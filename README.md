@@ -19,6 +19,9 @@ TO DO:
 	ie. not possible at this time.
 -implement automatic token refreshing (currently needs to be done manually/reloading the program). this is unideal.
 -implement live timer that shows current song + elapsed time 
+	not sure if possible with current implementation, might need to find library that can do this
+	ncurses?
+	also need to find a way to poll live status from spotify application instead of making constant checks to API
 ie
 
 ===============================================================================
