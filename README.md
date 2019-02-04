@@ -10,27 +10,25 @@ TO DO:
 -Implement colors, not all output is colored. --50%
 -Implement queuing, unknown when since we're reliant on spotify API supporting queuing (it doesn't)
 -Implement queuing, unqueuing, saving, removing tracks from history/search
-	also pending spotify API, but we can implement saving/removing from history/search
+	also pending spotify API
+	but we can implement saving/removing from history/search (COMPLETE, Nov 2018)
 -Implement viewing previously played songs and next up songs 
 	can view last 5 played songs!
 	implementing next 5 songs/skipping behavior means more work
 	...and requires spotify to implement queuing in their API
+	ie. not possible at this time.
 
 Color Scheme:
 
 Red: Errors
-ie. Unrecognized command, invalid volume, etc.
+Green: prompt
 
-Yellow: Informational
-ie. Volume: 100, Repeat is Off, etc.
-
-idk i think we should rethink that.
-
+keep is simple amirite
 
 //example preview url
 https://p.scdn.co/mp3-preview/d5c742f7e2d651d8f34761e045cfbcdb76f6b077?cid=774b29d4f13844c495f206cafdad9c86
 
-"preview_url" key available from track object (ie. one obtain from search)
+"preview_url" key available from track object (ie. obtainable from search)
 //need to implement webview behind the scenes to play the track?
 1. user searches track
 2. user decides to demo track
