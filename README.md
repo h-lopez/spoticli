@@ -17,6 +17,21 @@ TO DO:
 	implementing next 5 songs/skipping behavior means more work
 	...and requires spotify to implement queuing in their API
 	ie. not possible at this time.
+-implement automatic token refreshing (currently needs to be done manually/reloading the program). this is unideal.
+-implement live timer that shows current song + elapsed time 
+ie
+
+===============================================================================
+[Playing - 0:56 / 2:04] - N.I.B. by Black Sabbath
+
+
+
+
+hlopez@spoticli ~$ volume 100
+volume: 100
+
+hlopez@spoticli ~$ 
+===============================================================================
 
 Color Scheme:
 

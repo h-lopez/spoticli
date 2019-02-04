@@ -137,11 +137,12 @@ class SpotiCLI(Cmd):
 
 	def __init__(self):
 		#Cmd.__init__(self)
+		#persistent history means that previous commands are saved between sessions, instead of being cleared after program is exited.
 		super().__init__(persistent_history_file='~/.history', persistent_history_length=100)
 		
 		version = 'SpotiCLI'
 		author = 'Author:\t\tHugo A Lopez'
-		build_date = 'Build Date:' + '\t' + '2018-10-05'
+		build_date = 'Build Date:' + '\t' + '2019-02-04'
 		app_info = '\n' + version + '\n\n' + author + '\n' + build_date + '\n'
 		
 		self.enable_logging = False
@@ -272,6 +273,7 @@ class SpotiCLI(Cmd):
 			print('No results for query!')
 			return
 
+		#iterates through list of (parsed) results and prints out each one.
 		print('')
 		for x in range(0, result_limit):
 			print(
@@ -280,6 +282,7 @@ class SpotiCLI(Cmd):
 				parsed_results[x]['album']['artists'][0]['name'] + ' on ' +
 				parsed_results[x]['album']['name'])
 
+		#presents users with options after a selection is made (via numkeys on keyboard)
 		song_id = self.search_selection(parsed_results, result_limit, args)
 		if(song_id):
 			#sp.start_playback(uris=song_id.split())
@@ -582,6 +585,9 @@ class SpotiCLI(Cmd):
 			else:
 				print("Shuffle is disabled")
 
+	#these commands have minor delays as spotify API has to process our changes before we 
+	#can read them, otherwise we'll be reading old data if there's little to no delay.
+	#it's shitty, but no good alternative is available
 	def repeat_on(self, args):
 		sp.repeat('context')
 		time.sleep(0.5)
@@ -628,7 +634,7 @@ class SpotiCLI(Cmd):
 
 	def do_history(self, line):
 	#def do_old(self, line):
-	#history is built-in command, being overloaded by function that displays last 5 songs.
+	#history is built-in cmd2 command, being overloaded by function that displays last 5 songs.
 		'''Returns last 5 played songs'''
 		result_limit = 5
 		history_list = sp.current_user_recently_played(result_limit)
