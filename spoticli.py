@@ -760,6 +760,10 @@ class SpotiCLI(Cmd):
 		#subtract one because arrays start at 0
 		sp.transfer_playback(device_list['devices'][user_choice - 1]['id'], False)
 
+	def do_reauthorize(self, line):
+		'''if token expires, should be able to request new token using this. probably.'''
+		self.sp = spotipy.Spotify(initialize_env())
+		
 	def do_exit(self, line):
 		'''quits spoticli'''
 		quit()
