@@ -1,6 +1,5 @@
 import spotipy
 import spotipy.util
-from colorama import init, Fore, Back, Style
 from spoticli import SpotiCLI
 
 def initialize_env():
@@ -34,10 +33,7 @@ def initialize_env():
 
 if __name__ == '__main__':
 	active = True
+	#declare spotipy object
 	sp = spotipy.Spotify(initialize_env())
-	while(active):
-		try:
-			active = SpotiCLI(sp).cmdloop()
-		except:
-			sp = spotipy.Spotify(initialize_env())
-			print('re-AUTHORIZED')
+	#create spotipy object and pass along to spoticli object
+	active = SpotiCLI(sp).cmdloop()

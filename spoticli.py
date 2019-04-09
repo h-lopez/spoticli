@@ -384,7 +384,7 @@ class SpotiCLI(Cmd):
 	def do_current(self, line):
 		'''Prints the current playing track'''
 
-		#need delay to make sure data spotify gives us is up to date
+		#need delay to make sure data spotify gives us is up to date, especially if we recently (<100ms) changed track or changed playback state
 		time.sleep(0.5)
 
 		#pull JSON on currently playing track & parse into python friendly format
