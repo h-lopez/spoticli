@@ -38,113 +38,24 @@ from cmd2 import Cmd, with_argparser
 #declares variable prior to assignment
 #sp = spotipy.Spotify('')
 
-def initialize_env():
-	#define scope and user info
-	#will eventually remove this from being hardcoded.
-	#prompt for info then save locally?
-	#prompt for info and keep alive for session?
-	#idk yet.
-	scope = 'user-library-read user-library-modify user-read-currently-playing user-read-playback-state user-modify-playback-state user-read-recently-played'
-	username = '95hlopez@gmail.com'
-	client_id = 'ad61a493657140c8a663f8db17730c4f'
-	client_secret = '3c403975a6874b238339db2231864294'
-	redirect_uri = 'http://127.0.0.1'
-	cache = '.spotipyoauthcache'
-	
-	#spotify_creds_manager = SpotifyClientCredentials(client_id, client_secret)
-	#spotify_auth_manager = SpotifyOAuth(client_id,client_secret,redirect_uri,None,scope,cache,None)
-	#token_info = spotify_auth_manager.get_cached_token()
-
-
-	#necessary for auto-resetting colors to white after color change is applied
-	#depends on colorama
-	init(autoreset=True)
-
-	#return spotipy.util.obtain_token_localhost(username,client_id,client_secret,redirect_uri,cache,scope)
-	access_token = spotipy.util.obtain_token_localhost(username,client_id,client_secret,redirect_uri,cache,scope)
-
-	#check if generated/saved token is valid before continuing
-	#if valid creates spotipy object
-	if access_token:
-		#sp = spotipy.Spotify(access_token)
-		#sp.trace = True
-		#sp.trace_out = True
-		return access_token
-
-#basic data retrieval/mutator fuctions
-#used internally (within program) NOT from CLI context
-def get_current_playback_data():
-	return parse(sp.current_user_playing_track())
-
-def get_current_playback_state():
-	return parse(sp.current_playback())
-
-def get_is_playing(song_data):
-	return song_data['is_playing']
-
-def get_song(song_data):
-	return song_data['item']['name']
-
-def get_artist(song_data):
-	return song_data['item']['artists'][0]['name']
-
-def get_album(song_data):
-	return song_data['item']['album']['name']
-
-def get_duration(song_data):
-	return song_data['item']['duration_ms']
-
-def get_postion(song_data):
-	return song_data['progress_ms']
-
-def get_repeat(playback_data):
-	return playback_data['repeat_state']
-
-def get_shuffle(playback_data):
-	return playback_data['shuffle_state']
-
-def get_volume(playback_data):
-	return playback_data['device']['volume_percent']
-
-def get_devices():
-	return parse(sp.devices())
-
-#takes value in milliseconds, converts to MM:SS timestamp, returns value as string
-def ms_to_time(ms_timestamp):
-	seconds=(ms_timestamp / 1000) % 60
-	seconds = int(seconds)
-
-	minutes=(ms_timestamp /(1000 * 60)) % 60
-	minutes = str(int(minutes))
-
-	if(seconds < 10):
-		seconds = '0' + str(seconds)
-	else:
-		seconds = str(seconds)
-	return(minutes + ':' + seconds)
-
-#takes song information and converts to elapsed time stamp
-# Elapsed Time (format MM:SS) / Total Time (format MM:SS)
-def generate_timestamp(song_data):
-	return ms_to_time(get_postion(song_data)) + ' / ' + ms_to_time(get_duration(song_data))
-
-#parses a string into usable/indexed JSON
-def parse(data):
-	return json.loads(json.dumps(data))
-
 #spoticli object, responsible for creating and building cmd object and initializing user session.
 class SpotiCLI(Cmd):
 
-	def __init__(self):
+	def __init__(self, sp):
 		#Cmd.__init__(self)
 		#persistent history means that previous commands are saved between sessions, instead of being cleared after program is exited.
 		super().__init__(persistent_history_file='~/.history', persistent_history_length=100)
 		
+		#depends on colorama
+		#necessary for auto-resetting colors to white after color change is applied
+		init(autoreset=True)
+		
 		version = 'SpotiCLI'
 		author = 'Author:\tHugo A Lopez'
-		build_date = 'Build:' + '\t' + '2019-03-18'
+		build_date = 'Build:' + '\t' + '2019-04-09'
 		app_info = '\n' + version + '\n\n' + author + '\n' + build_date + '\n'
 		
+		self.spotipy_instance = sp
 		self.enable_logging = False
 		self.intro  = Fore.BLUE + app_info
 		self.prompt = Fore.GREEN + os.getlogin() + '@spoticli ~$ '
@@ -181,6 +92,67 @@ class SpotiCLI(Cmd):
 		self.hidden_commands.append('shortcuts')
 		self.hidden_commands.append('_relative_load')
 
+	#basic data retrieval/mutator fuctions
+	#used internally (within program) NOT from CLI context
+	def get_current_playback_data(self):
+		return self.parse(self.spotipy_instance.current_user_playing_track())
+
+	def get_current_playback_state(self):
+		return self.parse(self.spotipy_instance.current_playback())
+
+	def get_is_playing(self, song_data):
+		return song_data['is_playing']
+
+	def get_song(self, song_data):
+		return song_data['item']['name']
+
+	def get_artist(self, song_data):
+		return song_data['item']['artists'][0]['name']
+
+	def get_album(self, song_data):
+		return song_data['item']['album']['name']
+
+	def get_duration(self, song_data):
+		return song_data['item']['duration_ms']
+
+	def get_postion(self, song_data):
+		return song_data['progress_ms']
+
+	def get_repeat(self, playback_data):
+		return playback_data['repeat_state']
+
+	def get_shuffle(self, playback_data):
+		return playback_data['shuffle_state']
+
+	def get_volume(self, playback_data):
+		return playback_data['device']['volume_percent']
+
+	def get_devices(self):
+		return self.parse(self.spotipy_instance.devices())
+
+	#takes value in milliseconds, converts to MM:SS timestamp, returns value as string
+	def ms_to_time(self, ms_timestamp):
+		seconds=(ms_timestamp / 1000) % 60
+		seconds = int(seconds)
+
+		minutes=(ms_timestamp /(1000 * 60)) % 60
+		minutes = str(int(minutes))
+
+		if(seconds < 10):
+			seconds = '0' + str(seconds)
+		else:
+			seconds = str(seconds)
+		return(minutes + ':' + seconds)
+
+	#takes song information and converts to elapsed time stamp
+	# Elapsed Time (format MM:SS) / Total Time (format MM:SS)
+	def generate_timestamp(self, song_data):
+		return self.ms_to_time(self.get_postion(song_data)) + ' / ' + self.ms_to_time(self.get_duration(song_data))
+
+	#parses a string into usable/indexed JSON
+	def parse(self, data):
+		return json.loads(json.dumps(data))
+	
 	#prints blank line
 	#necessary to overload cmd2's default behavior (retry previous command)
 	def emptyline(self):
@@ -192,19 +164,19 @@ class SpotiCLI(Cmd):
 
 	#def do_debug(self, line):
 	#	if(line == 'y'):
-	#		sp.trace = True
-	#		sp.trace_out = True
+	#		self.spotipy_instance.trace = True
+	#		self.spotipy_instance.trace_out = True
 	#		print('debug messages enabled')
 	#	elif(line == 'n'):
-	#		sp.trace = False
-	#		sp.trace_out = False
+	#		self.spotipy_instance.trace = False
+	#		self.spotipy_instance.trace_out = False
 	#		print('debug messages disabled')
 
 	def search_result_parser(self, search_type, result_count, args):
 		args = ' '.join(args.query)
 		#need to append 's' at of query type
 		#spotify uses plurals as the keys in the search api
-		return parse(sp.search(args,type=search_type,limit=result_count))[search_type + 's']['items']
+		return self.parse(self.spotipy_instance.search(args,type=search_type,limit=result_count))[search_type + 's']['items']
 
 	def search_selection(self, parsed_results, result_limit, args):
 		user_choice = input("\nSelect result: ")
@@ -286,20 +258,20 @@ class SpotiCLI(Cmd):
 		#presents users with options after a selection is made (via numkeys on keyboard)
 		song_id = self.search_selection(parsed_results, result_limit, args)
 		if(song_id):
-			#sp.start_playback(uris=song_id.split())
+			#self.spotipy_instance.start_playback(uris=song_id.split())
 			#'do what' code goes right here.
 			action_id = self.action_selection(args)
 			if(action_id):
 				song_id = song_id.split()
 				if(action_id == 'play'):
-					sp.start_playback(uris=song_id)
+					self.spotipy_instance.start_playback(uris=song_id)
 					self.do_current('')
 				if(action_id == 'queue'):
 					print('queuing is not currently supported')
 				if(action_id == 'save'):
-					sp.current_user_saved_tracks_add(song_id)
+					self.spotipy_instance.current_user_saved_tracks_add(song_id)
 				if(action_id == 'unsave'):
-					sp.current_user_saved_tracks_delete(song_id)
+					self.spotipy_instance.current_user_saved_tracks_delete(song_id)
 		else:
 			return
 
@@ -323,7 +295,7 @@ class SpotiCLI(Cmd):
 
 		artist_id = self.search_selection(parsed_results, result_limit, args)
 		if(artist_id):
-			sp.start_playback(context_uri=artist_id)
+			self.spotipy_instance.start_playback(context_uri=artist_id)
 		else:
 			return
 
@@ -349,7 +321,7 @@ class SpotiCLI(Cmd):
 		#play playlist directly from results
 		album_id = self.search_selection(parsed_results, result_limit, args)
 		if(album_id):
-			sp.start_playback(context_uri=album_id)
+			self.spotipy_instance.start_playback(context_uri=album_id)
 		else:
 			return
 
@@ -374,7 +346,7 @@ class SpotiCLI(Cmd):
 		#play playlist directly from results
 		playlist_id = self.search_selection(parsed_results, result_limit, args)
 		if(playlist_id):
-			sp.start_playback(context_uri=playlist_id)
+			self.spotipy_instance.start_playback(context_uri=playlist_id)
 		else:
 			return
 
@@ -416,17 +388,17 @@ class SpotiCLI(Cmd):
 		time.sleep(0.5)
 
 		#pull JSON on currently playing track & parse into python friendly format
-		now_playing = get_current_playback_data()
-		#parsed = parse(sp.current_user_playing_track())
+		now_playing = self.get_current_playback_data()
+		#parsed = self.parse(self.spotipy_instance.current_user_playing_track())
 
 		#pull song name, artist and album, print to console
-		song_name = get_song(now_playing)
-		artist_name = get_artist(now_playing)
-		album_name = get_album(now_playing)
-		timestamp = generate_timestamp(now_playing)
+		song_name = self.get_song(now_playing)
+		artist_name = self.get_artist(now_playing)
+		album_name = self.get_album(now_playing)
+		timestamp = self.generate_timestamp(now_playing)
 		playing_state = ''
 
-		if(get_is_playing(now_playing)):
+		if(self.get_is_playing(now_playing)):
 			playing_state = '[Playing'
 		else:
 			playing_state = '[Stopped'
@@ -441,23 +413,23 @@ class SpotiCLI(Cmd):
 	'''
 	def do_play(self, line):
 		#Toggles playback on Spotify client
-		if(get_is_playing(get_current_playback_data())):
-			sp.pause_playback()
+		if(self.get_is_playing(self.get_current_playback_data())):
+			self.spotipy_instance.pause_playback()
 		else:
-			sp.start_playback()
+			self.spotipy_instance.start_playback()
 		self.do_current('')
 	'''
 	
 	def do_play(self, line):
 		'''starts playback if paused'''
-		if(not get_is_playing(get_current_playback_data())):
-			sp.start_playback()
+		if(not self.get_is_playing(self.get_current_playback_data())):
+			self.spotipy_instance.start_playback()
 		self.do_current('')
 		
 	def do_pause(self, line):
 		'''stops playback if started'''
-		if(get_is_playing(get_current_playback_data())):
-			sp.pause_playback()
+		if(self.get_is_playing(self.get_current_playback_data())):
+			self.spotipy_instance.pause_playback()
 		self.do_current('')
 	#
 		
@@ -466,26 +438,26 @@ class SpotiCLI(Cmd):
 	#
 	#def do_follow(self, line):
 	#	'''follows artist of currently playing track'''
-	#	now_playing = get_current_playback_data()
-	#	sp.user_follow_artists(now_playing['item']['artist']['id'].split())
+	#	now_playing = self.get_current_playback_data()
+	#	self.spotipy_instance.user_follow_artists(now_playing['item']['artist']['id'].split())
 	#	print(Fore.RED + '<3 - Artist Followed')
 
 	#not currently possible to unfollow artist in spotipy API...oh well...
 	#def do_unfollow(self, line):
 	#	'''unfollows artist of currently playing track'''
-	#	now_playing = get_current_playback_data()
+	#	now_playing = self.get_current_playback_data()
 	#	print(Fore.RED + '<3 - Artist Unfollowed')
 
 	def do_save(self, line):
 		'''saves track to user library (or removes saved track from user library)'''
-		now_playing = get_current_playback_data()
-		sp.current_user_saved_tracks_add(now_playing['item']['id'].split())
+		now_playing = self.get_current_playback_data()
+		self.spotipy_instance.current_user_saved_tracks_add(now_playing['item']['id'].split())
 		print('<3 - Track Saved')
 
 	def do_unsave(self, line):
 		'''removes track from user library'''
-		now_playing = get_current_playback_data()
-		sp.current_user_saved_tracks_delete(now_playing['item']['id'].split())
+		now_playing = self.get_current_playback_data()
+		self.spotipy_instance.current_user_saved_tracks_delete(now_playing['item']['id'].split())
 		print('</3 - Track Unsaved')
 
 	def do_queue(self, line):
@@ -516,9 +488,9 @@ class SpotiCLI(Cmd):
 			print('invalid time')
 			return
 
-		now_playing = get_current_playback_state()
-		song_duration = get_duration(now_playing)
-		song_position = get_postion(now_playing)
+		now_playing = self.get_current_playback_state()
+		song_duration = self.get_duration(now_playing)
+		song_position = self.get_postion(now_playing)
 
 		if((new_pos > song_duration) or (new_pos < (song_duration * -1))):
 			print('invalid time')
@@ -526,26 +498,26 @@ class SpotiCLI(Cmd):
 
 		if(line[0] == '+' or line[0] == '-'):
 			song_position = song_position + new_pos
-			sp.seek_track(song_position)
+			self.spotipy_instance.seek_track(song_position)
 		else:
-			sp.seek_track(new_pos)
+			self.spotipy_instance.seek_track(new_pos)
 		#print(str(new_pos/1000) + ' / ' + str(song_duration/1000))
 		self.do_current('')
 
 	def do_previous(self, line):
 		'''plays previous track'''
-		sp.previous_track()
+		self.spotipy_instance.previous_track()
 		self.do_current('')
 
 	def do_next(self, line):
 		'''skips to next track'''
-		sp.next_track()
+		self.spotipy_instance.next_track()
 		self.do_current('')
 
 	def do_again(self, line):
 		'''instantly replays current song'''
 		#literally the same as 'seek 0'
-		sp.seek_track(0)
+		self.spotipy_instance.seek_track(0)
 		self.do_current('')
 
 	#how do reload token properly arrrrrgh
@@ -554,12 +526,12 @@ class SpotiCLI(Cmd):
 		#sp = spotipy.Spotify(initialize_env())
 
 	def shuffle_on(self, args):
-		sp.shuffle(True)
+		self.spotipy_instance.shuffle(True)
 		time.sleep(0.5)
 		self.do_shuffle('')
 
 	def shuffle_off(self, args):
-		sp.shuffle(False)
+		self.spotipy_instance.shuffle(False)
 		time.sleep(0.5)
 		self.do_shuffle('')
 
@@ -584,7 +556,7 @@ class SpotiCLI(Cmd):
 			args.func(self, args)
 		except AttributeError:
 			# No sub-command was provided, so as called
-			playback = get_shuffle(get_current_playback_state())
+			playback = self.get_shuffle(self.get_current_playback_state())
 			if(playback==True):
 				print("Shuffle is enabled")
 			else:
@@ -594,17 +566,17 @@ class SpotiCLI(Cmd):
 	#can read them, otherwise we'll be reading old data if there's little to no delay.
 	#it's shitty, but no good alternative is available
 	def repeat_on(self, args):
-		sp.repeat('context')
+		self.spotipy_instance.repeat('context')
 		time.sleep(0.5)
 		self.do_repeat('')
 
 	def repeat_track(self, args):
-		sp.repeat('track')
+		self.spotipy_instance.repeat('track')
 		time.sleep(0.5)
 		self.do_repeat('')
 
 	def repeat_off(self, args):
-		sp.repeat('off')
+		self.spotipy_instance.repeat('off')
 		time.sleep(0.5)
 		self.do_repeat('')
 
@@ -630,7 +602,7 @@ class SpotiCLI(Cmd):
 			args.func(self, args)
 		except AttributeError:
 			# No sub-command was provided, so as called
-			playback = get_repeat(get_current_playback_state())
+			playback = self.get_repeat(self.get_current_playback_state())
 			if(playback == 'track'):
 				print("Repeating Track")
 			elif(playback == 'context'):
@@ -643,8 +615,8 @@ class SpotiCLI(Cmd):
 	#history is built-in cmd2 command, being overloaded by function that displays last 5 songs.
 		'''Returns last 5 played songs'''
 		result_limit = 5
-		history_list = sp.current_user_recently_played(result_limit)
-		parsed_results = parse(history_list['items'])
+		history_list = self.spotipy_instance.current_user_recently_played(result_limit)
+		parsed_results = self.parse(history_list['items'])
 		#print(parsed_results)
 		#if results are less < 5, only print the # of returned results
 		if(result_limit > len(parsed_results)):
@@ -683,20 +655,20 @@ class SpotiCLI(Cmd):
 		song_id = parsed_results[user_choice - 1]['track']['uri']
 		print(song_id)
 		if(song_id):
-			#sp.start_playback(uris=song_id.split())
+			#self.spotipy_instance.start_playback(uris=song_id.split())
 			#'do what' code goes right here.
 			action_id = self.action_selection(line)
 			if(action_id):
 				song_id = song_id.split()
 				if(action_id == 'play'):
-					sp.start_playback(uris=song_id)
+					self.spotipy_instance.start_playback(uris=song_id)
 					self.do_current('')
 				if(action_id == 'queue'):
 					print('queuing is not currently supported')
 				if(action_id == 'save'):
-					sp.current_user_saved_tracks_add(song_id)
+					self.spotipy_instance.current_user_saved_tracks_add(song_id)
 				if(action_id == 'unsave'):
-					sp.current_user_saved_tracks_delete(song_id)
+					self.spotipy_instance.current_user_saved_tracks_delete(song_id)
 		else:
 			return
 				
@@ -705,7 +677,7 @@ class SpotiCLI(Cmd):
 	Usage: volume [value]
 	Volume must be between 0 and 100, inclusive
 	You can also specify a step increase by prefixing value with +/-, otherwise it defaults to 10'''
-		current_vol = get_volume(get_current_playback_state())
+		current_vol = self.get_volume(self.get_current_playback_state())
 
 		if not line:
 			print('volume: ' + str(current_vol))
@@ -730,15 +702,15 @@ class SpotiCLI(Cmd):
 		elif(new_vol < 0):
 			new_vol = 0
 
-		sp.volume(new_vol)
+		self.spotipy_instance.volume(new_vol)
 		print('volume: ' + str(new_vol))
 
 	def do_devices(self, line):
 		'''transfer playback to different user device'''
-		device_list = get_devices()
-		device_length = len(get_devices()['devices'])
+		device_list = self.get_devices()
+		device_length = len(self.get_devices()['devices'])
 
-		print('current device: ' + get_current_playback_state()['device']['name'])
+		print('current device: ' + self.get_current_playback_state()['device']['name'])
 
 		for x in range (0, device_length):
 			print(str(x + 1) + ': ' + device_list['devices'][x]['name'])
@@ -764,22 +736,12 @@ class SpotiCLI(Cmd):
 
 		#transfer playback on selected device, but don't actually start playing yet.
 		#subtract one because arrays start at 0
-		sp.transfer_playback(device_list['devices'][user_choice - 1]['id'], False)
+		self.spotipy_instance.transfer_playback(device_list['devices'][user_choice - 1]['id'], False)
 
-	def do_reauthorize(self, line):
-		'''if token expires, should be able to request new token using this. probably.'''
-		self.sp = spotipy.Spotify(initialize_env())
+	#def do_reauthorize(self, line):
+	#	'''if token expires, should be able to request new token using this. probably.'''
+	#	self.sp = spotipy.Spotify(initialize_env())
 		
 	def do_exit(self, line):
 		'''quits spoticli'''
 		quit()
-
-if __name__ == '__main__':
-	active = True
-	sp = spotipy.Spotify(initialize_env())
-	while(active):
-		try:
-			active = SpotiCLI().cmdloop()
-		except:
-			sp = spotipy.Spotify(initialize_env())
-			print('re-AUTHORIZED')
