@@ -141,8 +141,8 @@ class SpotiCLI(Cmd):
 		super().__init__(persistent_history_file='~/.history', persistent_history_length=100)
 		
 		version = 'SpotiCLI'
-		author = 'Author:\t\tHugo A Lopez'
-		build_date = 'Build Date:' + '\t' + '2019-02-04'
+		author = 'Author:\tHugo A Lopez'
+		build_date = 'Build:' + '\t' + '2019-03-18'
 		app_info = '\n' + version + '\n\n' + author + '\n' + build_date + '\n'
 		
 		self.enable_logging = False
@@ -174,6 +174,7 @@ class SpotiCLI(Cmd):
 		self.hidden_commands.append('set')
 		self.hidden_commands.append('edit')
 		self.hidden_commands.append('load')
+		self.hidden_commands.append('macro')
 		self.hidden_commands.append('py')
 		self.hidden_commands.append('pyscript')
 		self.hidden_commands.append('shell')
@@ -400,6 +401,7 @@ class SpotiCLI(Cmd):
 
 	@with_argparser(search_parser)
 	def do_search(self, args):
+		'''search for artist, album, track or playlist'''
 		try:
 			# Call whatever sub-command function was selected
 			args.func(self, args)
@@ -487,9 +489,11 @@ class SpotiCLI(Cmd):
 		print('</3 - Track Unsaved')
 
 	def do_queue(self, line):
+		'''shows current queued songs'''
 		print('queueing not implemented (awaiting spotify API implementation)')
 
-	def do_upcomfing(self, line):
+	def do_upcoming(self, line):
+		'''print list of upcoming songs (defaults to 10)'''
 		print('upcoming songs not implemented (awaiting spotify API implementation')
 		# check if queue, get first 5
 		# if queue has <5 songs or queue empty, check remainder from songs in playlist
@@ -574,6 +578,7 @@ class SpotiCLI(Cmd):
 
 	@with_argparser(shuffle_parser)
 	def do_shuffle(self, args):
+		'''show or edit shuffle state'''
 		try:
 			# Call whatever sub-command function was selected
 			args.func(self, args)
@@ -619,6 +624,7 @@ class SpotiCLI(Cmd):
 
 	@with_argparser(repeat_parser)
 	def do_repeat(self, args):
+		'''show or edit repeat state'''
 		try:
 			# Call whatever sub-command function was selected
 			args.func(self, args)
