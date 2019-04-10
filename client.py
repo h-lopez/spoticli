@@ -1,6 +1,13 @@
 import spotipy
 import spotipy.util
+import datetime
+
 from spoticli import SpotiCLI
+from datetime import datetime
+
+#what if we pass time as parameter into spoticli object
+#spoticli checks preloop if current time > creation time + 40
+#if it is, exit, and have client re-loop it.
 
 def initialize_env():
 	#define scope and user info
@@ -25,15 +32,18 @@ def initialize_env():
 	#check if generated/saved token is valid before continuing
 	#if valid creates spotipy object
 	if access_token:
-		#sp = spotipy.Spotify(access_token)
-		#sp.trace = True
-		#sp.trace_out = True
 		return access_token
 
 
 if __name__ == '__main__':
-	active = True
 	#declare spotipy object
-	sp = spotipy.Spotify(initialize_env())
 	#create spotipy object and pass along to spoticli object
-	active = SpotiCLI(sp).cmdloop()
+	#while(True):
+		#sp = spotipy.Spotify(initialize_env())
+		#active = SpotiCLI(sp, current_time).cmdloop()
+	reauth_exit = 1
+	while(reauth_exit is 1):
+		print(datetime.now())
+		current_time = datetime.now()
+		reauth_exit = SpotiCLI(spotipy.Spotify(initialize_env()), current_time).cmdloop()
+		print('exit code: ' + reauth_exit)
