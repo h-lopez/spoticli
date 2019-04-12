@@ -34,16 +34,25 @@ def initialize_env():
 	if access_token:
 		return access_token
 
-
+	#if you return an exit code, it kills the entire program
+	#if you DONT return an exit code it doesn't...okay.
+		
 if __name__ == '__main__':
 	#declare spotipy object
 	#create spotipy object and pass along to spoticli object
 	#while(True):
 		#sp = spotipy.Spotify(initialize_env())
 		#active = SpotiCLI(sp, current_time).cmdloop()
-	reauth_exit = 1
-	while(reauth_exit is 1):
-		print(datetime.now())
-		current_time = datetime.now()
-		reauth_exit = SpotiCLI(spotipy.Spotify(initialize_env()), current_time).cmdloop()
-		print('exit code: ' + reauth_exit)
+	SpotiCLI(spotipy.Spotify(initialize_env()), datetime.now()).cmdloop()
+	'''
+	while(True):
+		reauth_exit = SpotiCLI(spotipy.Spotify(initialize_env()), datetime.now())
+		reauth_exit.cmdloop()
+		print('current state')
+		print(reauth_exit)
+		if reauth_exit is 1:
+			print('exit')
+			break
+		if reauth_exit is 2:
+			print('re-iterate')
+			'''

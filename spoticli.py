@@ -69,7 +69,8 @@ class SpotiCLI(Cmd):
 		self.persistent_history_file = '~/.history'
 		
 		#default expiration time to 45min before exiting and requesting new token
-		self.expiration_time = current_time + timedelta(minutes=1)
+		self.creation_time = current_time
+		self.expiration_time = current_time + timedelta(seconds=10)
 		os.system('title SpotiCLI')
 		#need to look into setting title from cmd2 built-in vs importing another lib
 		#self.set_window_title('Spoticli')
@@ -95,6 +96,7 @@ class SpotiCLI(Cmd):
 		self.hidden_commands.append('shell')
 		self.hidden_commands.append('shortcuts')
 		self.hidden_commands.append('_relative_load')
+		self.hidden_commands.append('quit')
 
 	#basic data retrieval/mutator fuctions
 	#used internally (within program) NOT from CLI context
@@ -103,6 +105,9 @@ class SpotiCLI(Cmd):
 	
 	def do_expiration(self, line):
 		print(self.expiration_time)
+		
+	def do_creation(self, line):
+		print(self.creation_time)
 	
 	def get_current_playback_data(self):
 		return self.parse(self.spotipy_instance.current_user_playing_track())
@@ -171,17 +176,33 @@ class SpotiCLI(Cmd):
 
 	#compare token expiration time to current time
 	#if current time is greater than expiration time, exit current loop to re-auth.
+	'''
 	def precmd(self, line):
 		if datetime.now() > self.expiration_time:
 			print(self.exit_code)
 			print('requesting new token, please wait')
 			#set exit code
-			#0 = normal termination
-			#1 = termination for token refresh
-			self.exit_code = 1
-			self.do_exit(line)
+			#1 = normal termination
+			#2 = termination for token refresh
+			self._should_quit = True
+			return self._STOP_AND_EXIT
 		return line
+	'''
 		
+	def do_exit(self, line):
+		'''exit spoticli'''
+		'''
+		print('exit requested with code: ')
+		print(self.exit_code)
+		self.exit_code = 1
+		self._should_quit = True
+		return self._STOP_AND_EXIT
+		'''
+		quit()
+
+	def postloop(self):
+		return self.exit_code
+	
 	def do_about(self, line):
 		print(Fore.BLUE + self.app_info)
 	#def trapSpotifyException(
@@ -592,6 +613,7 @@ class SpotiCLI(Cmd):
 
 	#these commands have minor delays as spotify API has to process our changes before we 
 	#can read them, otherwise we'll be reading old data if there's little to no delay.
+	#while we can just print the state we selected, there's no confirmation that it was actually setn to spotify.
 	#it's shitty, but no good alternative is available
 	def repeat_on(self, args):
 		self.spotipy_instance.repeat('context')
@@ -769,16 +791,3 @@ class SpotiCLI(Cmd):
 	#def do_reauthorize(self, line):
 	#	'''if token expires, should be able to request new token using this. probably.'''
 	#	self.sp = spotipy.Spotify(initialize_env())
-		
-	def postloop(self):
-		"""Hook method executed once when the cmdloop() method is about to return."""
-		code = self.exit_code if self.exit_code is not None else 0
-		print(self.exit_code)
-		return code
-		
-	def do_exit(self, line):
-		'''quits spoticli'''
-		self.exit_code = 0
-		self._should_quit = True
-		return self._STOP_AND_EXIT
-		#quit()
