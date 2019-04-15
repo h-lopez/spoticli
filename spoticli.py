@@ -188,17 +188,35 @@ class SpotiCLI(Cmd):
 			return self._STOP_AND_EXIT
 		return line
 	'''
+	
+	def postcmd(self, line, stop):
+		if datetime.now() > self.expiration_time:
+			print(self.exit_code)
+			print('requesting new token, please wait')
+			#set exit code
+			#1 = normal termination
+			#2 = termination for token refresh
+			self.exit_code = 2
+			self._should_quit = True
+			print('PREPARING TO SOFT EXIT')
+			self.do_exit(self)
+			return self._STOP_AND_EXIT
+		return line
+	
 		
 	def do_exit(self, line):
 		'''exit spoticli'''
-		'''
 		print('exit requested with code: ')
 		print(self.exit_code)
-		self.exit_code = 1
-		self._should_quit = True
-		return self._STOP_AND_EXIT
-		'''
-		quit()
+		if self.exit_code is 2:
+			print('SOFT EXITTING')
+			quit()
+		else:
+			print('HARD EXITTING')
+			self._should_quit = True
+			return self._STOP_AND_EXIT
+		
+		#quit()
 
 	def postloop(self):
 		return self.exit_code

@@ -28,7 +28,7 @@ def initialize_env():
 
 	#return spotipy.util.obtain_token_localhost(username,client_id,client_secret,redirect_uri,cache,scope)
 	access_token = spotipy.util.obtain_token_localhost(username,client_id,client_secret,redirect_uri,cache,scope)
-
+	print(access_token)
 	#check if generated/saved token is valid before continuing
 	#if valid creates spotipy object
 	if access_token:
@@ -43,8 +43,8 @@ if __name__ == '__main__':
 	#while(True):
 		#sp = spotipy.Spotify(initialize_env())
 		#active = SpotiCLI(sp, current_time).cmdloop()
-	SpotiCLI(spotipy.Spotify(initialize_env()), datetime.now()).cmdloop()
-	'''
+	#SpotiCLI(spotipy.Spotify(initialize_env()), datetime.now()).cmdloop()
+	
 	while(True):
 		reauth_exit = SpotiCLI(spotipy.Spotify(initialize_env()), datetime.now())
 		reauth_exit.cmdloop()
@@ -55,4 +55,4 @@ if __name__ == '__main__':
 			break
 		if reauth_exit is 2:
 			print('re-iterate')
-			'''
+			
