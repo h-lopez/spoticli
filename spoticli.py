@@ -70,8 +70,9 @@ class SpotiCLI(Cmd):
 		self.persistent_history_file = '~/.history'
 		
 		#default expiration time to 45min before exiting and requesting new token
+		self.refresh_interval = timedelta(minutes=5)
 		self.creation_time = current_time
-		self.expiration_time = current_time + timedelta(minutes=10)
+		self.expiration_time = self.creation_time + self.refresh_interval
 		os.system('title SpotiCLI')
 		#need to look into setting title from cmd2 built-in vs importing another lib
 		#self.set_window_title('Spoticli')
@@ -210,7 +211,7 @@ class SpotiCLI(Cmd):
 			print('Attempting token refresh...')
 			self.refresh_session()
 			self.creation_time = datetime.now()
-			self.expiration_time = self.creation_time + timedelta(minutes=10)
+			self.expiration_time = self.creation_time + self.refresh_interval
 		return line
 	
 	'''def postcmd(self, line, stop):
