@@ -19,7 +19,7 @@ def initialize_env():
 	username = '95hlopez@gmail.com'
 	client_id = 'ad61a493657140c8a663f8db17730c4f'
 	client_secret = '3c403975a6874b238339db2231864294'
-	redirect_uri = 'http://127.0.0.1'
+	redirect_uri = 'http://localhost'
 	cache = '.spotipyoauthcache'
 	
 	#spotify_creds_manager = SpotifyClientCredentials(client_id, client_secret)
@@ -43,11 +43,11 @@ if __name__ == '__main__':
 	#while(True):
 		#sp = spotipy.Spotify(initialize_env())
 		#active = SpotiCLI(sp, current_time).cmdloop()
-	#SpotiCLI(spotipy.Spotify(initialize_env()), datetime.now()).cmdloop()
-	
+	SpotiCLI(spotipy.Spotify(initialize_env()), datetime.now()).cmdloop()
+	'''
 	while(True):
 		reauth_exit = SpotiCLI(spotipy.Spotify(initialize_env()), datetime.now())
-		reauth_exit.cmdloop()
+		print(reauth_exit.cmdloop())
 		print('current state')
 		print(reauth_exit)
 		if reauth_exit is 1:
@@ -55,4 +55,4 @@ if __name__ == '__main__':
 			break
 		if reauth_exit is 2:
 			print('re-iterate')
-			
+	print('i got here')'''

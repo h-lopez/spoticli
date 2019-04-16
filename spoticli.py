@@ -56,6 +56,7 @@ class SpotiCLI(Cmd):
 		build_date = 'Build:' + '\t' + '2019-04-09'
 		self.app_info = '\n' + version + '\n\n' + author + '\n' + build_date + '\n'
 		
+		self.current_token = ''
 		self.spotipy_instance = sp
 		self.enable_logging = False
 		self.intro  = ''#Fore.BLUE + self.app_info
@@ -70,7 +71,7 @@ class SpotiCLI(Cmd):
 		
 		#default expiration time to 45min before exiting and requesting new token
 		self.creation_time = current_time
-		self.expiration_time = current_time + timedelta(seconds=10)
+		self.expiration_time = current_time + timedelta(minutes=10)
 		os.system('title SpotiCLI')
 		#need to look into setting title from cmd2 built-in vs importing another lib
 		#self.set_window_title('Spoticli')
@@ -188,8 +189,31 @@ class SpotiCLI(Cmd):
 			return self._STOP_AND_EXIT
 		return line
 	'''
+	def do_get_token_info(self, line):
+		print(self.current_token)
 	
-	def postcmd(self, line, stop):
+	def refresh_session(self):
+		scope = 'user-library-read user-library-modify user-read-currently-playing user-read-playback-state user-modify-playback-state user-read-recently-played'
+		username = '95hlopez@gmail.com'
+		client_id = 'ad61a493657140c8a663f8db17730c4f'
+		client_secret = '3c403975a6874b238339db2231864294'
+		redirect_uri = 'http://localhost'
+		cache = '.spotipyoauthcache'
+		access_token = spotipy.util.obtain_token_localhost(username,client_id,client_secret,redirect_uri,cache,scope)
+		self.current_token = access_token
+		if access_token:
+			self.sp = spotipy.Spotify(access_token)
+			print('new token requested') 
+	
+	def precmd(self, line):
+		if datetime.now () > self.expiration_time:
+			print('Attempting token refresh...')
+			self.refresh_session()
+			self.creation_time = datetime.now()
+			self.expiration_time = self.creation_time + timedelta(minutes=10)
+		return line
+	
+	'''def postcmd(self, line, stop):
 		if datetime.now() > self.expiration_time:
 			print(self.exit_code)
 			print('requesting new token, please wait')
@@ -202,25 +226,26 @@ class SpotiCLI(Cmd):
 			self.do_exit(self)
 			return self._STOP_AND_EXIT
 		return line
-	
-		
-	def do_exit(self, line):
-		'''exit spoticli'''
-		print('exit requested with code: ')
-		print(self.exit_code)
-		if self.exit_code is 2:
-			print('SOFT EXITTING')
-			quit()
-		else:
-			print('HARD EXITTING')
-			self._should_quit = True
-			return self._STOP_AND_EXIT
-		
-		#quit()
 
 	def postloop(self):
 		return self.exit_code
 	
+	def do_exit(self, line):
+		#exit spoticli
+		print('exit requested with code: ')
+		print(self.exit_code)
+		if self.exit_code is 2:
+			print('SOFT EXITTING')
+			self._should_quit = True
+			return self._STOP_AND_EXIT
+		else:
+			print('HARD EXITTING')
+			self._should_quit = True
+			return self._STOP_AND_EXIT'''
+		
+	def do_exit(self, line):
+		quit()
+
 	def do_about(self, line):
 		print(Fore.BLUE + self.app_info)
 	#def trapSpotifyException(
