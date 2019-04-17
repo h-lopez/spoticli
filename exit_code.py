@@ -45,7 +45,8 @@ Usage:  exit [exit_code]
 			self.do_exit(line)
 		return line'''
 	
-
+	def do_print(self, line):
+		print(datetime.now().timestamp())
 	
 	def do_creation(self, line):
 		print(self.creation_time)

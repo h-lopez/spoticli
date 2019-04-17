@@ -42,7 +42,7 @@ from cmd2 import Cmd, with_argparser
 #spoticli object, responsible for creating and building cmd object and initializing user session.
 class SpotiCLI(Cmd):
 
-	def __init__(self, sp, current_time):
+	def __init__(self):
 		#Cmd.__init__(self)
 		#persistent history means that previous commands are saved between sessions, instead of being cleared after program is exited.
 		super().__init__(persistent_history_file='~/.history', persistent_history_length=100)
@@ -57,7 +57,7 @@ class SpotiCLI(Cmd):
 		self.app_info = '\n' + version + '\n\n' + author + '\n' + build_date + '\n'
 		
 		self.current_token = ''
-		self.spotipy_instance = sp
+		self.spotipy_instance = ''
 		self.enable_logging = False
 		self.intro  = ''#Fore.BLUE + self.app_info
 		self.prompt = Fore.GREEN + os.getlogin() + '@spoticli ~$ '
@@ -71,7 +71,7 @@ class SpotiCLI(Cmd):
 		
 		#default expiration time to 45min before exiting and requesting new token
 		self.refresh_interval = timedelta(minutes=5)
-		self.creation_time = current_time
+		self.creation_time = datetime.now()
 		self.expiration_time = self.creation_time + self.refresh_interval
 		os.system('title SpotiCLI')
 		#need to look into setting title from cmd2 built-in vs importing another lib
@@ -102,15 +102,6 @@ class SpotiCLI(Cmd):
 
 	#basic data retrieval/mutator fuctions
 	#used internally (within program) NOT from CLI context
-	def do_time(self, line):
-		print(datetime.now())
-	
-	def do_expiration(self, line):
-		print(self.expiration_time)
-		
-	def do_creation(self, line):
-		print(self.creation_time)
-	
 	def get_current_playback_data(self):
 		return self.parse(self.spotipy_instance.current_user_playing_track())
 
@@ -146,8 +137,7 @@ class SpotiCLI(Cmd):
 
 	def get_devices(self):
 		return self.parse(self.spotipy_instance.devices())
-
-		
+	
 	#takes value in milliseconds, converts to MM:SS timestamp, returns value as string
 	def ms_to_time(self, ms_timestamp):
 		seconds=(ms_timestamp / 1000) % 60
@@ -176,6 +166,10 @@ class SpotiCLI(Cmd):
 	def emptyline(self):
 		return
 
+	#overloads default error message
+	def default(self, line):
+		print(Fore.RED + 'Unrecognized command')
+		
 	#compare token expiration time to current time
 	#if current time is greater than expiration time, exit current loop to re-auth.
 	'''
@@ -190,10 +184,26 @@ class SpotiCLI(Cmd):
 			return self._STOP_AND_EXIT
 		return line
 	'''
-	def do_get_token_info(self, line):
-		print(self.current_token)
+
+	#create initial spotipy object and program start
+	def preloop(self):
+		self.refresh_session()
 	
+	#check is token is dead before exectuting command
+	#if dead, refresh token, then pass command
+	#if not dead, pass command
+	def precmd(self, line):
+		if datetime.now () > self.expiration_time:
+			print('Attempting token refresh...')
+			self.refresh_session()
+			self.creation_time = datetime.now()
+			self.expiration_time = self.creation_time + self.refresh_interval
+		return line
+
+	#this creates a new spotipy session with new token.
 	def refresh_session(self):
+		#explicitly kill session
+		self.spotipy_instance = ''
 		scope = 'user-library-read user-library-modify user-read-currently-playing user-read-playback-state user-modify-playback-state user-read-recently-played'
 		username = '95hlopez@gmail.com'
 		client_id = 'ad61a493657140c8a663f8db17730c4f'
@@ -203,16 +213,9 @@ class SpotiCLI(Cmd):
 		access_token = spotipy.util.obtain_token_localhost(username,client_id,client_secret,redirect_uri,cache,scope)
 		self.current_token = access_token
 		if access_token:
-			self.sp = spotipy.Spotify(access_token)
+			#assuming new token was retrieved successfully, create new session.
+			self.spotipy_instance = spotipy.Spotify(access_token)
 			print('new token requested') 
-	
-	def precmd(self, line):
-		if datetime.now () > self.expiration_time:
-			print('Attempting token refresh...')
-			self.refresh_session()
-			self.creation_time = datetime.now()
-			self.expiration_time = self.creation_time + self.refresh_interval
-		return line
 	
 	'''def postcmd(self, line, stop):
 		if datetime.now() > self.expiration_time:
@@ -243,17 +246,22 @@ class SpotiCLI(Cmd):
 			print('HARD EXITTING')
 			self._should_quit = True
 			return self._STOP_AND_EXIT'''
-		
+	
 	def do_exit(self, line):
+		'''Exit SpotiCLI'''
 		quit()
 
 	def do_about(self, line):
+		'''display build information'''
 		print(Fore.BLUE + self.app_info)
-	#def trapSpotifyException(
-		
-	#overloads default message
-	def default(self, line):
-		print(Fore.RED + 'Unrecognized command')
+	
+	def do_diagnostics(self, line):
+		'''display diagnostics'''
+		print('Current Time: ' + Fore.CYAN + str(datetime.now()))
+		print('Token create time: ' + Fore.YELLOW + str(self.creation_time))
+		print('Token expire time: ' + Fore.YELLOW + str(self.expiration_time))
+		print('Spotipy Memory Address: ' + Fore.MAGENTA + str(self.spotipy_instance))
+		print('Current Spotipy Token ID: \n' + str(self.current_token))
 
 	#def do_debug(self, line):
 	#	if(line == 'y'):
