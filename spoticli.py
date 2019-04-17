@@ -70,9 +70,8 @@ class SpotiCLI(Cmd):
 		self.persistent_history_file = '~/.history'
 		
 		#default expiration time to 45min before exiting and requesting new token
-		self.refresh_interval = timedelta(minutes=5)
-		self.creation_time = datetime.now()
-		self.expiration_time = self.creation_time + self.refresh_interval
+		self.creation_time = (datetime.now().timestamp())
+		self.expiration_time = self.creation_time
 		os.system('title SpotiCLI')
 		#need to look into setting title from cmd2 built-in vs importing another lib
 		#self.set_window_title('Spoticli')
@@ -193,11 +192,9 @@ class SpotiCLI(Cmd):
 	#if dead, refresh token, then pass command
 	#if not dead, pass command
 	def precmd(self, line):
-		if datetime.now () > self.expiration_time:
+		if int(datetime.now().timestamp()) > self.expiration_time:
 			print('Attempting token refresh...')
 			self.refresh_session()
-			self.creation_time = datetime.now()
-			self.expiration_time = self.creation_time + self.refresh_interval
 		return line
 
 	#this creates a new spotipy session with new token.
@@ -215,8 +212,21 @@ class SpotiCLI(Cmd):
 		if access_token:
 			#assuming new token was retrieved successfully, create new session.
 			self.spotipy_instance = spotipy.Spotify(access_token)
-			print('new token requested') 
+			#assuming this was successful, try to read spotipy auth token to get expiration
+			self.creation_time = int(datetime.now().timestamp())
+			try:
+				self.expiration_time = json.loads(open('.spotipyoauthcache', 'r').read())['expires_at']
+			except:
+				#if token wasn't found, just set expiration to 5m from now
+				print('cached token not found?!')
+				self.expiration_time = int(datetime.timestamp(datetime.now() + timedelta(minutes=5)))
+			#print('new token requested') 
 	
+	#used to write an extra black line between commands
+	def postcmd(self,line,stop):
+		print('')
+		return line
+		
 	'''def postcmd(self, line, stop):
 		if datetime.now() > self.expiration_time:
 			print(self.exit_code)
@@ -257,10 +267,13 @@ class SpotiCLI(Cmd):
 	
 	def do_diagnostics(self, line):
 		'''display diagnostics'''
-		print('Current Time: ' + Fore.CYAN + str(datetime.now()))
+		print('')
+		print('Time (Central ST): ' + Fore.CYAN + str(datetime.now()))
+		print('Current UNIX time: ' + Fore.YELLOW + str(int(datetime.now().timestamp())))
 		print('Token create time: ' + Fore.YELLOW + str(self.creation_time))
 		print('Token expire time: ' + Fore.YELLOW + str(self.expiration_time))
 		print('Spotipy Memory Address: ' + Fore.MAGENTA + str(self.spotipy_instance))
+		print('')
 		print('Current Spotipy Token ID: \n' + str(self.current_token))
 
 	#def do_debug(self, line):
