@@ -51,15 +51,15 @@ class SpotiCLI(Cmd):
 		#necessary for auto-resetting colors to white after color change is applied
 		init(autoreset=True)
 		
-		version = 'SpotiCLI'
-		author = 'Author:\tHugo A Lopez'
-		build_date = 'Build:' + '\t' + '2019-04-09'
-		self.app_info = '\n' + version + '\n\n' + author + '\n' + build_date + '\n'
+		app_name = 'SpotiCLI'
+		author = 'Author:\t\tHugo A Lopez'
+		version = 'Version:' + '\t' + '1.0.19.0424'
+		self.app_info = '\n' + app_name + '\n\n' + author + '\n' + version
 		
 		self.current_token = ''
 		self.spotipy_instance = ''
 		self.enable_logging = False
-		self.intro  = ''#Fore.BLUE + self.app_info
+		self.intro  = Fore.BLUE + self.app_info + '\n'
 		self.prompt = Fore.GREEN + os.getlogin() + '@spoticli ~$ '
 		self.allow_cli_args = False
 		self.allow_redirection = False
@@ -264,7 +264,7 @@ class SpotiCLI(Cmd):
 	def do_about(self, line):
 		'''display build information'''
 		print(Fore.BLUE + self.app_info)
-	
+		
 	def do_diagnostics(self, line):
 		'''display diagnostics'''
 		print('')
