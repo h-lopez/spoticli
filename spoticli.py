@@ -73,6 +73,10 @@ class SpotiCLI(Cmd):
 		self.creation_time = (datetime.now().timestamp())
 		self.expiration_time = self.creation_time
 		os.system('title SpotiCLI')
+		
+		#for device transferring and shit like that.
+		self.selected_device = ''
+		
 		#need to look into setting title from cmd2 built-in vs importing another lib
 		#self.set_window_title('Spoticli')
 
@@ -100,42 +104,102 @@ class SpotiCLI(Cmd):
 		self.hidden_commands.append('quit')
 
 	#basic data retrieval/mutator fuctions
-	#used internally (within program) NOT from CLI context
+	#used internally (within program) NOT from CLI context	
 	def get_current_playback_data(self):
-		return self.parse(self.spotipy_instance.current_user_playing_track())
+		data = self.parse(self.spotipy_instance.current_user_playing_track())
+		if data is None:
+			self.force_device()
+			data = self.parse(self.spotipy_instance.current_user_playing_track())
+		return data
 
 	def get_current_playback_state(self):
-		return self.parse(self.spotipy_instance.current_playback())
+		data = self.parse(self.spotipy_instance.current_playback())
+		if data is None:
+			self.force_device()
+			data = self.parse(self.spotipy_instance.current_playback())
+		return data
 
 	def get_is_playing(self, song_data):
-		return song_data['is_playing']
+		data = song_data['is_playing']
+		if data is None:
+			self.force_device()
+			print('invalid device?')
+			data = song_data['is_playing']
+		return data
 
 	def get_song(self, song_data):
-		return song_data['item']['name']
+		data = song_data['item']['name']
+		if data is None:
+			self.force_device()
+			print('invalid device?')
+			data = song_data['item']['name']
+		return data
 
 	def get_artist(self, song_data):
-		return song_data['item']['artists'][0]['name']
+		data = song_data['item']['artists'][0]['name']
+		if data is None:
+			self.force_device()
+			print('invalid device?')
+			data = song_data['item']['artists'][0]['name']
+		return data
 
 	def get_album(self, song_data):
-		return song_data['item']['album']['name']
+		data = song_data['item']['album']['name']
+		if data is None:
+			self.force_device()
+			print('invalid device?')
+			data = song_data['item']['album']['name']
+		return data
 
 	def get_duration(self, song_data):
-		return song_data['item']['duration_ms']
+		data = song_data['item']['duration_ms']
+		if data is None:
+			self.force_device()
+			print('invalid device?')
+			data = song_data['item']['duration_ms']
+		return data
 
 	def get_postion(self, song_data):
-		return song_data['progress_ms']
+		data = song_data['progress_ms']
+		if data is None:
+			self.force_device()
+			print('invalid device?')
+			data = song_data['progress_ms']
+		return data
 
 	def get_repeat(self, playback_data):
-		return playback_data['repeat_state']
+		data = playback_data['repeat_state']
+		if data is None:
+			self.force_device()
+			print('invalid device?')
+			data = playback_data['repeat_state']
+		return data
 
 	def get_shuffle(self, playback_data):
-		return playback_data['shuffle_state']
+		data = playback_data['shuffle_state']
+		if data is None:
+			self.force_device()
+			print('invalid device?')
+			data = playback_data['shuffle_state']
+		return data
 
 	def get_volume(self, playback_data):
-		return playback_data['device']['volume_percent']
+		data = playback_data['device']['volume_percent']
+		if data is None:
+			self.force_device()
+			print('invalid device?')
+			data = playback_data['device']['volume_percent']
+		return data
 
 	def get_devices(self):
-		return self.parse(self.spotipy_instance.devices())
+		data = self.parse(self.spotipy_instance.devices())
+		return data
+	
+	#attempt to force device choice by selecting 1st available device, in case device timeout is reached
+	#if it is, blindly select the first available (should be the same that user was using already
+	def force_device(self):
+		data = self.get_devices()
+		self.spotipy_instance.transfer_playback(data['devices'][0]['id'], False)
 	
 	#takes value in milliseconds, converts to MM:SS timestamp, returns value as string
 	def ms_to_time(self, ms_timestamp):
@@ -824,7 +888,7 @@ class SpotiCLI(Cmd):
 		'''transfer playback to different user device'''
 		device_list = self.get_devices()
 		device_length = len(self.get_devices()['devices'])
-
+		
 		print('current device: ' + self.get_current_playback_state()['device']['name'])
 
 		for x in range (0, device_length):
@@ -851,7 +915,8 @@ class SpotiCLI(Cmd):
 
 		#transfer playback on selected device, but don't actually start playing yet.
 		#subtract one because arrays start at 0
-		self.spotipy_instance.transfer_playback(device_list['devices'][user_choice - 1]['id'], False)
+		self.selected_device = device_list['devices'][user_choice - 1]['id']
+		self.spotipy_instance.transfer_playback(selected_device, False)
 
 	#def do_reauthorize(self, line):
 	#	'''if token expires, should be able to request new token using this. probably.'''
