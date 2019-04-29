@@ -270,11 +270,11 @@ class SpotiCLI(Cmd):
 		quit()
 
 	def do_about(self, line):
-		'''display build information'''
+		'''Show Build Information'''
 		print(self.app_info)
 		
 	def do_diagnostics(self, line):
-		'''display diagnostics'''
+		'''Show Diagnostics'''
 		print('')
 		print('Time (Central ST): ' + str(datetime.now()))
 		print('Current UNIX time: ' + str(int(datetime.now().timestamp())))
@@ -283,16 +283,6 @@ class SpotiCLI(Cmd):
 		print('SP Memory Address: ' + str(self.spotipy_instance))
 		print('')
 		print('Spotipy Token ID: \n' + str(self.current_token))
-
-	#def do_debug(self, line):
-	#	if(line == 'y'):
-	#		self.spotipy_instance.trace = True
-	#		self.spotipy_instance.trace_out = True
-	#		print('debug messages enabled')
-	#	elif(line == 'n'):
-	#		self.spotipy_instance.trace = False
-	#		self.spotipy_instance.trace_out = False
-	#		print('debug messages disabled')
 
 	def search_result_parser(self, search_type, result_count, args):
 		args = ' '.join(args.query)
@@ -495,7 +485,7 @@ class SpotiCLI(Cmd):
 
 	@with_argparser(search_parser)
 	def do_search(self, args):
-		'''search for artist, album, track or playlist'''
+		'''Search by artist, album, track or playlist'''
 		try:
 			# Call whatever sub-command function was selected
 			args.func(self, args)
@@ -504,7 +494,7 @@ class SpotiCLI(Cmd):
 			self.do_help('search')
 
 	def do_current(self, line):
-		'''Prints the current playing track'''
+		'''Show Current Track'''
 
 		#need delay to make sure data spotify gives us is up to date, especially if we recently (<100ms) changed track or changed playback state
 		time.sleep(0.5)
@@ -532,13 +522,13 @@ class SpotiCLI(Cmd):
 				album_name)
 	
 	def do_play(self, line):
-		'''starts playback if paused'''
+		'''Start Playback'''
 		if(not self.get_is_playing(self.get_current_playback_data())):
 			self.spotipy_instance.start_playback()
 		self.do_current('')
 		
 	def do_pause(self, line):
-		'''stops playback if started'''
+		'''Pause Playback'''
 		if(self.get_is_playing(self.get_current_playback_data())):
 			self.spotipy_instance.pause_playback()
 		self.do_current('')
@@ -559,23 +549,23 @@ class SpotiCLI(Cmd):
 	#	print(Fore.RED + '<3 - Artist Unfollowed')
 
 	def do_save(self, line):
-		'''saves track to user library '''
+		'''Save Track to user library '''
 		now_playing = self.get_current_playback_data()
 		self.spotipy_instance.current_user_saved_tracks_add(now_playing['item']['id'].split())
 		print(Fore.RED + Style.BRIGHT + '<3 - Track Saved!')
 
 	def do_unsave(self, line):
-		'''removes track from user library'''
+		'''Remove Track from user library'''
 		now_playing = self.get_current_playback_data()
 		self.spotipy_instance.current_user_saved_tracks_delete(now_playing['item']['id'].split())
 		print(Fore.RED + Style.BRIGHT + '</3 - Track Unsaved!')
 
 	def do_queue(self, line):
-		'''shows current queued songs'''
+		'''Show queued songs'''
 		print('queueing not implemented (awaiting future spotify API implementation)')
 
 	def do_upcoming(self, line):
-		'''print list of upcoming songs (defaults to 10)'''
+		'''Show List of upcoming songs (defaults to 5)'''
 		print('upcoming songs not implemented (awaiting future spotify API implementation')
 		# check if queue, get first 5
 		# if queue has <5 songs or queue empty, check remainder from songs in playlist
@@ -583,7 +573,7 @@ class SpotiCLI(Cmd):
 		# if nothing, display none
 		
 	def do_seek(self, line):
-		'''Changes song position to specified second
+		'''Seek to specific time in a track
 	Usage: seek [seconds]
 	You can also specify a step increase by prefixing time with +/-'''
 
@@ -615,17 +605,17 @@ class SpotiCLI(Cmd):
 		self.do_current('')
 
 	def do_previous(self, line):
-		'''plays previous track'''
+		'''Play Previous Track'''
 		self.spotipy_instance.previous_track()
 		self.do_current('')
 
 	def do_next(self, line):
-		'''skips to next track'''
+		'''Play Next Track'''
 		self.spotipy_instance.next_track()
 		self.do_current('')
 
 	def do_again(self, line):
-		'''instantly replays current song'''
+		'''Replay current track'''
 		#literally the same as 'seek 0'
 		self.spotipy_instance.seek_track(0)
 		self.do_current('')
@@ -655,7 +645,7 @@ class SpotiCLI(Cmd):
 
 	@with_argparser(shuffle_parser)
 	def do_shuffle(self, args):
-		'''show or edit shuffle state'''
+		'''Show or change shuffle mode'''
 		try:
 			# Call whatever sub-command function was selected
 			args.func(self, args)
@@ -702,7 +692,7 @@ class SpotiCLI(Cmd):
 
 	@with_argparser(repeat_parser)
 	def do_repeat(self, args):
-		'''show or edit repeat state'''
+		'''Show or change repeat mode'''
 		try:
 			# Call whatever sub-command function was selected
 			args.func(self, args)
@@ -719,7 +709,7 @@ class SpotiCLI(Cmd):
 	def do_history(self, line):
 	#def do_old(self, line):
 	#history is built-in cmd2 command, being overloaded by function that displays last 5 songs.
-		'''Returns last 5 played songs'''
+		'''Show last 5 played songs'''
 		result_limit = 5
 		history_list = self.spotipy_instance.current_user_recently_played(result_limit)
 		parsed_results = self.parse(history_list['items'])
@@ -777,7 +767,7 @@ class SpotiCLI(Cmd):
 			return
 				
 	def do_volume(self, line):
-		'''Sets volume to specified level, range 0-100
+		'''Set volume to specified level, range 0-100
 	Usage: volume [value]
 	Volume must be between 0 and 100, inclusive
 	You can also specify a step increase by prefixing value with +/-, otherwise it defaults to 10'''
@@ -815,7 +805,7 @@ class SpotiCLI(Cmd):
 		print('current device: ' + self.get_current_playback_state()['device']['name'])
 		
 	def do_devices(self, line):
-		'''transfer playback to different user device'''
+		'''Transfer playback between devices'''
 		device_list = self.get_devices()
 		device_length = len(self.get_devices()['devices'])
 
