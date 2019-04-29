@@ -2,15 +2,11 @@
 SpotiCLI
 Copyright 2019, Hugo A Lopez
 
-Using spotipy & cmd2
-
 to use, make sure you have your client-id, client-secret and username handy to build this out
 i'll add a way to specify your client information details w/o hardcoding (eventually)
 
 released under the do whatever the fuck you like license
 '''
-
-#hope you like spaghetti
 
 import argparse
 import json
@@ -463,21 +459,21 @@ class SpotiCLI(Cmd):
 			return
 
 	search_parser = argparse.ArgumentParser(prog='search')
-	search_subparsers = search_parser.add_subparsers(title='subcommands', help='subcommand help\n')
+	search_subparsers = search_parser.add_subparsers(title='Search parameters')
 
-	parser_song = search_subparsers.add_parser('song', help='search for song (default behaviour)')
+	parser_song = search_subparsers.add_parser('song', help='Search by Track title (default behaviour)')
 	parser_song.add_argument('query', nargs='+', help='search string')
 	parser_song.set_defaults(func=search_song)
 
-	parser_artist = search_subparsers.add_parser('artist', help='search for artist')
+	parser_artist = search_subparsers.add_parser('artist', help='Search by Artist')
 	parser_artist.add_argument('query', nargs='+', help='search string')
 	parser_artist.set_defaults(func=search_artist)
 
-	parser_album = search_subparsers.add_parser('album', help='search for album')
+	parser_album = search_subparsers.add_parser('album', help='Search by Album')
 	parser_album.add_argument('query', nargs='+', help='search string')
 	parser_album.set_defaults(func=search_album)
 
-	parser_playlist = search_subparsers.add_parser('playlist', help='search for playlist')
+	parser_playlist = search_subparsers.add_parser('playlist', help='Search by Playlist')
 	parser_playlist.add_argument('query', nargs='+', help='search string')
 	parser_playlist.set_defaults(func=search_playlist)
 
@@ -631,14 +627,14 @@ class SpotiCLI(Cmd):
 		self.do_shuffle('')
 
 	shuffle_parser = argparse.ArgumentParser(prog='shuffle')
-	shuffle_subparsers = shuffle_parser.add_subparsers(title='subcommands', help='subcommand help\n')
+	shuffle_subparsers = shuffle_parser.add_subparsers(title='Shuffle States:')
 
 	# create the parser for the "foo" sub-command
-	parser_shuffle_on = shuffle_subparsers.add_parser('on', help='enables shuffle')
+	parser_shuffle_on = shuffle_subparsers.add_parser('on', help='Enable shuffle')
 	parser_shuffle_on.set_defaults(func=shuffle_on)
 
 	# create the parser for the "foo" sub-command
-	parser_shuffle_off = shuffle_subparsers.add_parser('off', help='disables shuffle')
+	parser_shuffle_off = shuffle_subparsers.add_parser('off', help='Disable shuffle')
 	parser_shuffle_off.set_defaults(func=shuffle_off)
 
 	search_subcommands = ['on','off']
@@ -677,15 +673,15 @@ class SpotiCLI(Cmd):
 		self.do_repeat('')
 
 	repeat_parser = argparse.ArgumentParser(prog='repeat')
-	repeat_subparsers = repeat_parser.add_subparsers(title='subcommands', help='subcommand help\n')
+	repeat_subparsers = repeat_parser.add_subparsers(title='Repeat States')
 
-	parser_repeat_track = repeat_subparsers.add_parser('track', help='repeats current track forever')
+	parser_repeat_track = repeat_subparsers.add_parser('track', help='Repeat current track indefinitely')
 	parser_repeat_track.set_defaults(func=repeat_track)
 
-	parser_repeat_on = repeat_subparsers.add_parser('on', help='enables repeat within context (ie. album, playlist, etc.')
+	parser_repeat_on = repeat_subparsers.add_parser('on', help='Enable Repeat within a context (ie. Album, Playlist, etc.')
 	parser_repeat_on.set_defaults(func=repeat_on)
 
-	parser_repeat_off = repeat_subparsers.add_parser('off', help='disables repeat')
+	parser_repeat_off = repeat_subparsers.add_parser('off', help='Disable Repeat')
 	parser_repeat_off.set_defaults(func=repeat_off)
 
 	search_subcommands = ['track', 'on','off']
