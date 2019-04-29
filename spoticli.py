@@ -1,6 +1,6 @@
 '''
 SpotiCLI
-Copyright 2018, Hugo A Lopez
+Copyright 2019, Hugo A Lopez
 
 Using spotipy & cmd2
 
@@ -34,18 +34,12 @@ from datetime import datetime, timedelta
 #provides command line shell and interpreter
 from cmd2 import Cmd, with_argparser
 
-#from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
-
-#declares variable prior to assignment
-#sp = spotipy.Spotify('')
-
-#spoticli object, responsible for creating and building cmd object and initializing user session.
 class SpotiCLI(Cmd):
 
 	def __init__(self):
 		#Cmd.__init__(self)
 		#persistent history means that previous commands are saved between sessions, instead of being cleared after program is exited.
-		super().__init__(persistent_history_file='~/.history', persistent_history_length=100)
+		super().__init__(persistent_history_file='~/.history', persistent_history_length=25)
 		
 		#depends on colorama
 		#necessary for auto-resetting colors to white after color change is applied
@@ -54,19 +48,19 @@ class SpotiCLI(Cmd):
 		app_name = 'SpotiCLI'
 		author = 'Author:\t\tHugo A Lopez'
 		version = 'Version:' + '\t' + '1.0.19.0424'
-		self.app_info = '\n' + app_name + '\n\n' + author + '\n' + version
+		self.app_info = Fore.CYAN + '\n' + app_name + '\n\n' + author + '\n' + version
 		
 		self.current_token = ''
 		self.spotipy_instance = ''
 		self.enable_logging = False
-		self.intro  = Fore.BLUE + self.app_info + '\n'
+		self.intro = self.app_info + '\n'
 		self.prompt = Fore.GREEN + os.getlogin() + '@spoticli ~$ '
 		self.allow_cli_args = False
 		self.allow_redirection = False
 		self.locals_in_py = False
 		self.use_ipython = False
 		self.transcript_files = False
-		self.persistent_history_length = 100
+		self.persistent_history_length = 25
 		self.persistent_history_file = '~/.history'
 		
 		#default expiration time to 45min before exiting and requesting new token
@@ -74,20 +68,8 @@ class SpotiCLI(Cmd):
 		self.expiration_time = self.creation_time
 		os.system('title SpotiCLI')
 		
-		#for device transferring and shit like that.
-		self.selected_device = ''
-		
 		#need to look into setting title from cmd2 built-in vs importing another lib
 		#self.set_window_title('Spoticli')
-
-		#remove unused commands
-		#del Cmd.do_edit
-		#del Cmd.do_load
-		#del Cmd.do_py
-		#del Cmd.do_pyscript
-		#del Cmd.do_shell
-		#del Cmd.do_shortcuts
-		#del Cmd.do__relative_load
 
 		#better to hide, we never know if we might need them (since they're actually useful)
 		self.hidden_commands.append('alias')
@@ -105,6 +87,10 @@ class SpotiCLI(Cmd):
 
 	#basic data retrieval/mutator fuctions
 	#used internally (within program) NOT from CLI context	
+	#all have same basic functionality; 
+	#check if returned is null, if it is then we hit a device inactivity timeout
+	#will have spotipy try to reassign first available device
+	#function will then attempt to retrieve/return requested data
 	def get_current_playback_data(self):
 		data = self.parse(self.spotipy_instance.current_user_playing_track())
 		if data is None:
@@ -196,7 +182,7 @@ class SpotiCLI(Cmd):
 		return data
 	
 	#attempt to force device choice by selecting 1st available device, in case device timeout is reached
-	#if it is, blindly select the first available (should be the same that user was using already
+	#if it is, blindly select the first available (should be the same that user was using already)
 	def force_device(self):
 		data = self.get_devices()
 		self.spotipy_instance.transfer_playback(data['devices'][0]['id'], False)
@@ -215,12 +201,12 @@ class SpotiCLI(Cmd):
 			seconds = str(seconds)
 		return(minutes + ':' + seconds)
 
-	#takes song information and converts to elapsed time stamp
+	#takes song information and converts to formatted elapsed time stamp
 	# Elapsed Time (format MM:SS) / Total Time (format MM:SS)
 	def generate_timestamp(self, song_data):
 		return self.ms_to_time(self.get_postion(song_data)) + ' / ' + self.ms_to_time(self.get_duration(song_data))
 
-	#parses a string into usable/indexed JSON
+	#parses a string into indexed JSON format
 	def parse(self, data):
 		return json.loads(json.dumps(data))
 	
@@ -232,27 +218,12 @@ class SpotiCLI(Cmd):
 	#overloads default error message
 	def default(self, line):
 		print(Fore.RED + 'Unrecognized command')
-		
-	#compare token expiration time to current time
-	#if current time is greater than expiration time, exit current loop to re-auth.
-	'''
-	def precmd(self, line):
-		if datetime.now() > self.expiration_time:
-			print(self.exit_code)
-			print('requesting new token, please wait')
-			#set exit code
-			#1 = normal termination
-			#2 = termination for token refresh
-			self._should_quit = True
-			return self._STOP_AND_EXIT
-		return line
-	'''
 
 	#create initial spotipy object and program start
 	def preloop(self):
 		self.refresh_session()
 	
-	#check is token is dead before exectuting command
+	#check is token is dead before executing command
 	#if dead, refresh token, then pass command
 	#if not dead, pass command
 	def precmd(self, line):
@@ -262,6 +233,7 @@ class SpotiCLI(Cmd):
 		return line
 
 	#this creates a new spotipy session with new token.
+	#need to decouple user clientid/secret from this method 
 	def refresh_session(self):
 		#explicitly kill session
 		self.spotipy_instance = ''
@@ -286,40 +258,12 @@ class SpotiCLI(Cmd):
 				self.expiration_time = int(datetime.timestamp(datetime.now() + timedelta(minutes=5)))
 			#print('new token requested') 
 	
-	#used to write an extra black line between commands
+	#used to write an extra blank line between commands
 	def postcmd(self,line,stop):
 		print('')
 		return line
-		
-	'''def postcmd(self, line, stop):
-		if datetime.now() > self.expiration_time:
-			print(self.exit_code)
-			print('requesting new token, please wait')
-			#set exit code
-			#1 = normal termination
-			#2 = termination for token refresh
-			self.exit_code = 2
-			self._should_quit = True
-			print('PREPARING TO SOFT EXIT')
-			self.do_exit(self)
-			return self._STOP_AND_EXIT
-		return line
-
-	def postloop(self):
-		return self.exit_code
 	
-	def do_exit(self, line):
-		#exit spoticli
-		print('exit requested with code: ')
-		print(self.exit_code)
-		if self.exit_code is 2:
-			print('SOFT EXITTING')
-			self._should_quit = True
-			return self._STOP_AND_EXIT
-		else:
-			print('HARD EXITTING')
-			self._should_quit = True
-			return self._STOP_AND_EXIT'''
+	#Begin CMD2 commands below
 	
 	def do_exit(self, line):
 		'''Exit SpotiCLI'''
@@ -327,18 +271,18 @@ class SpotiCLI(Cmd):
 
 	def do_about(self, line):
 		'''display build information'''
-		print(Fore.BLUE + self.app_info)
+		print(self.app_info)
 		
 	def do_diagnostics(self, line):
 		'''display diagnostics'''
 		print('')
-		print('Time (Central ST): ' + Fore.CYAN + str(datetime.now()))
-		print('Current UNIX time: ' + Fore.YELLOW + str(int(datetime.now().timestamp())))
-		print('Token create time: ' + Fore.YELLOW + str(self.creation_time))
-		print('Token expire time: ' + Fore.YELLOW + str(self.expiration_time))
-		print('Spotipy Memory Address: ' + Fore.MAGENTA + str(self.spotipy_instance))
+		print('Time (Central ST): ' + str(datetime.now()))
+		print('Current UNIX time: ' + str(int(datetime.now().timestamp())))
+		print('Token create time: ' + str(self.creation_time))
+		print('Token expire time: ' + str(self.expiration_time))
+		print('SP Memory Address: ' + str(self.spotipy_instance))
 		print('')
-		print('Current Spotipy Token ID: \n' + str(self.current_token))
+		print('Spotipy Token ID: \n' + str(self.current_token))
 
 	#def do_debug(self, line):
 	#	if(line == 'y'):
@@ -586,17 +530,6 @@ class SpotiCLI(Cmd):
 				song_name + ' by ' +
 				artist_name + ' on ' +
 				album_name)
-
-	#let's just make this separate functions
-	'''
-	def do_play(self, line):
-		#Toggles playback on Spotify client
-		if(self.get_is_playing(self.get_current_playback_data())):
-			self.spotipy_instance.pause_playback()
-		else:
-			self.spotipy_instance.start_playback()
-		self.do_current('')
-	'''
 	
 	def do_play(self, line):
 		'''starts playback if paused'''
@@ -609,7 +542,6 @@ class SpotiCLI(Cmd):
 		if(self.get_is_playing(self.get_current_playback_data())):
 			self.spotipy_instance.pause_playback()
 		self.do_current('')
-	#
 		
 	# wtf
 	# AttributeError: 'Spotify' object has no attribute 'user_follow_artists'
@@ -627,24 +559,24 @@ class SpotiCLI(Cmd):
 	#	print(Fore.RED + '<3 - Artist Unfollowed')
 
 	def do_save(self, line):
-		'''saves track to user library (or removes saved track from user library)'''
+		'''saves track to user library '''
 		now_playing = self.get_current_playback_data()
 		self.spotipy_instance.current_user_saved_tracks_add(now_playing['item']['id'].split())
-		print('<3 - Track Saved')
+		print(Fore.RED + Style.BRIGHT + '<3 - Track Saved!')
 
 	def do_unsave(self, line):
 		'''removes track from user library'''
 		now_playing = self.get_current_playback_data()
 		self.spotipy_instance.current_user_saved_tracks_delete(now_playing['item']['id'].split())
-		print('</3 - Track Unsaved')
+		print(Fore.RED + Style.BRIGHT + '</3 - Track Unsaved!')
 
 	def do_queue(self, line):
 		'''shows current queued songs'''
-		print('queueing not implemented (awaiting spotify API implementation)')
+		print('queueing not implemented (awaiting future spotify API implementation)')
 
 	def do_upcoming(self, line):
 		'''print list of upcoming songs (defaults to 10)'''
-		print('upcoming songs not implemented (awaiting spotify API implementation')
+		print('upcoming songs not implemented (awaiting future spotify API implementation')
 		# check if queue, get first 5
 		# if queue has <5 songs or queue empty, check remainder from songs in playlist
 		# if still <5 just print what we have
@@ -698,11 +630,6 @@ class SpotiCLI(Cmd):
 		self.spotipy_instance.seek_track(0)
 		self.do_current('')
 
-	#how do reload token properly arrrrrgh
-	#def do_reload_token(self, line):
-	#	print('defunct')
-		#sp = spotipy.Spotify(initialize_env())
-
 	def shuffle_on(self, args):
 		self.spotipy_instance.shuffle(True)
 		time.sleep(0.5)
@@ -742,7 +669,7 @@ class SpotiCLI(Cmd):
 
 	#these commands have minor delays as spotify API has to process our changes before we 
 	#can read them, otherwise we'll be reading old data if there's little to no delay.
-	#while we can just print the state we selected, there's no confirmation that it was actually setn to spotify.
+	#while we can just print the state we selected, there's no confirmation our changes were taken by spotify.
 	#it's shitty, but no good alternative is available
 	def repeat_on(self, args):
 		self.spotipy_instance.repeat('context')
@@ -801,8 +728,6 @@ class SpotiCLI(Cmd):
 		if(result_limit > len(parsed_results)):
 			result_limit = len(parsed_results)
 
-		print()
-			
 		#if size of results is 0, print out error of now songs found and return
 		if(result_limit < 1):
 			print('No results for query!')
@@ -920,9 +845,4 @@ class SpotiCLI(Cmd):
 
 		#transfer playback on selected device, but don't actually start playing yet.
 		#subtract one because arrays start at 0
-		self.selected_device = device_list['devices'][user_choice - 1]['id']
 		self.spotipy_instance.transfer_playback(selected_device, False)
-
-	#def do_reauthorize(self, line):
-	#	'''if token expires, should be able to request new token using this. probably.'''
-	#	self.sp = spotipy.Spotify(initialize_env())
