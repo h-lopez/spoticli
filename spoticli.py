@@ -884,13 +884,18 @@ class SpotiCLI(Cmd):
 		self.spotipy_instance.volume(new_vol)
 		print('volume: ' + str(new_vol))
 
+	#moved to separate function to allow
+	#otherwise, this will break stuff when device timeout is reached.
+	def current_device(self):
+		print('current device: ' + self.get_current_playback_state()['device']['name'])
+		
 	def do_devices(self, line):
 		'''transfer playback to different user device'''
 		device_list = self.get_devices()
 		device_length = len(self.get_devices()['devices'])
-		
-		print('current device: ' + self.get_current_playback_state()['device']['name'])
 
+		self.current_device()
+		
 		for x in range (0, device_length):
 			print(str(x + 1) + ': ' + device_list['devices'][x]['name'])
 
