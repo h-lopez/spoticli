@@ -49,7 +49,7 @@ class SpotiCLI(Cmd):
 		self.current_token = ''
 		self.spotipy_instance = ''
 		self.enable_logging = False
-		self.intro = self.app_info + '\n'
+		self.intro = ''#self.app_info + '\n'
 		self.prompt = Fore.GREEN + os.getlogin() + '@spoticli ~$ '
 		self.allow_cli_args = False
 		self.allow_redirection = False
@@ -224,7 +224,7 @@ class SpotiCLI(Cmd):
 	#if not dead, pass command
 	def precmd(self, line):
 		if int(datetime.now().timestamp()) > self.expiration_time:
-			print('Attempting token refresh...')
+			#print('Attempting token refresh...')
 			self.refresh_session()
 		return line
 
@@ -272,11 +272,11 @@ class SpotiCLI(Cmd):
 	def do_diagnostics(self, line):
 		'''Show Diagnostics'''
 		print('')
-		print('Time (Central ST): ' + str(datetime.now()))
+		print('Time (Central ST): ' + Fore.CYAN + str(datetime.now()))
 		print('Current UNIX time: ' + str(int(datetime.now().timestamp())))
 		print('Token create time: ' + str(self.creation_time))
 		print('Token expire time: ' + str(self.expiration_time))
-		print('SP Memory Address: ' + str(self.spotipy_instance))
+		print('SP Memory Address: ' + Fore.CYAN + str(self.spotipy_instance))
 		print('')
 		print('Spotipy Token ID: \n' + str(self.current_token))
 
@@ -831,4 +831,5 @@ class SpotiCLI(Cmd):
 
 		#transfer playback on selected device, but don't actually start playing yet.
 		#subtract one because arrays start at 0
-		self.spotipy_instance.transfer_playback(selected_device, False)
+		
+		self.spotipy_instance.transfer_playback(device_list['devices'][user_choice - 1]['id'], False)
