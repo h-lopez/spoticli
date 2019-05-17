@@ -563,7 +563,7 @@ class SpotiCLI(Cmd):
 
 	def do_upcoming(self, line):
 		'''Show List of upcoming songs (defaults to 5)'''
-		print('upcoming songs not implemented (awaiting future spotify API implementation')
+		print('upcoming songs not implemented (awaiting future spotify API implementation)')
 		# check if queue, get first 5
 		# if queue has <5 songs or queue empty, check remainder from songs in playlist
 		# if still <5 just print what we have
