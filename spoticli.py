@@ -6,6 +6,7 @@ to use, make sure you have your client-id, client-secret and username handy to b
 i'll add a way to specify your client information details w/o hardcoding (eventually)
 
 released under the do whatever the fuck you like license
+because fuck you
 '''
 
 import argparse
