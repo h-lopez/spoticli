@@ -50,7 +50,7 @@ class SpotiCLI(Cmd):
 		self.spotipy_instance = ''
 		self.enable_logging = False
 		self.intro = ''#self.app_info + '\n'
-		self.prompt = Fore.GREEN + os.getlogin() + '@spoticli ~$ '
+		self.prompt = Fore.GREEN + os.getlogin() + '@spoticli ~$ ' + Style.RESET_ALL
 		self.allow_cli_args = False
 		self.allow_redirection = False
 		self.locals_in_py = False
@@ -62,7 +62,6 @@ class SpotiCLI(Cmd):
 		#default expiration time to 45min before exiting and requesting new token
 		self.creation_time = (datetime.now().timestamp())
 		self.expiration_time = self.creation_time
-		os.system('title SpotiCLI')
 		
 		#need to look into setting title from cmd2 built-in vs importing another lib
 		#self.set_window_title('Spoticli')
@@ -80,6 +79,7 @@ class SpotiCLI(Cmd):
 		self.hidden_commands.append('shortcuts')
 		self.hidden_commands.append('_relative_load')
 		self.hidden_commands.append('quit')
+		os.system('title SpotiCLI')
 
 	#basic data retrieval/mutator fuctions
 	#used internally (within program) NOT from CLI context	
