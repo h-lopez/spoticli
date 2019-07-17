@@ -79,7 +79,10 @@ class SpotiCLI(Cmd):
 		self.hidden_commands.append('shortcuts')
 		self.hidden_commands.append('_relative_load')
 		self.hidden_commands.append('quit')
-		os.system('title SpotiCLI')
+
+		#ONLY change title if using non unix system
+		if(os.name is not 'posix'):
+			os.system('title SpotiCLI')
 
 	#basic data retrieval/mutator fuctions
 	#used internally (within program) NOT from CLI context	
