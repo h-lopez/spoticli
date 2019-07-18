@@ -36,7 +36,7 @@ class SpotiCLI(Cmd):
 	def __init__(self):
 		#Cmd.__init__(self)
 		#persistent history means that previous commands are saved between sessions, instead of being cleared after program is exited.
-		super().__init__(persistent_history_file='~/.history', persistent_history_length=25)
+		super().__init__(persistent_history_file='.history', persistent_history_length=25)
 		
 		#depends on colorama
 		#necessary for auto-resetting colors to white after color change is applied
@@ -58,7 +58,7 @@ class SpotiCLI(Cmd):
 		self.use_ipython = False
 		self.transcript_files = False
 		self.persistent_history_length = 25
-		self.persistent_history_file = '~/.history'
+		self.persistent_history_file = '.history'
 		
 		#default expiration time to 45min before exiting and requesting new token
 		self.creation_time = (datetime.now().timestamp())
