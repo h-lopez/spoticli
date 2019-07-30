@@ -36,7 +36,7 @@ class SpotiCLI(Cmd):
 	def __init__(self):
 		#Cmd.__init__(self)
 		#persistent history means that previous commands are saved between sessions, instead of being cleared after program is exited.
-		super().__init__(persistent_history_file='.history', persistent_history_length=25)
+		super().__init__(persistent_history_file='~/.history', persistent_history_length=25)
 		
 		#depends on colorama
 		#necessary for auto-resetting colors to white after color change is applied
@@ -50,7 +50,7 @@ class SpotiCLI(Cmd):
 		self.current_token = ''
 		self.spotipy_instance = ''
 		self.enable_logging = False
-		self.intro = ''#self.app_info + '\n'
+		self.intro = self.app_info + '\n'
 		self.prompt = Fore.GREEN + os.getlogin() + '@spoticli ~$ ' + Style.RESET_ALL
 		self.allow_cli_args = False
 		self.allow_redirection = False
@@ -58,7 +58,7 @@ class SpotiCLI(Cmd):
 		self.use_ipython = False
 		self.transcript_files = False
 		self.persistent_history_length = 25
-		self.persistent_history_file = '.history'
+		self.persistent_history_file = '~/.history'
 		
 		#default expiration time to 45min before exiting and requesting new token
 		self.creation_time = (datetime.now().timestamp())
@@ -621,12 +621,12 @@ class SpotiCLI(Cmd):
 		self.spotipy_instance.seek_track(0)
 		self.do_current('')
 
-	def shuffle_on(self, args):
+	def shuffle_enable(self, args):
 		self.spotipy_instance.shuffle(True)
 		time.sleep(0.5)
 		self.do_shuffle('')
 
-	def shuffle_off(self, args):
+	def shuffle_disable(self, args):
 		self.spotipy_instance.shuffle(False)
 		time.sleep(0.5)
 		self.do_shuffle('')
@@ -635,14 +635,14 @@ class SpotiCLI(Cmd):
 	shuffle_subparsers = shuffle_parser.add_subparsers(title='Shuffle States:')
 
 	# create the parser for the "foo" sub-command
-	parser_shuffle_on = shuffle_subparsers.add_parser('on', help='Enable shuffle', add_help=False)
-	parser_shuffle_on.set_defaults(func=shuffle_on)
+	parser_shuffle_enable = shuffle_subparsers.add_parser('enable', help='Enable shuffle', add_help=False)
+	parser_shuffle_enable.set_defaults(func=shuffle_enable)
 
 	# create the parser for the "foo" sub-command
-	parser_shuffle_off = shuffle_subparsers.add_parser('off', help='Disable shuffle', add_help=False)
-	parser_shuffle_off.set_defaults(func=shuffle_off)
+	parser_shuffle_disable = shuffle_subparsers.add_parser('disable', help='Disable shuffle', add_help=False)
+	parser_shuffle_disable.set_defaults(func=shuffle_disable)
 
-	search_subcommands = ['on','off']
+	search_subcommands = ['enable','disable']
 
 	@with_argparser(shuffle_parser)
 	def do_shuffle(self, args):
@@ -662,7 +662,7 @@ class SpotiCLI(Cmd):
 	#can read them, otherwise we'll be reading old data if there's little to no delay.
 	#while we can just print the state we selected, there's no confirmation our changes were taken by spotify.
 	#it's shitty, but no good alternative is available
-	def repeat_on(self, args):
+	def repeat_enable(self, args):
 		self.spotipy_instance.repeat('context')
 		time.sleep(0.5)
 		self.do_repeat('')
@@ -672,7 +672,7 @@ class SpotiCLI(Cmd):
 		time.sleep(0.5)
 		self.do_repeat('')
 
-	def repeat_off(self, args):
+	def repeat_disable(self, args):
 		self.spotipy_instance.repeat('off')
 		time.sleep(0.5)
 		self.do_repeat('')
@@ -683,13 +683,13 @@ class SpotiCLI(Cmd):
 	parser_repeat_track = repeat_subparsers.add_parser('track', help='Repeat current track indefinitely', add_help=False)
 	parser_repeat_track.set_defaults(func=repeat_track)
 
-	parser_repeat_on = repeat_subparsers.add_parser('on', help='Enable Repeat within a context (ie. Album, Playlist, etc.', add_help=False)
-	parser_repeat_on.set_defaults(func=repeat_on)
+	parser_repeat_enable = repeat_subparsers.add_parser('enable', help='Enable Repeat within a context (ie. Album, Playlist, etc.', add_help=False)
+	parser_repeat_enable.set_defaults(func=repeat_enable)
 
-	parser_repeat_off = repeat_subparsers.add_parser('off', help='Disable Repeat', add_help=False)
-	parser_repeat_off.set_defaults(func=repeat_off)
+	parser_repeat_disable = repeat_subparsers.add_parser('disable', help='Disable Repeat', add_help=False)
+	parser_repeat_disable.set_defaults(func=repeat_disable)
 
-	search_subcommands = ['track', 'on','off']
+	search_subcommands = ['track', 'enable','disable']
 
 	@with_argparser(repeat_parser)
 	def do_repeat(self, args):
@@ -701,9 +701,9 @@ class SpotiCLI(Cmd):
 			# No sub-command was provided, so as called
 			playback = self.get_repeat(self.get_current_playback_state())
 			if(playback == 'track'):
-				print("Repeating Track")
+				print("Repeat set to current track")
 			elif(playback == 'context'):
-				print("Repeating is contextual (Album, Playlist, etc)")
+				print("Repeat is enabled)")
 			else:
 				print("Repeat is disabled")
 
