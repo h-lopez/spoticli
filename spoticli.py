@@ -5,8 +5,7 @@ Copyright 2019, Hugo A Lopez
 to use, make sure you have your client-id, client-secret and username handy to build this out
 i'll add a way to specify your client information details w/o hardcoding (eventually)
 
-released under the do whatever the fuck you like license
-because fuck you
+released under the MIT license
 '''
 
 import argparse
@@ -836,3 +835,6 @@ class SpotiCLI(Cmd):
 		#subtract one because arrays start at 0
 		
 		self.spotipy_instance.transfer_playback(device_list['devices'][user_choice - 1]['id'], False)
+
+if __name__ == '__main__':
+	SpotiCLI().cmdloop()
