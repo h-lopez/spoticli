@@ -1,14 +1,37 @@
 SpotiCLI 1.0
 
 Command line front end for spotify 
+REQUIRES spotify premium to use front end as most of the API is locked behind premium :(
+
 Built with Python using Cmd2, Colorama and Spotipy libraries
 this project would not exist without these contributions
+
+system compatability:
+Win10 - Fully compatible
+Linux - mostly working, some bugs to squish
+Android - (via termux), mostly working! some bugs to squish
+MacOS - untested
+
+requirements:
+-python3
+-pip
+-spotipy
+-cmd2
+-colorama
+
+install guide:
+1. setup spotify dev account and have a client id/secret ready to use 
+2. clone repo 
+3. run 'python3 client.py' or whatever you need to do to run a .py  
+4. authorize yourself
+
+once working you're good
 
 TO DO:
 -Implement playing track/artist/playlist/album from search -- DONE! July 2018
 -Implement playback transfer -- DONE! August 2018
--Implement colors, not all output is colored. --50%
--Implement queuing, unknown when since we're reliant on spotify API supporting queuing (it doesn't)
+-Implement colors, not all output is colored. --50% Update: good enough. jul 19 
+-Implement queuing, unknown when since we're reliant on spotify API supporting queuing (it doesn't as of jul 2019)
 -Implement queuing, unqueuing, saving, removing tracks from history/search
 	also pending spotify API
 	but we can implement saving/removing from history/search (COMPLETE, Nov 2018)
@@ -17,24 +40,17 @@ TO DO:
 	implementing next 5 songs/skipping behavior means more work
 	...and requires spotify to implement queuing in their API
 	ie. not possible at this time.
--implement automatic token refreshing (currently needs to be done manually/reloading the program). this is unideal.
+-implement automatic token refreshing (currently needs to be done manually/reloading the program). this is unideal. DONE. I fixed this last...feb? march? i forgot to be honest
 -implement live timer that shows current song + elapsed time 
 	not sure if possible with current implementation, might need to find library that can do this
 	ncurses?
-	also need to find a way to poll live status from spotify application instead of making constant checks to API
-ie
+	also need to find a way to poll live status from spotify application instead of making a bajillion, constant checks to the API
 
-===============================================================================
-[Playing - 0:56 / 2:04] - N.I.B. by Black Sabbath
-
-
-
-
-hlopez@spoticli ~$ volume 100
-volume: 100
-
-hlopez@spoticli ~$ 
-===============================================================================
+TO do before any serious public release:
+ -Improve the authorization process (harcoding your client id and client secret into the application is a shit solution)
+ -relicense under a real license. GPL? MIT?
+ -squish bugs / improve 
+ -fix the goddamn bugs
 
 Color Scheme:
 
@@ -55,7 +71,7 @@ https://p.scdn.co/mp3-preview/d5c742f7e2d651d8f34761e045cfbcdb76f6b077?cid=774b2
 5. spoticli checks if playback is active
 6. spoticli pauses playback if active
 7. spoticli creates web browser object and visits the preview 
-8. user will not be able to interact with the preview (since it's behind the scenes)
+8. user will not be able to interact with the preview (since it's occuring OUTSIDE of the player)
 
 review: shit solution
 
