@@ -9,7 +9,7 @@ this project would not exist without these contributions
 system compatability:
 Win10 - Fully compatible
 Linux - mostly working, some bugs to squish
-Android - (via termux), mostly working! some bugs to squish
+Android - (via termux), mostly working! some bugs to squish. not sure why anyone would want this but it's there
 MacOS - untested
 
 requirements:
