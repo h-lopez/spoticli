@@ -54,5 +54,5 @@ docs/_build/
 
 
 *.pyc
-*.spotifyauthcache
-.spotipyoauthcache
+*.spoticli
+*.iml
