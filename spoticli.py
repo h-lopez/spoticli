@@ -34,6 +34,8 @@ class SpotiCLI(Cmd):
 
 	def __init__(self):
 		#Cmd.__init__(self)
+		#persistent history means that previous commands are saved between sessions, instead of being cleared after program is exited.
+		super().__init__(persistent_history_file='~/history.spoticli', persistent_history_length=25)
 		
 		#depends on colorama
 		#necessary for auto-resetting colors to white after color change is applied
@@ -55,17 +57,8 @@ class SpotiCLI(Cmd):
 		self.use_ipython = False
 		self.transcript_files = False
 		self.persistent_history_length = 25
-		self.persistent_history_file = 'history.spoticli'
-
-		#ONLY change title if using non unix system
-		if(os.name is not 'posix'):
-			os.system('title SpotiCLI')
-			self.persistent_history_file = '~/history.spoticli'
-		#need to look into changing window title on posix systems
-		#apply linux only changes here
-
-		#persistent history means that previous commands are saved between sessions, instead of being cleared after program is exited.
-		super().__init__(persistent_history_file=self.persistent_history_file, persistent_history_length=25)
+		self.persistent_history_file = '~/history.spoticli'
+		
 		#default expiration time to 45min before exiting and requesting new token
 		self.creation_time = (datetime.now().timestamp())
 		self.expiration_time = self.creation_time
@@ -84,6 +77,10 @@ class SpotiCLI(Cmd):
 		self.hidden_commands.append('_relative_load')
 		self.hidden_commands.append('quit')
 
+		#ONLY change title if using non unix system
+		if(os.name is not 'posix'):
+			os.system('title SpotiCLI')
+			#need to look into changing window title on posix systems
 
 	#basic data retrieval/mutator fuctions
 	#used internally (within program) NOT from CLI context	
