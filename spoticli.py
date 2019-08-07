@@ -238,7 +238,7 @@ class SpotiCLI(Cmd):
 	def refresh_session(self):
 		#explicitly kill session
 		self.spotipy_instance = ''
-		scope = 'user-library-read user-library-modify user-read-currently-playing user-read-playback-state user-modify-playback-state user-read-recently-played'
+		scope = 'user-library-read user-library-modify user-read-currently-playing user-read-playback-state user-modify-playback-state user-read-recently-played playlist-read-private'
 		username = '95hlopez@gmail.com'
 		client_id = 'ad61a493657140c8a663f8db17730c4f'
 		client_secret = '3c403975a6874b238339db2231864294'
@@ -496,7 +496,7 @@ class SpotiCLI(Cmd):
 			self.do_help('search')
 
 	def do_lists(self, line):
-		'''Get list of user-owned playlists'''
+		'''Get list of user-owned and followed playlists'''
 
 		playlists = self.spotipy_instance.current_user_playlists(limit=10)
 		print(playlists)
