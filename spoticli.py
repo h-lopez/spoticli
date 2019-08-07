@@ -498,8 +498,14 @@ class SpotiCLI(Cmd):
 	def do_lists(self, line):
 		'''Get list of user-owned and followed playlists'''
 
-		playlists = self.spotipy_instance.current_user_playlists(limit=10)
-		print(playlists)
+		result_limit = 10
+
+		playlists = self.parse(self.spotipy_instance.current_user_playlists(limit=10))
+		if (len(playlists) < result_limit):
+			result_limit = len(playlists)
+
+		for x in range (0, result_limit):
+			print(playlists['items'][x]['name'])
 
 	def do_current(self, line):
 		'''Show Current Track'''
