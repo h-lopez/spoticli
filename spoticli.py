@@ -11,9 +11,6 @@ released under the MIT license
 import argparse
 import json
 import os
-import subprocess
-import sys
-import threading
 import time
 
 #spotipy library
@@ -30,10 +27,23 @@ from datetime import datetime, timedelta
 #provides command line shell and interpreter
 from cmd2 import Cmd, with_argparser
 
+#pathlib
+#needed to fetch correct path
+from pathlib import Path
+
 class SpotiCLI(Cmd):
 
 	def __init__(self):
 		#Cmd.__init__(self)
+
+		#set home directory...needed so you don't have a bajillion files everywhere
+		home_directory = str(Path.home()) + '/'
+		self.file_history = home_directory + 'hist.spoticli'
+		self.file_cred = home_directory + 'cred.spoticli'
+		self.file_authcache = home_directory + 'auth.spoticli'
+
+		#persistent history means that previous commands are saved between sessions, instead of being cleared after program is exited.
+		super().__init__(persistent_history_file=self.file_history, persistent_history_length=25)
 		
 		#depends on colorama
 		#necessary for auto-resetting colors to white after color change is applied
@@ -55,17 +65,8 @@ class SpotiCLI(Cmd):
 		self.use_ipython = False
 		self.transcript_files = False
 		self.persistent_history_length = 25
-		self.persistent_history_file = 'history.spoticli'
-
-		#ONLY change title if using non unix system
-		if(os.name is not 'posix'):
-			os.system('title SpotiCLI')
-			self.persistent_history_file = '~/history.spoticli'
-		#need to look into changing window title on posix systems
-		#apply linux only changes here
-
-		#persistent history means that previous commands are saved between sessions, instead of being cleared after program is exited.
-		super().__init__(persistent_history_file=self.persistent_history_file, persistent_history_length=25)
+		self.persistent_history_file = self.file_history
+		
 		#default expiration time to 45min before exiting and requesting new token
 		self.creation_time = (datetime.now().timestamp())
 		self.expiration_time = self.creation_time
@@ -84,6 +85,10 @@ class SpotiCLI(Cmd):
 		self.hidden_commands.append('_relative_load')
 		self.hidden_commands.append('quit')
 
+		#ONLY change title if using non unix system
+		if(os.name is not 'posix'):
+			os.system('title SpotiCLI')
+			#need to look into changing window title on posix systems
 
 	#basic data retrieval/mutator fuctions
 	#used internally (within program) NOT from CLI context	
@@ -241,12 +246,12 @@ class SpotiCLI(Cmd):
 	def refresh_session(self):
 		#explicitly kill session
 		self.spotipy_instance = ''
-		scope = 'user-library-read user-library-modify user-read-currently-playing user-read-playback-state user-modify-playback-state user-read-recently-played'
+		scope = 'user-library-read user-library-modify user-read-currently-playing user-read-playback-state user-modify-playback-state user-read-recently-played playlist-read-private'
 		username = '95hlopez@gmail.com'
 		client_id = 'ad61a493657140c8a663f8db17730c4f'
 		client_secret = '3c403975a6874b238339db2231864294'
 		redirect_uri = 'http://localhost'
-		cache = 'authcache.spoticli'
+		cache = self.file_authcache
 		access_token = spotipy.util.obtain_token_localhost(username,client_id,client_secret,redirect_uri,cache,scope)
 		self.current_token = access_token
 		if access_token:
@@ -255,7 +260,7 @@ class SpotiCLI(Cmd):
 			#assuming this was successful, try to read spotipy auth token to get expiration
 			self.creation_time = int(datetime.now().timestamp())
 			try:
-				self.expiration_time = json.loads(open('authcache.spoticli', 'r').read())['expires_at']
+				self.expiration_time = json.loads(open(self.file_authcache, 'r').read())['expires_at']
 			except:
 				#if token wasn't found, just set expiration to 5m from now
 				print('cached token not found?!')
@@ -497,6 +502,38 @@ class SpotiCLI(Cmd):
 		except AttributeError:
 			# No sub-command was provided, so as called
 			self.do_help('search')
+
+	def do_lists(self, line):
+		'''Get list of user-owned and followed playlists'''
+
+		result_limit = 10
+
+		playlists = self.parse(self.spotipy_instance.current_user_playlists(limit=10))
+		if (len(playlists) < result_limit):
+			result_limit = len(playlists)
+
+		for x in range (0, result_limit):
+			print(str(x + 1) + ": " + playlists['items'][x]['name'])
+
+		user_choice = input("\nSelect result: ")
+		if(user_choice == ''):
+			return
+		try:
+			user_choice = int(user_choice)
+
+		#if user sent non-integer value, exit to main cmd loop
+		except ValueError:
+			print('invalid selection')
+			return
+			
+		#if user sent value out of range, exit to main cmd loop
+		if (user_choice <= 0 or user_choice > result_limit):
+			print('invalid selection')
+			return
+
+		#find the playlist user selected and start playing
+		playlist_id = playlists['items'][user_choice - 1]['uri']
+		self.spotipy_instance.start_playback(context_uri=playlist_id)
 
 	def do_current(self, line):
 		'''Show Current Track'''
@@ -841,7 +878,7 @@ class SpotiCLI(Cmd):
 		#transfer playback on selected device, but don't actually start playing yet.
 		#subtract one because arrays start at 0
 		
-		self.spotipy_instance.transfer_playback(device_list['devices'][user_choice - 1]['id'], False)
+		self.spotipy_instance.transfer_playback(device_list['devices'][user_choice - 1]['id'], False)	
 
 if __name__ == '__main__':
 	SpotiCLI().cmdloop()
