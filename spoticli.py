@@ -28,15 +28,22 @@ from datetime import datetime, timedelta
 from cmd2 import Cmd, with_argparser
 
 #pathlib
-#i need
+#needed to fetch correct path
 from pathlib import Path
 
 class SpotiCLI(Cmd):
 
 	def __init__(self):
 		#Cmd.__init__(self)
+
+		#set home directory...needed so you don't have a bajillion files everywhere
+		home_directory = str(Path.home()) + '/'
+		self.file_history = home_directory + 'hist.spoticli'
+		self.file_cred = home_directory + 'cred.spoticli'
+		self.file_authcache = home_directory + 'auth.spoticli'
+
 		#persistent history means that previous commands are saved between sessions, instead of being cleared after program is exited.
-		super().__init__(persistent_history_file='~/history.spoticli', persistent_history_length=25)
+		super().__init__(persistent_history_file=self.file_history, persistent_history_length=25)
 		
 		#depends on colorama
 		#necessary for auto-resetting colors to white after color change is applied
@@ -58,7 +65,7 @@ class SpotiCLI(Cmd):
 		self.use_ipython = False
 		self.transcript_files = False
 		self.persistent_history_length = 25
-		self.persistent_history_file = '~/history.spoticli'
+		self.persistent_history_file = self.file_history
 		
 		#default expiration time to 45min before exiting and requesting new token
 		self.creation_time = (datetime.now().timestamp())
@@ -244,7 +251,7 @@ class SpotiCLI(Cmd):
 		client_id = 'ad61a493657140c8a663f8db17730c4f'
 		client_secret = '3c403975a6874b238339db2231864294'
 		redirect_uri = 'http://localhost'
-		cache = 'authcache.spoticli'
+		cache = self.file_authcache
 		access_token = spotipy.util.obtain_token_localhost(username,client_id,client_secret,redirect_uri,cache,scope)
 		self.current_token = access_token
 		if access_token:
@@ -253,7 +260,7 @@ class SpotiCLI(Cmd):
 			#assuming this was successful, try to read spotipy auth token to get expiration
 			self.creation_time = int(datetime.now().timestamp())
 			try:
-				self.expiration_time = json.loads(open('authcache.spoticli', 'r').read())['expires_at']
+				self.expiration_time = json.loads(open(self.file_authcache, 'r').read())['expires_at']
 			except:
 				#if token wasn't found, just set expiration to 5m from now
 				print('cached token not found?!')
