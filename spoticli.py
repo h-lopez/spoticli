@@ -495,6 +495,12 @@ class SpotiCLI(Cmd):
 			# No sub-command was provided, so as called
 			self.do_help('search')
 
+	def do_lists(self, line):
+		'''Get list of user-owned playlists'''
+
+		playlists = self.spotipy_instance.current_user_playlists(limit=10)
+		print(playlists)
+
 	def do_current(self, line):
 		'''Show Current Track'''
 
@@ -838,7 +844,7 @@ class SpotiCLI(Cmd):
 		#transfer playback on selected device, but don't actually start playing yet.
 		#subtract one because arrays start at 0
 		
-		self.spotipy_instance.transfer_playback(device_list['devices'][user_choice - 1]['id'], False)
+		self.spotipy_instance.transfer_playback(device_list['devices'][user_choice - 1]['id'], False)	
 
 if __name__ == '__main__':
 	SpotiCLI().cmdloop()
