@@ -505,7 +505,27 @@ class SpotiCLI(Cmd):
 			result_limit = len(playlists)
 
 		for x in range (0, result_limit):
-			print(playlists['items'][x]['name'])
+			print(str(x + 1) + ": " + playlists['items'][x]['name'])
+
+		user_choice = input("\nSelect result: ")
+		if(user_choice == ''):
+			return
+		try:
+			user_choice = int(user_choice)
+
+		#if user sent non-integer value, exit to main cmd loop
+		except ValueError:
+			print('invalid selection')
+			return
+			
+		#if user sent value out of range, exit to main cmd loop
+		if (user_choice <= 0 or user_choice > result_limit):
+			print('invalid selection')
+			return
+
+		#find the playlist user selected and start playing
+		playlist_id = playlists['items'][user_choice - 1]['uri']
+		self.spotipy_instance.start_playback(context_uri=playlist_id)
 
 	def do_current(self, line):
 		'''Show Current Track'''
