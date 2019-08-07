@@ -56,4 +56,7 @@ docs/_build/
 *.pyc
 *.spoticli
 *.iml
+idea/
+.idea/
 /.idea/
+*.xml
