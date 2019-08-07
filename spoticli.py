@@ -11,9 +11,6 @@ released under the MIT license
 import argparse
 import json
 import os
-import subprocess
-import sys
-import threading
 import time
 
 #spotipy library
@@ -29,6 +26,10 @@ from datetime import datetime, timedelta
 #cmd2 libary
 #provides command line shell and interpreter
 from cmd2 import Cmd, with_argparser
+
+#pathlib
+#i need
+from pathlib import Path
 
 class SpotiCLI(Cmd):
 
