@@ -10,11 +10,11 @@ REQUIRES spotify premium to use front end as most of the playback API is locked 
 * MacOS - untested
 
 ## requirements:
-*python3
-*pip
-*spotipy
-*cmd2
-*colorama
+* python3
+* pip
+* spotipy
+* cmd2
+* colorama
 
 ## install guide:
 1. setup spotify dev account and have a client id/secret ready to use 
