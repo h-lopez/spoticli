@@ -21,3 +21,4 @@ REQUIRES spotify premium to use front end as most of the playback API is locked 
 1. clone repo 
 1. run 'python3 client.py' or whatever you need to do to run a .py  
 1. authorize yourself
+1. once authorized you're good. refer to documentation within the help command
