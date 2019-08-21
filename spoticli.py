@@ -744,7 +744,7 @@ class SpotiCLI(Cmd):
 			if(playback == 'track'):
 				print("Repeat set to current track")
 			elif(playback == 'context'):
-				print("Repeat is enabled)")
+				print("Repeat is enabled")
 			else:
 				print("Repeat is disabled")
 
