@@ -240,7 +240,8 @@ class SpotiCLI(Cmd):
 
 	#this method will handle authentication of the session. will also need to implement logout function.
 	def authenticate(self):
-		print('not implemented')
+		#print('not implemented')
+		print('')
 	#this creates a new spotipy session with new token.
 	#need to decouple user clientid/secret from this method 
 	def refresh_session(self):
@@ -744,7 +745,7 @@ class SpotiCLI(Cmd):
 			if(playback == 'track'):
 				print("Repeat set to current track")
 			elif(playback == 'context'):
-				print("Repeat is enabled)")
+				print("Repeat is enabled")
 			else:
 				print("Repeat is disabled")
 
