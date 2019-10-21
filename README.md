@@ -1,14 +1,14 @@
 SpotiCLI 1.0
 
 # About
-Command line front end for spotify, built with Python using Cmd2, Colorama and Spotipy libraries
-REQUIRES spotify premium to use front end as most of the playback API is locked behind premium 
+Command line front end for Spotify  
+Please note this REQUIRES Spotify Premium to use; most of the playback APIs are locked behind premium  
+Linux-based systems can use dbus to control playback (this functionality is NOT implemented in SpotiCLI)
 
 # Compatibility:
 * Win10 - Fully compatible
-* Linux - mostly working, some bugs to squish
-* Android - (via termux), mostly working! some bugs to squish. not sure why anyone would want this but it's there
-* MacOS - utterly untested....probably works though.
+* Linux - Mostly working
+* MacOS - utterly untested
 
 # Requirements:
 * python3
