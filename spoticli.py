@@ -269,6 +269,9 @@ class SpotiCLI(Cmd):
 			#assuming new token was retrieved successfully, create new session.
 			self.spotipy_instance = Spotify(access_token)
 			#assuming this was successful, try to read spotipy auth token to get expiration
+			#new spotipfy library will make this redundant
+
+			#this is legacy code that will be removed once we hit better integration
 			self.creation_time = int(datetime.now().timestamp())
 			try:
 				self.expiration_time = json.loads(open(self.file_authcache, 'r').read())['expires_at']
