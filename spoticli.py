@@ -106,17 +106,17 @@ class SpotiCLI(Cmd):
 	#will have spotipy try to reassign first available device
 	#function will then attempt to retrieve/return requested data
 	def get_current_playback_data(self):
-		data = self.parse(self.spotipy_instance.current_user_playing_track())
+		data = self.parse(self.spotipy_instance.playback_currently_playing())
 		if data is None:
 			self.force_device()
-			data = self.parse(self.spotipy_instance.current_user_playing_track())
+			data = self.parse(self.spotipy_instance.playback_currently_playing())
 		return data
 
 	def get_current_playback_state(self):
-		data = self.parse(self.spotipy_instance.current_playback())
+		data = self.parse(self.spotipy_instance.playback())
 		if data is None:
 			self.force_device()
-			data = self.parse(self.spotipy_instance.current_playback())
+			data = self.parse(self.spotipy_instance.playback())
 		return data
 
 	def get_is_playing(self, song_data):
@@ -199,7 +199,7 @@ class SpotiCLI(Cmd):
 	#if it is, blindly select the first available (should be the same that user was using already)
 	def force_device(self):
 		data = self.get_devices()
-		self.spotipy_instance.transfer_playback(data['devices'][0]['id'], False)
+		self.spotipy_instance.playback_transfer(data['devices'][0]['id'], False)
 	
 	#takes value in milliseconds, converts to MM:SS timestamp, returns value as string
 	def ms_to_time(self, ms_timestamp):
@@ -262,6 +262,7 @@ class SpotiCLI(Cmd):
 		client_secret = '3c403975a6874b238339db2231864294'
 		redirect_uri = 'http://localhost'
 		#cache = self.file_authcache
+		print(prompt_for_user_token(client_id, client_secret,redirect_uri, scope))
 		access_token = prompt_for_user_token(client_id, client_secret,redirect_uri, scope)
 		self.current_token = access_token
 		print(access_token)
@@ -718,17 +719,17 @@ class SpotiCLI(Cmd):
 	#while we can just print the state we selected, there's no confirmation our changes were taken by spotify.
 	#it's shitty, but no good alternative is available
 	def repeat_enable(self, args):
-		self.spotipy_instance.repeat('context')
+		self.spotipy_instance.playback_repeat('context')
 		time.sleep(0.5)
 		self.do_repeat('')
 
 	def repeat_track(self, args):
-		self.spotipy_instance.repeat('track')
+		self.spotipy_instance.playback_repeat('track')
 		time.sleep(0.5)
 		self.do_repeat('')
 
 	def repeat_disable(self, args):
-		self.spotipy_instance.repeat('off')
+		self.spotipy_instance.playback_repeat('off')
 		time.sleep(0.5)
 		self.do_repeat('')
 
@@ -852,7 +853,7 @@ class SpotiCLI(Cmd):
 		elif(new_vol < 0):
 			new_vol = 0
 
-		self.spotipy_instance.volume(new_vol)
+		self.spotipy_instance.playback_volume(new_vol)
 		print('volume: ' + str(new_vol))
 
 	#moved to separate function to allow
