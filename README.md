@@ -8,14 +8,15 @@ REQUIRES spotify premium to use front end as most of the playback API is locked 
 *Win10 - Fully compatible
 *Linux - mostly working, some bugs to squish
 *Android - (via termux), mostly working! some bugs to squish. not sure why anyone would want this but it's there
-*MacOS - untested
+*MacOS - utterly untested....probably works though.
 
 #requirements:
 *python3
 *pip
-*spotipy
+*felix-hilder/spotipy
 *cmd2
 *colorama
+*flask
 
 #install guide:
 1. setup spotify dev account and have a client id/secret ready to use 
