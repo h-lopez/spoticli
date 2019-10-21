@@ -192,7 +192,7 @@ class SpotiCLI(Cmd):
 		return data
 
 	def get_devices(self):
-		data = self.parse(self.spotipy_instance.devices())
+		data = self.parse(self.spotipy_instance.playback_devices())
 		return data
 	
 	#attempt to force device choice by selecting 1st available device, in case device timeout is reached
