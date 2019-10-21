@@ -1,24 +1,24 @@
 SpotiCLI 1.0
 
-#About
+# About
 Command line front end for spotify, built with Python using Cmd2, Colorama and Spotipy libraries
 REQUIRES spotify premium to use front end as most of the playback API is locked behind premium 
 
-#system compatability:
-*Win10 - Fully compatible
-*Linux - mostly working, some bugs to squish
-*Android - (via termux), mostly working! some bugs to squish. not sure why anyone would want this but it's there
-*MacOS - utterly untested....probably works though.
+# Compatability:
+* Win10 - Fully compatible
+* Linux - mostly working, some bugs to squish
+* Android - (via termux), mostly working! some bugs to squish. not sure why anyone would want this but it's there
+* MacOS - utterly untested....probably works though.
 
-#requirements:
-*python3
-*pip
-*felix-hilder/spotipy
-*cmd2
-*colorama
-*flask
+# Requirements:
+* python3
+* pip
+* felix-hilder/spotipy
+* cmd2
+* colorama
+* flask
 
-#install guide:
+# Installation:
 1. setup spotify dev account and have a client id/secret ready to use 
 1. clone repo 
 1. run 'python3 client.py' or whatever you need to do to run a .py  
