@@ -94,6 +94,13 @@ class SpotiCLI(Cmd):
 		self.hidden_commands.append('run_pyscript')
 		self.hidden_commands.append('run_script')
 
+		scope = 'user-library-read user-library-modify user-read-currently-playing user-read-playback-state user-modify-playback-state user-read-recently-played playlist-read-private'
+		client_id = 'ad61a493657140c8a663f8db17730c4f'
+		client_secret = '3c403975a6874b238339db2231864294'
+		redirect_uri = 'http://localhost'
+		access_token = prompt_for_user_token(client_id, client_secret,redirect_uri, scope)
+		self.spotipy_instance = Spotify(access_token)
+
 		#ONLY change title if using non unix system
 		if(os.name is not 'posix'):
 			os.system('title SpotiCLI')
@@ -106,6 +113,7 @@ class SpotiCLI(Cmd):
 	#will have spotipy try to reassign first available device
 	#function will then attempt to retrieve/return requested data
 	def get_current_playback_data(self):
+		print(self.spotipy_instance.playback_currently_playing())
 		data = self.parse(self.spotipy_instance.playback_currently_playing())
 		if data is None:
 			self.force_device()
@@ -221,6 +229,7 @@ class SpotiCLI(Cmd):
 		return self.ms_to_time(self.get_postion(song_data)) + ' / ' + self.ms_to_time(self.get_duration(song_data))
 
 	#parses a string into indexed JSON format
+	###no longer needed? new spotipy lib returns as objects
 	def parse(self, data):
 		return json.loads(json.dumps(data))
 	
@@ -236,7 +245,7 @@ class SpotiCLI(Cmd):
 	#create initial spotipy object and program start
 	def preloop(self):
 		self.authenticate()
-		self.refresh_session()
+		#self.refresh_session()
 	
 	#check is token is dead before executing command
 	#if dead, refresh token, then pass command
@@ -244,7 +253,8 @@ class SpotiCLI(Cmd):
 	def precmd(self, line):
 		if int(datetime.now().timestamp()) > self.expiration_time:
 			#print('Attempting token refresh...')
-			self.refresh_session()
+			#self.refresh_session()
+			print('deprecated!')
 		return line
 
 	#this method will handle authentication of the session. will also need to implement logout function.
@@ -262,10 +272,8 @@ class SpotiCLI(Cmd):
 		client_secret = '3c403975a6874b238339db2231864294'
 		redirect_uri = 'http://localhost'
 		#cache = self.file_authcache
-		print(prompt_for_user_token(client_id, client_secret,redirect_uri, scope))
-		access_token = prompt_for_user_token(client_id, client_secret,redirect_uri, scope)
+		#access_token = prompt_for_user_token(client_id, client_secret,redirect_uri, scope)
 		self.current_token = access_token
-		print(access_token)
 		if access_token:
 			#assuming new token was retrieved successfully, create new session.
 			self.spotipy_instance = Spotify(access_token)
