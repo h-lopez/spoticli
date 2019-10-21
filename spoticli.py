@@ -20,8 +20,10 @@ import time
 
 #spotipy library
 #handles json calls to spotify API
-import spotipy
-import spotipy.util
+from spotipy import Spotify
+from spotipy.scope import every
+from spotipy.sender import PersistentSender
+from spotipy.util import prompt_for_user_token
 
 #colorama library
 #allows printing of text in different colors
@@ -255,16 +257,17 @@ class SpotiCLI(Cmd):
 		#explicitly kill session
 		self.spotipy_instance = ''
 		scope = 'user-library-read user-library-modify user-read-currently-playing user-read-playback-state user-modify-playback-state user-read-recently-played playlist-read-private'
-		username = '95hlopez@gmail.com'
+		#username = '95hlopez@gmail.com'
 		client_id = 'ad61a493657140c8a663f8db17730c4f'
 		client_secret = '3c403975a6874b238339db2231864294'
 		redirect_uri = 'http://localhost'
-		cache = self.file_authcache
-		access_token = spotipy.util.obtain_token_localhost(username,client_id,client_secret,redirect_uri,cache,scope)
+		#cache = self.file_authcache
+		access_token = prompt_for_user_token(client_id, client_secret,redirect_uri, scope)
 		self.current_token = access_token
+		print(access_token)
 		if access_token:
 			#assuming new token was retrieved successfully, create new session.
-			self.spotipy_instance = spotipy.Spotify(access_token)
+			self.spotipy_instance = Spotify(access_token)
 			#assuming this was successful, try to read spotipy auth token to get expiration
 			self.creation_time = int(datetime.now().timestamp())
 			try:
