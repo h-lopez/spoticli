@@ -84,6 +84,8 @@ class SpotiCLI(Cmd):
 		self.hidden_commands.append('shortcuts')
 		self.hidden_commands.append('_relative_load')
 		self.hidden_commands.append('quit')
+		self.hidden_commands.append('run_pyscript')
+		self.hidden_commands.append('run_script')
 
 		#ONLY change title if using non unix system
 		if(os.name is not 'posix'):
