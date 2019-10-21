@@ -5,6 +5,11 @@ Copyright 2019, Hugo A Lopez
 to use, make sure you have your client-id, client-secret and username handy to build this out
 i'll add a way to specify your client information details w/o hardcoding (eventually)
 
+Note: DEV BRANCH BUILD
+PLEASE MAKE SURE YOU USE https://github.com/felix-hilden/spotipy
+OLD API IS BEING DEPRECATED https://github.com/plamere/spotipy 
+ALL FUTURE DEVELOPMENT WILL BE PORTED TO FELIX VERSION OF SPOTIPY
+
 released under the MIT license
 '''
 
