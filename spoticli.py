@@ -42,14 +42,6 @@ from pathlib import Path
 class SpotiCLI(Cmd):
 
 	def __init__(self):
-		#Cmd.__init__(self)
-
-		#set home directory...needed so you don't have a bajillion files everywhere
-		home_directory = str(Path.home())
-		self.file_history = 'hist.spoticli'
-		self.file_cred = 'cred.spoticli'
-		self.file_authcache = 'auth.spoticli'
-
 		#persistent history means that previous commands are saved between sessions, instead of being cleared after program is exited.
 		#super().__init__(persistent_history_file=self.file_history, persistent_history_length=25)
 		super().__init__()
@@ -72,13 +64,9 @@ class SpotiCLI(Cmd):
 		self.locals_in_py = False
 		self.use_ipython = False
 		self.transcript_files = False
-		self.persistent_history_length = 25
-		self.persistent_history_file = self.file_history
-		
-		#default expiration time to 45min before exiting and requesting new token
-		self.creation_time = (datetime.now().timestamp())
-		self.expiration_time = self.creation_time
-		
+		#self.persistent_history_length = 25
+		#self.persistent_history_file = self.file_history
+
 		#hide built-in cmd2 functions. this will leave them available for use but will be hidden from tab completion (and docs)
 		self.hidden_commands.append('alias')
 		self.hidden_commands.append('unalias')
@@ -99,7 +87,8 @@ class SpotiCLI(Cmd):
 		client_id = 'ad61a493657140c8a663f8db17730c4f'
 		client_secret = '3c403975a6874b238339db2231864294'
 		redirect_uri = 'http://localhost'
-		access_token = prompt_for_user_token(client_id, client_secret,redirect_uri, scope)
+		#access_token = prompt_for_user_token(client_id, client_secret,redirect_uri, scope)
+		access_token = 'f'
 		self.spotipy_instance = Spotify(access_token)
 
 		#ONLY change title if using non unix system
@@ -107,108 +96,100 @@ class SpotiCLI(Cmd):
 			os.system('title SpotiCLI')
 			#need to look into changing window title on posix systems
 
+	#cmd2 native functions
+	#prints blank line
+	#necessary to overload cmd2's default behavior (retry previous command)
+	def emptyline(self):
+		return
+
+	#overloads default error message
+	def default(self, line):
+		print(Fore.RED + 'Unrecognized command')
+
+	#used to write an extra blank line between commands...just a formatting thing.
+	def postcmd(self,line,stop):
+		print('')
+		return line
+
+	#create initial spotipy object and program start
+	### def preloop(self):
+	### 	self.authenticate()
+	### 	#self.refresh_session()
+	
+	#check is token is dead before executing command
+	#if dead, refresh token, then pass command
+	#if not dead, pass command
+	#no longer needed, new API should enable auto refresh
+	### def precmd(self, line):
+	### 	if int(datetime.now().timestamp()) > self.expiration_time:
+	### 		#print('Attempting token refresh...')
+	### 		#self.refresh_session()
+	### 		print('deprecated!')
+	### 	return line
+
 	#basic data retrieval/mutator fuctions
 	#used internally (within program) NOT from CLI context	
-	#all have same basic functionality; 
+	#all have same basic functionality; will query spotify API for data
 	#check if returned is null, if it is then we hit a device inactivity timeout
-	#will have spotipy try to reassign first available device
+	
+	#will have spotipy try to reassign first available device    <--- no longer needed?
 	#function will then attempt to retrieve/return requested data
+
 	def get_current_playback_data(self):
-		print(self.spotipy_instance.playback_currently_playing())
-		data = self.parse(self.spotipy_instance.playback_currently_playing())
-		if data is None:
-			self.force_device()
-			data = self.parse(self.spotipy_instance.playback_currently_playing())
+		data = 'not implemented!'
 		return data
 
 	def get_current_playback_state(self):
-		data = self.parse(self.spotipy_instance.playback())
-		if data is None:
-			self.force_device()
-			data = self.parse(self.spotipy_instance.playback())
+		data = 'not implemented!'
 		return data
 
 	def get_is_playing(self, song_data):
-		data = song_data['is_playing']
-		if data is None:
-			self.force_device()
-			print('invalid device?')
-			data = song_data['is_playing']
+		data = 'not implemented!'
 		return data
 
 	def get_song(self, song_data):
-		data = song_data['item']['name']
-		if data is None:
-			self.force_device()
-			print('invalid device?')
-			data = song_data['item']['name']
+		data = 'not implemented!'
 		return data
 
 	def get_artist(self, song_data):
-		data = song_data['item']['artists'][0]['name']
-		if data is None:
-			self.force_device()
-			print('invalid device?')
-			data = song_data['item']['artists'][0]['name']
+		data = 'not implemented!'
 		return data
 
 	def get_album(self, song_data):
-		data = song_data['item']['album']['name']
-		if data is None:
-			self.force_device()
-			print('invalid device?')
-			data = song_data['item']['album']['name']
+		data = 'not implemented!'
 		return data
 
 	def get_duration(self, song_data):
-		data = song_data['item']['duration_ms']
-		if data is None:
-			self.force_device()
-			print('invalid device?')
-			data = song_data['item']['duration_ms']
+		data = 'not implemented!'
 		return data
 
 	def get_position(self, song_data):
-		data = song_data['progress_ms']
-		if data is None:
-			self.force_device()
-			print('invalid device?')
-			data = song_data['progress_ms']
+		data = 'not implemented!'
 		return data
 
 	def get_repeat(self, playback_data):
-		data = playback_data['repeat_state']
-		if data is None:
-			self.force_device()
-			print('invalid device?')
-			data = playback_data['repeat_state']
+		data = 'not implemented!'
 		return data
 
 	def get_shuffle(self, playback_data):
-		data = playback_data['shuffle_state']
-		if data is None:
-			self.force_device()
-			print('invalid device?')
-			data = playback_data['shuffle_state']
+		data = 'not implemented!'
 		return data
 
 	def get_volume(self, playback_data):
-		data = playback_data['device']['volume_percent']
-		if data is None:
-			self.force_device()
-			print('invalid device?')
-			data = playback_data['device']['volume_percent']
+		data = 'not implemented!'
 		return data
 
 	def get_devices(self):
-		data = self.parse(self.spotipy_instance.playback_devices())
+		data = 'not implemented!'
 		return data
 	
 	#attempt to force device choice by selecting 1st available device, in case device timeout is reached
 	#if it is, blindly select the first available (should be the same that user was using already)
-	def force_device(self):
-		data = self.get_devices()
-		self.spotipy_instance.playback_transfer(data['devices'][0]['id'], False)
+
+	#might not be needed in new API?
+	### def force_device(self):
+	### 	data = self.get_devices()
+	### 	self.spotipy_instance.playback_transfer(data['devices'][0]['id'], False)
 	
 	#takes value in milliseconds, converts to MM:SS timestamp, returns value as string
 	def ms_to_time(self, ms_timestamp):
@@ -231,75 +212,50 @@ class SpotiCLI(Cmd):
 
 	#parses a string into indexed JSON format
 	###no longer needed? new spotipy lib returns as objects
-	def parse(self, data):
-		return json.loads(json.dumps(data))
-	
-	#prints blank line
-	#necessary to overload cmd2's default behavior (retry previous command)
-	def emptyline(self):
-		return
-
-	#overloads default error message
-	def default(self, line):
-		print(Fore.RED + 'Unrecognized command')
-
-	#create initial spotipy object and program start
-	def preloop(self):
-		self.authenticate()
-		#self.refresh_session()
-	
-	#check is token is dead before executing command
-	#if dead, refresh token, then pass command
-	#if not dead, pass command
-	def precmd(self, line):
-		if int(datetime.now().timestamp()) > self.expiration_time:
-			#print('Attempting token refresh...')
-			#self.refresh_session()
-			print('deprecated!')
-		return line
+	### def parse(self, data):
+	### 	return json.loads(json.dumps(data))
 
 	#this method will handle authentication of the session. will also need to implement logout function.
-	def authenticate(self):
-		#print('not implemented')
-		print('')
+	### def authenticate(self):
+	### 	#print('not implemented')
+	### 	print('')
 	#this creates a new spotipy session with new token.
 	#need to decouple user clientid/secret from this method 
-	def refresh_session(self):
-		#explicitly kill session
-		self.spotipy_instance = ''
-		scope = 'user-library-read user-library-modify user-read-currently-playing user-read-playback-state user-modify-playback-state user-read-recently-played playlist-read-private'
-		#username = '95hlopez@gmail.com'
-		client_id = 'ad61a493657140c8a663f8db17730c4f'
-		client_secret = '3c403975a6874b238339db2231864294'
-		redirect_uri = 'http://localhost'
-		#cache = self.file_authcache
-		#access_token = prompt_for_user_token(client_id, client_secret,redirect_uri, scope)
-		access_token = ''
-		self.current_token = access_token
-		if access_token:
-			#assuming new token was retrieved successfully, create new session.
-			self.spotipy_instance = Spotify(access_token)
-			#assuming this was successful, try to read spotipy auth token to get expiration
-			#new spotipfy library will make this redundant
+	
+	######## I don't think this is needed anymore?
+	###
+	### def refresh_session(self):
+	### 	#explicitly kill session
+	### 	self.spotipy_instance = ''
+	### 	scope = 'user-library-read user-library-modify user-read-currently-playing user-read-playback-state user-modify-playback-state user-read-recently-played playlist-read-private'
+	### 	#username = '95hlopez@gmail.com'
+	### 	client_id = 'ad61a493657140c8a663f8db17730c4f'
+	### 	client_secret = '3c403975a6874b238339db2231864294'
+	### 	redirect_uri = 'http://localhost'
+	### 	#cache = self.file_authcache
+	### 	#access_token = prompt_for_user_token(client_id, client_secret,redirect_uri, scope)
+	### 	access_token = ''
+	### 	self.current_token = access_token
+	### 	if access_token:
+	### 		#assuming new token was retrieved successfully, create new session.
+	### 		self.spotipy_instance = Spotify(access_token)
+	### 		#assuming this was successful, try to read spotipy auth token to get expiration
+	### 		#new spotipfy library will make this redundant
+	### 
+	### 		#this is legacy code that will be removed once we hit better integration
+	### 		self.creation_time = int(datetime.now().timestamp())
+	### 		try:
+	### 			self.expiration_time = json.loads(open(self.file_authcache, 'r').read())['expires_at']
+	### 		except:
+	### 			#if token wasn't found, just set expiration to 5m from now
+	### 			print('cached token not found?!')
+	### 			self.expiration_time = int(datetime.timestamp(datetime.now() + timedelta(minutes=5)))
+	### 		#print('new token requested') 
+	
+	##########################################
+	####### Begin CMD2 commands below ########
+	##########################################
 
-			#this is legacy code that will be removed once we hit better integration
-			self.creation_time = int(datetime.now().timestamp())
-			try:
-				self.expiration_time = json.loads(open(self.file_authcache, 'r').read())['expires_at']
-			except:
-				#if token wasn't found, just set expiration to 5m from now
-				print('cached token not found?!')
-				self.expiration_time = int(datetime.timestamp(datetime.now() + timedelta(minutes=5)))
-			#print('new token requested') 
-	
-	#used to write an extra blank line between commands
-	def postcmd(self,line,stop):
-		print('')
-		return line
-	
-	# ######################################## #
-	# ###### Begin CMD2 commands below ####### #
-	# ######################################## #
 	def do_exit(self, line):
 		'''Exit SpotiCLI'''
 		quit()
