@@ -569,9 +569,10 @@ class SpotiCLI(Cmd):
 		###get song ID and unsave
 		print('</3 - Track Unsaved!')
 
-	def do_queue(self, line):
-		'''Show queued songs'''
-		print('queueing not implemented (awaiting future spotify API implementation)')
+	### honestly queue and upcoming would do the same thing...functioanlly.
+	### def do_queue(self, line):
+	### 	'''Show queued songs'''
+	### 	print('queueing not implemented (awaiting future spotify API implementation)')
 
 	def do_upcoming(self, line):
 		'''Show List of upcoming songs (defaults to 5)'''
