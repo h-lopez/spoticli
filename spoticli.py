@@ -28,8 +28,8 @@ from spotipy.util import prompt_for_user_token
 
 #colorama library
 #allows printing of text in different colors
-from colorama import init, Fore, Style
-from datetime import datetime, timedelta
+### from colorama import init, Fore, Style
+### from datetime import datetime, timedelta
 
 #cmd2 libary
 #provides command line shell and interpreter
@@ -50,15 +50,15 @@ class SpotiCLI(Cmd):
 		init(autoreset=True)
 		
 		app_name = 'SpotiCLI'
-		author = 'Author:\t\tHugo A Lopez'
-		version = 'Version:\t0.9 build 191021.DEV'
-		self.app_info = f'\n{app_name}\n\n{author}\n{version}'
+		author = 'Hugo A Lopez'
+		version = '0.9 build 191021.DEV'
+		self.app_info = f'\n{app_name} {version}'
 		
 		self.current_token = ''
 		self.spotipy_instance = ''
 		#self.enable_logging = False
 		self.intro = self.app_info + '\n'
-		self.prompt = 'spoticli ~$ ' + Style.RESET_ALL
+		self.prompt = 'spoticli ~$ ' # + Style.RESET_ALL
 		#self.allow_cli_args = False
 		#self.allow_redirection = False
 		#self.locals_in_py = False
@@ -573,13 +573,13 @@ class SpotiCLI(Cmd):
 	#	'''follows artist of currently playing track'''
 	#	now_playing = self.get_current_playback_data()
 	#	self.spotipy_instance.user_follow_artists(now_playing['item']['artist']['id'].split())
-	#	print(Fore.RED + '<3 - Artist Followed')
+	#	print('<3 - Artist Followed')
 
 	#not currently possible to unfollow artist in spotipy API...oh well...
 	#def do_unfollow(self, line):
 	#	'''unfollows artist of currently playing track'''
 	#	now_playing = self.get_current_playback_data()
-	#	print(Fore.RED + '</3 - Artist Unfollowed')
+	#	print('</3 - Artist Unfollowed')
 
 	def do_save(self, line):
 		'''Save Track to user library '''
@@ -827,7 +827,7 @@ class SpotiCLI(Cmd):
 			else:
 				print('invalid volume')
 				return
-			#print(Style.BRIGHT + Fore.RED + 'Invalid volume ' + '\'' + line +'\'')
+			#print('Invalid volume ' + '\'' + line +'\'')
 
 		if(new_vol > 100):
 			new_vol = 100
