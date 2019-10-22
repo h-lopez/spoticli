@@ -90,10 +90,12 @@ class SpotiCLI(Cmd):
 		access_token = 'f'
 		self.spotipy_instance = Spotify(access_token)
 
+		self.set_window_title(app_name)
 		#ONLY change title if using non unix system
-		if(os.name is not 'posix'):
-			os.system('title SpotiCLI')
-			#need to look into changing window title on posix ie. linux systems
+		#if(os.name is not 'posix'):
+		#	os.system('title SpotiCLI')
+		#need to look into changing window title on posix ie. linux systems
+		#actually cmd2 has implemented a native set_window_title command...cool
 
 	#cmd2 native functions
 	#prints blank line
@@ -255,251 +257,225 @@ class SpotiCLI(Cmd):
 		print('')
 		print('Spotipy Token ID: \n' + str(self.current_token))
 	
-	### Parses search results into a list of items to make it a human-readable list
-	def search_result_parser(self, search_type, result_count, args):
-		args = ' '.join(args.query)
-		#need to append 's' at of query type
-		#spotify uses plurals as the keys in the search api
-		return self.parse(self.spotipy_instance.search(args,type=search_type,limit=result_count))[search_type + 's']['items']
+###Disabling search functionality until I can get the other stuff under control.
 
-	### Prints out list of items and allows user to make a selection out of 5 items
-	def search_selection(self, parsed_results, result_limit, args):
-		user_choice = input("\nSelect result: ")
-
-		#if user sent no value (empty) exit to main command loop
-		if(user_choice == ''):
-			return
-		try:
-			user_choice = int(user_choice)
-
-		#if user sent non-integer value, exit to main cmd loop
-		except ValueError:
-			print('invalid selection')
-			return
-
-		#if user sent value out of range, exit to main cmd loop
-		if (user_choice <= 0 or user_choice > result_limit):
-			print('invalid selection')
-			return
-
-		#return the uri/context uri
-		#need to subtract 1 from user_choice because arrays start at 0
-		return parsed_results[user_choice - 1]['uri']
-
-	#interpret user input to perform expected action
-	def action_selection(self, args):
-		action_list = '\n1: Play\n' + '2: Queue\n' +  '3: Save\n' + '4: Unsave\n'
-		print(action_list)
-		user_choice = input("Select action: ")
-		if(user_choice == ''):
-			return
-		try:
-			user_choice = int(user_choice)
-
-		except ValueError:
-			print('invalid selection')
-			return
-
-		# 1 = play
-		# 2 = queue
-		# 3 = save
-		# 4 = unsave
-
-		if(user_choice == 1):
-			return 'play'
-		if(user_choice == 2):
-			return 'queue'
-		if(user_choice == 3):
-			return 'save'
-		if(user_choice == 4):
-			return 'unsave'
-		if(user_choice <= 0 or user_choice > 4):
-			print('invalid selection')
-			return
-
-	def search_song(self, args):
-		'''searches for song, and prints results
-		Usage: search song [query]'''
-		result_limit = 5
-		parsed_results = self.search_result_parser('track', result_limit, args)
-
-		#if results are less < 5, only print the # of returned results
-		if(result_limit > len(parsed_results)):
-			result_limit = len(parsed_results)
-
-		#if size of results is 0, print out error of now songs found and return
-		if(result_limit < 1):
-			print('No results for query!')
-			return
-
-		#iterates through list of (parsed) results and prints out each one.
-		print('')
-		for x in range(0, result_limit):
-			print(
-				str(x + 1) + ': ' +
-				parsed_results[x]['name'] + ' by ' +
-				parsed_results[x]['album']['artists'][0]['name'] + ' on ' +
-				parsed_results[x]['album']['name'])
-
-		#presents users with options after a selection is made (via numkeys on keyboard)
-		song_id = self.search_selection(parsed_results, result_limit, args)
-		if(song_id):
-			#self.spotipy_instance.start_playback(uris=song_id.split())
-			#'do what' code goes right here.
-			action_id = self.action_selection(args)
-			if(action_id):
-				song_id = song_id.split()
-				if(action_id == 'play'):
-					self.spotipy_instance.start_playback(uris=song_id)
-					self.do_current('')
-				if(action_id == 'queue'):
-					print('queuing is not currently supported')
-				if(action_id == 'save'):
-					self.spotipy_instance.current_user_saved_tracks_add(song_id)
-				if(action_id == 'unsave'):
-					self.spotipy_instance.current_user_saved_tracks_delete(song_id)
-		else:
-			return
-
-	def search_artist(self, args):
-		'''searches for artist
-		Usage: search artist [query]'''
-		result_limit = 5
-		parsed_results = self.search_result_parser('artist', result_limit, args)
-
-		if(result_limit > len(parsed_results)):
-			result_limit = len(parsed_results)
-
-		if(result_limit < 1):
-			print('No results for query!')
-			return
-
-		for x in range(0, result_limit):
-			print(
-				str(x + 1) + ': ' +
-				parsed_results[x]['name'])
-
-		artist_id = self.search_selection(parsed_results, result_limit, args)
-		if(artist_id):
-			self.spotipy_instance.start_playback(context_uri=artist_id)
-		else:
-			return
-
-	def search_album(self, args):
-		'''searches for album
-		Usage: search album [query]'''
-		result_limit = 5
-		parsed_results = self.search_result_parser('album', result_limit, args)
-
-		if(result_limit > len(parsed_results)):
-			result_limit = len(parsed_results)
-
-		if(result_limit < 1):
-			print('No results for query!')
-			return
-
-		for x in range(0, result_limit):
-			print(
-				str(x + 1) + ': ' +
-				parsed_results[x]['name'] + ' by ' +
-				parsed_results[x]['artists'][0]['name'])
-
-		#play playlist directly from results
-		album_id = self.search_selection(parsed_results, result_limit, args)
-		if(album_id):
-			self.spotipy_instance.start_playback(context_uri=album_id)
-		else:
-			return
-
-	def search_playlist(self, args):
-		'''searches for playlist
-		Usage: search playlist [query]'''
-		result_limit = 5
-		parsed_results = self.search_result_parser('playlist', result_limit, args)
-
-		if(result_limit > len(parsed_results)):
-			result_limit = len(parsed_results)
-
-		if(result_limit < 1):
-			print('No results for query!')
-			return
-
-		for x in range(0, result_limit):
-			print(
-				str(x + 1) + ': ' +
-				parsed_results[x]['name'])
-
-		#play playlist directly from results
-		playlist_id = self.search_selection(parsed_results, result_limit, args)
-		if(playlist_id):
-			self.spotipy_instance.start_playback(context_uri=playlist_id)
-		else:
-			return
-
-	search_parser = argparse.ArgumentParser(prog='search', add_help=False)
-	search_subparsers = search_parser.add_subparsers(title='Search parameters')
-
-	parser_song = search_subparsers.add_parser('song', help='Search by Track title (default behaviour)', add_help=False)
-	parser_song.add_argument('query', nargs='+', help='search string')
-	parser_song.set_defaults(func=search_song)
-
-	parser_artist = search_subparsers.add_parser('artist', help='Search by Artist', add_help=False)
-	parser_artist.add_argument('query', nargs='+', help='search string')
-	parser_artist.set_defaults(func=search_artist)
-
-	parser_album = search_subparsers.add_parser('album', help='Search by Album', add_help=False)
-	parser_album.add_argument('query', nargs='+', help='search string')
-	parser_album.set_defaults(func=search_album)
-
-	parser_playlist = search_subparsers.add_parser('playlist', help='Search by Playlist', add_help=False)
-	parser_playlist.add_argument('query', nargs='+', help='search string')
-	parser_playlist.set_defaults(func=search_playlist)
-
-	search_subcommands = ['song', 'artist', 'album','playlist']
-
-	@with_argparser(search_parser)
-	def do_search(self, args):
-		'''Search by artist, album, track or playlist'''
-		try:
-			# Call whatever sub-command function was selected
-			args.func(self, args)
-		except AttributeError:
-			# No sub-command was provided, so as called
-			self.do_help('search')
+####	### Parses search results into a list of items to make it a human-readable list
+####	def search_result_parser(self, search_type, result_count, args):
+####		args = ' '.join(args.query)
+####		#need to append 's' at of query type
+####		#spotify uses plurals as the keys in the search api
+####		return self.parse(self.spotipy_instance.search(args,type=search_type,limit=result_count))[search_type + 's']['items']
+####
+####	### Prints out list of items and allows user to make a selection out of 5 items
+####	def search_selection(self, parsed_results, result_limit, args):
+####		user_choice = input("\nSelect result: ")
+####
+####		#if user sent no value (empty) exit to main command loop
+####		if(user_choice == ''):
+####			return
+####		try:
+####			user_choice = int(user_choice)
+####
+####		#if user sent non-integer value, exit to main cmd loop
+####		except ValueError:
+####			print('invalid selection')
+####			return
+####
+####		#if user sent value out of range, exit to main cmd loop
+####		if (user_choice <= 0 or user_choice > result_limit):
+####			print('invalid selection')
+####			return
+####
+####		#return the uri/context uri
+####		#need to subtract 1 from user_choice because arrays start at 0
+####		return parsed_results[user_choice - 1]['uri']
+####
+####	#interpret user input to perform expected action
+####	#need to rethink this process as I don't like it.
+####	#also it needlessly writes user input as history in cmd2. that's annoying af
+####	def action_selection(self, args):
+####		action_list = '\n1: Play\n' + '2: Queue\n' +  '3: Save\n' + '4: Unsave\n'
+####		print(action_list)
+####		user_choice = input("Select action: ")
+####		if(user_choice == ''):
+####			return
+####		try:
+####			user_choice = int(user_choice)
+####
+####		except ValueError:
+####			print('invalid selection')
+####			return
+####
+####		# 1 = play
+####		# 2 = queue
+####		# 3 = save
+####		# 4 = unsave
+####
+####		if(user_choice == 1):
+####			return 'play'
+####		if(user_choice == 2):
+####			return 'queue'
+####		if(user_choice == 3):
+####			return 'save'
+####		if(user_choice == 4):
+####			return 'unsave'
+####		if(user_choice <= 0 or user_choice > 4):
+####			print('invalid selection')
+####			return
+####
+####	def search_song(self, args):
+####		'''searches for song, and prints results
+####		Usage: search song [query]'''
+####		result_limit = 5
+####		parsed_results = self.search_result_parser('track', result_limit, args)
+####
+####		#if results are less < 5, only print the # of returned results
+####		if(result_limit > len(parsed_results)):
+####			result_limit = len(parsed_results)
+####
+####		#if size of results is 0, print out error of now songs found and return
+####		if(result_limit < 1):
+####			print('No results for query!')
+####			return
+####
+####		#iterates through list of (parsed) results and prints out each one.
+####		print('')
+####		for x in range(0, result_limit):
+####			print(
+####				str(x + 1) + ': ' +
+####				parsed_results[x]['name'] + ' by ' +
+####				parsed_results[x]['album']['artists'][0]['name'] + ' on ' +
+####				parsed_results[x]['album']['name'])
+####
+####		#presents users with options after a selection is made (via numkeys on keyboard)
+####		song_id = self.search_selection(parsed_results, result_limit, args)
+####		if(song_id):
+####			#self.spotipy_instance.start_playback(uris=song_id.split())
+####			#'do what' code goes right here.
+####			action_id = self.action_selection(args)
+####			if(action_id):
+####				song_id = song_id.split()
+####				if(action_id == 'play'):
+####					self.spotipy_instance.start_playback(uris=song_id)
+####					self.do_current('')
+####				if(action_id == 'queue'):
+####					print('queuing is not currently supported')
+####				if(action_id == 'save'):
+####					self.spotipy_instance.current_user_saved_tracks_add(song_id)
+####				if(action_id == 'unsave'):
+####					self.spotipy_instance.current_user_saved_tracks_delete(song_id)
+####		else:
+####			return
+####
+####	def search_artist(self, args):
+####		'''searches for artist
+####		Usage: search artist [query]'''
+####		result_limit = 5
+####		parsed_results = self.search_result_parser('artist', result_limit, args)
+####
+####		if(result_limit > len(parsed_results)):
+####			result_limit = len(parsed_results)
+####
+####		if(result_limit < 1):
+####			print('No results for query!')
+####			return
+####
+####		for x in range(0, result_limit):
+####			print(
+####				str(x + 1) + ': ' +
+####				parsed_results[x]['name'])
+####
+####		artist_id = self.search_selection(parsed_results, result_limit, args)
+####		if(artist_id):
+####			self.spotipy_instance.start_playback(context_uri=artist_id)
+####		else:
+####			return
+####
+####	def search_album(self, args):
+####		'''searches for album
+####		Usage: search album [query]'''
+####		result_limit = 5
+####		parsed_results = self.search_result_parser('album', result_limit, args)
+####
+####		if(result_limit > len(parsed_results)):
+####			result_limit = len(parsed_results)
+####
+####		if(result_limit < 1):
+####			print('No results for query!')
+####			return
+####
+####		for x in range(0, result_limit):
+####			print(
+####				str(x + 1) + ': ' +
+####				parsed_results[x]['name'] + ' by ' +
+####				parsed_results[x]['artists'][0]['name'])
+####
+####		#play playlist directly from results
+####		album_id = self.search_selection(parsed_results, result_limit, args)
+####		if(album_id):
+####			self.spotipy_instance.start_playback(context_uri=album_id)
+####		else:
+####			return
+####
+####	def search_playlist(self, args):
+####		'''searches for playlist
+####		Usage: search playlist [query]'''
+####		result_limit = 5
+####		parsed_results = self.search_result_parser('playlist', result_limit, args)
+####
+####		if(result_limit > len(parsed_results)):
+####			result_limit = len(parsed_results)
+####
+####		if(result_limit < 1):
+####			print('No results for query!')
+####			return
+####
+####		for x in range(0, result_limit):
+####			print(
+####				str(x + 1) + ': ' +
+####				parsed_results[x]['name'])
+####
+####		#play playlist directly from results
+####		playlist_id = self.search_selection(parsed_results, result_limit, args)
+####		if(playlist_id):
+####			self.spotipy_instance.start_playback(context_uri=playlist_id)
+####		else:
+####			return
+####
+####	search_parser = argparse.ArgumentParser(prog='search', add_help=False)
+####	search_subparsers = search_parser.add_subparsers(title='Search parameters')
+####
+####	parser_song = search_subparsers.add_parser('song', help='Search by Track title (default behaviour)', add_help=False)
+####	parser_song.add_argument('query', nargs='+', help='search string')
+####	parser_song.set_defaults(func=search_song)
+####
+####	parser_artist = search_subparsers.add_parser('artist', help='Search by Artist', add_help=False)
+####	parser_artist.add_argument('query', nargs='+', help='search string')
+####	parser_artist.set_defaults(func=search_artist)
+####
+####	parser_album = search_subparsers.add_parser('album', help='Search by Album', add_help=False)
+####	parser_album.add_argument('query', nargs='+', help='search string')
+####	parser_album.set_defaults(func=search_album)
+####
+####	parser_playlist = search_subparsers.add_parser('playlist', help='Search by Playlist', add_help=False)
+####	parser_playlist.add_argument('query', nargs='+', help='search string')
+####	parser_playlist.set_defaults(func=search_playlist)
+####
+####	search_subcommands = ['song', 'artist', 'album','playlist']
+####
+####	@with_argparser(search_parser)
+####	def do_search(self, args):
+####		'''Search by artist, album, track or playlist'''
+####		try:
+####			# Call whatever sub-command function was selected
+####			args.func(self, args)
+####		except AttributeError:
+####			# No sub-command was provided, so as called
+####			self.do_help('search')
 
 	def do_lists(self, line):
 		'''Get list of user-owned and followed playlists'''
-
-		#will change this from hardcoded to paged at some point.
-		#will also need to figure out how to paginate output
-		result_limit = 10
-
-		playlists = self.parse(self.spotipy_instance.current_user_playlists(limit=10))
-		if (len(playlists) < result_limit):
-			result_limit = len(playlists)
-
-		for x in range (0, result_limit):
-			print(str(x + 1) + ": " + playlists['items'][x]['name'])
-
-		user_choice = input("\nSelect result: ")
-		if(user_choice == ''):
-			return
-		try:
-			user_choice = int(user_choice)
-
-		#if user sent non-integer value, exit to main cmd loop
-		except ValueError:
-			print('invalid selection')
-			return
-			
-		#if user sent value out of range, exit to main cmd loop
-		if (user_choice <= 0 or user_choice > result_limit):
-			print('invalid selection')
-			return
-
-		#find the playlist user selected and start playing
-		playlist_id = playlists['items'][user_choice - 1]['uri']
-		self.spotipy_instance.start_playback(context_uri=playlist_id)
+		print('not implemented')
 
 	#takes value in milliseconds, converts to MM:SS timestamp, returns value as string
 	def ms_to_time(self, ms_timestamp):
@@ -539,26 +515,24 @@ class SpotiCLI(Cmd):
 		playing_state = ''
 
 		if(self.get_is_playing(now_playing)):
-			playing_state = '[Playing'
+			playing_state = 'Playing'
 		else:
-			playing_state = '[Stopped'
+			playing_state = 'Stopped'
 
-		print(  playing_state + ' - ' +
-				timestamp + ']' + ' - ' +
-				song_name + ' by ' +
-				artist_name + ' on ' +
-				album_name)
+		### should produce a string looking like
+		### [Playing - 0:05 / 4:24] - Make Me Wanna Die by The Pretty Reckless on Make Me Wanna die
+		playing_str = f'[{playing_state} - {timestamp}] - {song_name} by {artist_name} on {album_name}'
+
+		print(playing_str)
 	
 	def do_play(self, line):
 		'''Start Playback'''
-		if(not self.get_is_playing(self.get_current_playback_data())):
-			self.spotipy_instance.start_playback()
+		###if NOt playing, start playing. else do nothing because it's already playing
 		self.do_current('')
 		
 	def do_pause(self, line):
 		'''Pause Playback'''
-		if(self.get_is_playing(self.get_current_playback_data())):
-			self.spotipy_instance.pause_playback()
+		###if playing, stop playing. else do nothing because it's already stopped
 		self.do_current('')
 		
 	# wtf
@@ -578,14 +552,12 @@ class SpotiCLI(Cmd):
 
 	def do_save(self, line):
 		'''Save Track to user library '''
-		now_playing = self.get_current_playback_data()
-		self.spotipy_instance.current_user_saved_tracks_add(now_playing['item']['id'].split())
-		print(F'<3 - Track Saved!')
+		###get song ID and save
+		print('<3 - Track Saved!')
 
 	def do_unsave(self, line):
 		'''Remove Track from user library'''
-		now_playing = self.get_current_playback_data()
-		self.spotipy_instance.current_user_saved_tracks_delete(now_playing['item']['id'].split())
+		###get song ID and unsave
 		print('</3 - Track Unsaved!')
 
 	def do_queue(self, line):
@@ -634,12 +606,12 @@ class SpotiCLI(Cmd):
 
 	def do_previous(self, line):
 		'''Play Previous Track'''
-		self.spotipy_instance.previous_track()
+		print('not implemented')
 		self.do_current('')
 
 	def do_next(self, line):
 		'''Play Next Track'''
-		self.spotipy_instance.next_track()
+		print('not implemented')
 		self.do_current('')
 
 	def do_again(self, line):
@@ -648,19 +620,22 @@ class SpotiCLI(Cmd):
 		#just replays the currently playing song. 
 		#if playback is paused, this will NOT resumt playback
 		self.spotipy_instance.seek_track(0)
+		print('not implemented')
 		self.do_current('')
 
 	#enable / disable function for shuffle. 
 	#time delay introduced to allow spotify API to 'catch up' and write our changes
 	#before we attempt to read them	
 	def shuffle_enable(self, args):
-		self.spotipy_instance.shuffle(True)
-		time.sleep(0.5)
+		#self.spotipy_instance.shuffle(True)
+		#time.sleep(0.5)
+		print('not implemented')
 		self.do_shuffle('')
 
 	def shuffle_disable(self, args):
-		self.spotipy_instance.shuffle(False)
-		time.sleep(0.5)
+		#self.spotipy_instance.shuffle(False)
+		#time.sleep(0.5)
+		print('not implemented')
 		self.do_shuffle('')
 
 	shuffle_parser = argparse.ArgumentParser(prog='shuffle', add_help=False)
@@ -830,6 +805,7 @@ class SpotiCLI(Cmd):
 			new_vol = 0
 
 		self.spotipy_instance.playback_volume(new_vol)
+		print('not implemented')
 		print('volume: ' + str(new_vol))
 
 	#moved to separate function to allow

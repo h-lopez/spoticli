@@ -6,10 +6,11 @@ from spotipy.scope import every
 
 client_id = 'ad61a493657140c8a663f8db17730c4f'
 client_secret = '3c403975a6874b238339db2231864294'
-redirect_uri = 'http://localhost:5000'
+redirect_uri = 'http://127.0.0.1:5000'
 
 conf = credentials_from_environment()
-cred = Credentials(client_id, client_secret, redirect_uri)
+conf = (client_id, client_secret, redirect_uri)
+cred = Credentials(*conf)
 spotify = Spotify()
 
 users = {}
@@ -38,7 +39,6 @@ def app_factory() -> Flask:
         token = cred.request_user_token(code, scope=every)
         with spotify.token_as(token):
             info = spotify.current_user()
-
         session['user'] = info.id
         users[info.id] = info
 
@@ -56,4 +56,4 @@ def app_factory() -> Flask:
 
 if __name__ == '__main__':
     application = app_factory()
-    application.run('localhost', 5000)
+    application.run('127.0.0.1', 5000)

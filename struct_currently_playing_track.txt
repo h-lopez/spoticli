@@ -1,0 +1,93 @@
+CurrentlyPlayingTrack(
+    actions=Actions(
+        disallows=Disallows(
+            interrupting_playback=False,
+            pausing=False,
+            resuming=True,
+            seeking=False,
+            skipping_next=False,
+            skipping_prev=False,
+            toggling_repeat_context=False,
+            toggling_shuffle=False,
+            toggling_repeat_track=False,
+            transferring_playback=False
+        )
+    ),
+    currently_playing_type=<CurrentlyPlayingType.track: 1>,
+    is_playing=True,
+    timestamp=1571756471552,
+    context=Context(
+        type=<ContextType.playlist: 3>,
+        href='https://api.spotify.com/v1/playlists/37i9dQZF1E4CFACDXqQONR',
+        external_urls={'spotify': 'https://open.spotify.com/playlist/37i9dQZF1E4CFACDXqQONR'},
+        uri='spotify:playlist:37i9dQZF1E4CFACDXqQONR'
+        ),
+    progress_ms=205938,
+    item=FullTrack(
+        id='7BpxYgVyRqa2UIDHX05JG6',
+        href='https://api.spotify.com/v1/tracks/7BpxYgVyRqa2UIDHX05JG6',
+        type='track',
+        uri='spotify:track:7BpxYgVyRqa2UIDHX05JG6',
+        artists=[SimpleArtist(
+            id='70BYFdaZbEKbeauJ670ysI',
+            href='https://api.spotify.com/v1/artists/70BYFdaZbEKbeauJ670ysI',
+            type='artist',
+            uri='spotify:artist:70BYFdaZbEKbeauJ670ysI',
+            external_urls={'spotify': 'https://open.spotify.com/artist/70BYFdaZbEKbeauJ670ysI'},
+            name='Shinedown'
+            )],
+        disc_number=1,
+        duration_ms=232333,
+        explicit=False,
+        external_urls={'spotify': 'https://open.spotify.com/track/7BpxYgVyRqa2UIDHX05JG6'},
+        name='KILL YOUR CONSCIENCE',
+        preview_url='https://p.scdn.co/mp3-preview/f10aa80f7dd26563f0a79799f33bf7b8d4de0b1f?cid=ad61a493657140c8a663f8db17730c4f',
+        track_number=5,
+        is_local=False,
+        album=SimpleAlbum(
+            id='0dtwIycvTaFNjo44QRwWz7',
+            href='https://api.spotify.com/v1/albums/0dtwIycvTaFNjo44QRwWz7',
+            type='album',
+            uri='spotify:album:0dtwIycvTaFNjo44QRwWz7',
+            album_type=<AlbumType.album: 1>,
+            artists=[SimpleArtist(
+                id='70BYFdaZbEKbeauJ670ysI',
+                href='https://api.spotify.com/v1/artists/70BYFdaZbEKbeauJ670ysI',
+                type='artist',
+                uri='spotify:artist:70BYFdaZbEKbeauJ670ysI',
+                external_urls={'spotify': 'https://open.spotify.com/artist/70BYFdaZbEKbeauJ670ysI'},
+                name='Shinedown'
+                )],
+            external_urls={'spotify': 'https://open.spotify.com/album/0dtwIycvTaFNjo44QRwWz7'},
+            images=[Image(
+                url='https://i.scdn.co/image/ab67616d0000b273bb85bcab29cd1c193c46afb1',
+                height=640,
+                width=640
+                ),
+                Image(
+                    url='https://i.scdn.co/image/ab67616d00001e02bb85bcab29cd1c193c46afb1',
+                    height=300,
+                    width=300
+                ),
+                Image(
+                    url='https://i.scdn.co/image/ab67616d00004851bb85bcab29cd1c193c46afb1',
+                    height=64,
+                    width=64
+                )],
+            name='ATTENTION ATTENTION',
+            total_tracks=14,
+            release_date='2018-05-04',
+            release_date_precision=<ReleaseDatePrecision.day: 3>,
+            album_group=None,
+            available_markets=None,
+            restrictions=None),
+            external_ids={'isrc': 'USAT21800622'},
+            popularity=57,
+            available_markets=None,
+            linked_from=None,
+            is_playable=True,
+            restrictions=None,
+            episode=None,
+            track=None
+        )
+   )
