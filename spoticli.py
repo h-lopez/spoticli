@@ -13,13 +13,14 @@ ALL FUTURE DEVELOPMENT WILL BE PORTED TO FELIX VERSION OF SPOTIPY
 released under the MIT license
 '''
 
+#misc. utilities for json manipulation/parsing and os functions
 import argparse
 import json
 import os
 import time
 
 #spotipy library
-#handles json calls to spotify API
+#handles calls to spotify API
 from spotipy import Spotify
 from spotipy.scope import every
 from spotipy.sender import PersistentSender
@@ -44,14 +45,14 @@ class SpotiCLI(Cmd):
 		#Cmd.__init__(self)
 
 		#set home directory...needed so you don't have a bajillion files everywhere
-		home_directory = str(Path.home()) + '/'
-		self.file_history = home_directory + 'hist.spoticli'
-		self.file_cred = home_directory + 'cred.spoticli'
-		self.file_authcache = home_directory + 'auth.spoticli'
+		home_directory = str(Path.home())
+		self.file_history = 'hist.spoticli'
+		self.file_cred = 'cred.spoticli'
+		self.file_authcache = 'auth.spoticli'
 
 		#persistent history means that previous commands are saved between sessions, instead of being cleared after program is exited.
-		super().__init__(persistent_history_file=self.file_history, persistent_history_length=25)
-		
+		#super().__init__(persistent_history_file=self.file_history, persistent_history_length=25)
+		super().__init__()
 		#depends on colorama
 		#necessary for auto-resetting colors to white after color change is applied
 		init(autoreset=True)
@@ -167,7 +168,7 @@ class SpotiCLI(Cmd):
 			data = song_data['item']['duration_ms']
 		return data
 
-	def get_postion(self, song_data):
+	def get_position(self, song_data):
 		data = song_data['progress_ms']
 		if data is None:
 			self.force_device()
@@ -226,7 +227,7 @@ class SpotiCLI(Cmd):
 	#takes song information and converts to formatted elapsed time stamp
 	# Elapsed Time (format MM:SS) / Total Time (format MM:SS)
 	def generate_timestamp(self, song_data):
-		return self.ms_to_time(self.get_postion(song_data)) + ' / ' + self.ms_to_time(self.get_duration(song_data))
+		return self.ms_to_time(self.get_position(song_data)) + ' / ' + self.ms_to_time(self.get_duration(song_data))
 
 	#parses a string into indexed JSON format
 	###no longer needed? new spotipy lib returns as objects
@@ -273,6 +274,7 @@ class SpotiCLI(Cmd):
 		redirect_uri = 'http://localhost'
 		#cache = self.file_authcache
 		#access_token = prompt_for_user_token(client_id, client_secret,redirect_uri, scope)
+		access_token = ''
 		self.current_token = access_token
 		if access_token:
 			#assuming new token was retrieved successfully, create new session.
@@ -655,7 +657,7 @@ class SpotiCLI(Cmd):
 
 		now_playing = self.get_current_playback_state()
 		song_duration = self.get_duration(now_playing)
-		song_position = self.get_postion(now_playing)
+		song_position = self.get_position(now_playing)
 
 		if((new_pos > song_duration) or (new_pos < (song_duration * -1))):
 			print('invalid time')
