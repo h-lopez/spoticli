@@ -47,7 +47,7 @@ class SpotiCLI(Cmd):
 		super().__init__()
 		#depends on colorama
 		#necessary for auto-resetting colors to white after color change is applied
-		init(autoreset=True)
+		#init(autoreset=True)
 		
 		app_name = 'SpotiCLI'
 		author = 'Hugo A Lopez'
@@ -79,7 +79,6 @@ class SpotiCLI(Cmd):
 		self.hidden_commands.append('shell')
 		self.hidden_commands.append('shortcuts')
 		self.hidden_commands.append('_relative_load')
-		self.hidden_commands.append('quit')
 		self.hidden_commands.append('run_pyscript')
 		self.hidden_commands.append('run_script')
 
@@ -255,10 +254,6 @@ class SpotiCLI(Cmd):
 		print('SP Memory Address: ' + str(self.spotipy_instance))
 		print('')
 		print('Spotipy Token ID: \n' + str(self.current_token))
-
-	def do_exit(self, line):
-		'''Exit SpotiCLI'''
-		quit()
 	
 	### Parses search results into a list of items to make it a human-readable list
 	def search_result_parser(self, search_type, result_count, args):
