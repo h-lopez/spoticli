@@ -15,7 +15,7 @@ released under the MIT license
 
 #misc. utilities for json manipulation/parsing and os functions
 import argparse
-import json
+#import json
 import os
 import time
 
@@ -28,7 +28,7 @@ from spotipy.util import prompt_for_user_token
 
 #colorama library
 #allows printing of text in different colors
-from colorama import init, Fore, Back, Style
+from colorama import init, Fore, Style
 from datetime import datetime, timedelta
 
 #cmd2 libary
@@ -51,19 +51,19 @@ class SpotiCLI(Cmd):
 		
 		app_name = 'SpotiCLI'
 		author = 'Author:\t\tHugo A Lopez'
-		version = 'Version:' + '\t' + '1.0.191021'
-		self.app_info = Fore.CYAN + '\n' + app_name + '\n\n' + author + '\n' + version
+		version = 'Version:\t0.9 build 191021.DEV'
+		self.app_info = f'\n{app_name}\n\n{author}\n{version}'
 		
 		self.current_token = ''
 		self.spotipy_instance = ''
-		self.enable_logging = False
+		#self.enable_logging = False
 		self.intro = self.app_info + '\n'
-		self.prompt = Fore.GREEN + 'spoticli ~$ ' + Style.RESET_ALL
-		self.allow_cli_args = False
-		self.allow_redirection = False
-		self.locals_in_py = False
-		self.use_ipython = False
-		self.transcript_files = False
+		self.prompt = 'spoticli ~$ ' + Style.RESET_ALL
+		#self.allow_cli_args = False
+		#self.allow_redirection = False
+		#self.locals_in_py = False
+		#self.use_ipython = False
+		#self.transcript_files = False
 		#self.persistent_history_length = 25
 		#self.persistent_history_file = self.file_history
 
@@ -94,7 +94,7 @@ class SpotiCLI(Cmd):
 		#ONLY change title if using non unix system
 		if(os.name is not 'posix'):
 			os.system('title SpotiCLI')
-			#need to look into changing window title on posix systems
+			#need to look into changing window title on posix ie. linux systems
 
 	#cmd2 native functions
 	#prints blank line
@@ -104,7 +104,7 @@ class SpotiCLI(Cmd):
 
 	#overloads default error message
 	def default(self, line):
-		print(Fore.RED + 'Unrecognized command')
+		print('Unrecognized command')
 
 	#used to write an extra blank line between commands...just a formatting thing.
 	def postcmd(self,line,stop):
@@ -135,6 +135,8 @@ class SpotiCLI(Cmd):
 	#will have spotipy try to reassign first available device    <--- no longer needed?
 	#function will then attempt to retrieve/return requested data
 
+	#OPERATIONAL/PLAYER CALLS
+
 	def get_current_playback_data(self):
 		data = 'not implemented!'
 		return data
@@ -143,23 +145,11 @@ class SpotiCLI(Cmd):
 		data = 'not implemented!'
 		return data
 
+	def get_devices(self):
+		data = 'not implemented!'
+		return data
+
 	def get_is_playing(self, song_data):
-		data = 'not implemented!'
-		return data
-
-	def get_song(self, song_data):
-		data = 'not implemented!'
-		return data
-
-	def get_artist(self, song_data):
-		data = 'not implemented!'
-		return data
-
-	def get_album(self, song_data):
-		data = 'not implemented!'
-		return data
-
-	def get_duration(self, song_data):
 		data = 'not implemented!'
 		return data
 
@@ -179,10 +169,24 @@ class SpotiCLI(Cmd):
 		data = 'not implemented!'
 		return data
 
-	def get_devices(self):
+	### SONG SPECIFIC API CALLS
+
+	def get_song(self, song_data):
 		data = 'not implemented!'
 		return data
-	
+
+	def get_duration(self, song_data):
+		data = 'not implemented!'
+		return data
+
+	def get_artist(self, song_data):
+		data = 'not implemented!'
+		return data
+
+	def get_album(self, song_data):
+		data = 'not implemented!'
+		return data
+
 	#attempt to force device choice by selecting 1st available device, in case device timeout is reached
 	#if it is, blindly select the first available (should be the same that user was using already)
 
@@ -191,25 +195,6 @@ class SpotiCLI(Cmd):
 	### 	data = self.get_devices()
 	### 	self.spotipy_instance.playback_transfer(data['devices'][0]['id'], False)
 	
-	#takes value in milliseconds, converts to MM:SS timestamp, returns value as string
-	def ms_to_time(self, ms_timestamp):
-		seconds=(ms_timestamp / 1000) % 60
-		seconds = int(seconds)
-
-		minutes=(ms_timestamp /(1000 * 60)) % 60
-		minutes = str(int(minutes))
-
-		if(seconds < 10):
-			seconds = '0' + str(seconds)
-		else:
-			seconds = str(seconds)
-		return(minutes + ':' + seconds)
-
-	#takes song information and converts to formatted elapsed time stamp
-	# Elapsed Time (format MM:SS) / Total Time (format MM:SS)
-	def generate_timestamp(self, song_data):
-		return self.ms_to_time(self.get_position(song_data)) + ' / ' + self.ms_to_time(self.get_duration(song_data))
-
 	#parses a string into indexed JSON format
 	###no longer needed? new spotipy lib returns as objects
 	### def parse(self, data):
@@ -256,31 +241,33 @@ class SpotiCLI(Cmd):
 	####### Begin CMD2 commands below ########
 	##########################################
 
-	def do_exit(self, line):
-		'''Exit SpotiCLI'''
-		quit()
-
 	def do_about(self, line):
 		'''Show Build Information'''
 		print(self.app_info)
-		
+
 	def do_diagnostics(self, line):
 		'''Show Diagnostics'''
 		print('')
-		print('Time (Central ST): ' + Fore.CYAN + str(datetime.now()))
+		print('Time (Central ST): ' + str(datetime.now()))
 		print('Current UNIX time: ' + str(int(datetime.now().timestamp())))
-		print('Token create time: ' + str(self.creation_time))
-		print('Token expire time: ' + str(self.expiration_time))
-		print('SP Memory Address: ' + Fore.CYAN + str(self.spotipy_instance))
+		#print('Token create time: ' + str(self.creation_time))
+		#print('Token expire time: ' + str(self.expiration_time))
+		print('SP Memory Address: ' + str(self.spotipy_instance))
 		print('')
 		print('Spotipy Token ID: \n' + str(self.current_token))
 
+	def do_exit(self, line):
+		'''Exit SpotiCLI'''
+		quit()
+	
+	### Parses search results into a list of items to make it a human-readable list
 	def search_result_parser(self, search_type, result_count, args):
 		args = ' '.join(args.query)
 		#need to append 's' at of query type
 		#spotify uses plurals as the keys in the search api
 		return self.parse(self.spotipy_instance.search(args,type=search_type,limit=result_count))[search_type + 's']['items']
 
+	### Prints out list of items and allows user to make a selection out of 5 items
 	def search_selection(self, parsed_results, result_limit, args):
 		user_choice = input("\nSelect result: ")
 
@@ -304,6 +291,7 @@ class SpotiCLI(Cmd):
 		#need to subtract 1 from user_choice because arrays start at 0
 		return parsed_results[user_choice - 1]['uri']
 
+	#interpret user input to perform expected action
 	def action_selection(self, args):
 		action_list = '\n1: Play\n' + '2: Queue\n' +  '3: Save\n' + '4: Unsave\n'
 		print(action_list)
@@ -487,6 +475,8 @@ class SpotiCLI(Cmd):
 	def do_lists(self, line):
 		'''Get list of user-owned and followed playlists'''
 
+		#will change this from hardcoded to paged at some point.
+		#will also need to figure out how to paginate output
 		result_limit = 10
 
 		playlists = self.parse(self.spotipy_instance.current_user_playlists(limit=10))
@@ -516,6 +506,26 @@ class SpotiCLI(Cmd):
 		playlist_id = playlists['items'][user_choice - 1]['uri']
 		self.spotipy_instance.start_playback(context_uri=playlist_id)
 
+	#takes value in milliseconds, converts to MM:SS timestamp, returns value as string
+	def ms_to_time(self, ms_timestamp):
+		seconds=(ms_timestamp / 1000) % 60
+		seconds = int(seconds)
+
+		minutes=(ms_timestamp /(1000 * 60)) % 60
+		minutes = str(int(minutes))
+
+		if(seconds < 10):
+			seconds = '0' + str(seconds)
+		else:
+			seconds = str(seconds)
+		return(minutes + ':' + seconds)
+
+	#takes song information and converts to a formatted time stamp
+	# Elapsed Time (format MM:SS) / Total Time (format MM:SS)
+	def generate_timestamp(self, song_data):
+		return self.ms_to_time(self.get_position(song_data)) + ' / ' + self.ms_to_time(self.get_duration(song_data))
+
+	#shows information on currently playing track
 	def do_current(self, line):
 		'''Show Current Track'''
 
@@ -569,19 +579,19 @@ class SpotiCLI(Cmd):
 	#def do_unfollow(self, line):
 	#	'''unfollows artist of currently playing track'''
 	#	now_playing = self.get_current_playback_data()
-	#	print(Fore.RED + '<3 - Artist Unfollowed')
+	#	print(Fore.RED + '</3 - Artist Unfollowed')
 
 	def do_save(self, line):
 		'''Save Track to user library '''
 		now_playing = self.get_current_playback_data()
 		self.spotipy_instance.current_user_saved_tracks_add(now_playing['item']['id'].split())
-		print(Fore.RED + Style.BRIGHT + '<3 - Track Saved!')
+		print(F'<3 - Track Saved!')
 
 	def do_unsave(self, line):
 		'''Remove Track from user library'''
 		now_playing = self.get_current_playback_data()
 		self.spotipy_instance.current_user_saved_tracks_delete(now_playing['item']['id'].split())
-		print(Fore.RED + Style.BRIGHT + '</3 - Track Unsaved!')
+		print('</3 - Track Unsaved!')
 
 	def do_queue(self, line):
 		'''Show queued songs'''
@@ -639,10 +649,15 @@ class SpotiCLI(Cmd):
 
 	def do_again(self, line):
 		'''Replay current track'''
-		#literally the same as 'seek 0'
+		#functionally the same as doing 'seek 0' from CLI
+		#just replays the currently playing song. 
+		#if playback is paused, this will NOT resumt playback
 		self.spotipy_instance.seek_track(0)
 		self.do_current('')
 
+	#enable / disable function for shuffle. 
+	#time delay introduced to allow spotify API to 'catch up' and write our changes
+	#before we attempt to read them	
 	def shuffle_enable(self, args):
 		self.spotipy_instance.shuffle(True)
 		time.sleep(0.5)
@@ -791,9 +806,9 @@ class SpotiCLI(Cmd):
 				
 	def do_volume(self, line):
 		'''Set volume to specified level, range 0-100
-	Usage: volume [value]
+	Usage: volume (+/-) (value)
 	Volume must be between 0 and 100, inclusive
-	You can also specify a step increase by prefixing value with +/-, otherwise it defaults to 10'''
+	Specify a step increase by prefixing value with +/-, otherwise it defaults to 10% step'''
 		current_vol = self.get_volume(self.get_current_playback_state())
 
 		if not line:
@@ -826,7 +841,8 @@ class SpotiCLI(Cmd):
 	#otherwise, this will break stuff when device timeout is reached.
 	def current_device(self):
 		print('current device: ' + self.get_current_playback_state()['device']['name'])
-		
+	
+	#allows trasnferring playback between spotify connect endpoints
 	def do_devices(self, line):
 		'''Transfer playback between devices'''
 		device_list = self.get_devices()
