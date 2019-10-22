@@ -26,6 +26,8 @@ from spotipy.scope import every
 from spotipy.sender import PersistentSender
 from spotipy.util import prompt_for_user_token
 
+import sys
+
 #colorama library
 #allows printing of text in different colors
 ### from colorama import init, Fore, Style
@@ -76,6 +78,7 @@ class SpotiCLI(Cmd):
 		self.hidden_commands.append('macro')
 		self.hidden_commands.append('py')
 		self.hidden_commands.append('pyscript')
+		self.hidden_commands.append('quit')
 		self.hidden_commands.append('shell')
 		self.hidden_commands.append('shortcuts')
 		self.hidden_commands.append('_relative_load')
@@ -257,6 +260,11 @@ class SpotiCLI(Cmd):
 		print('')
 		print('Spotipy Token ID: \n' + str(self.current_token))
 	
+	##this works. do not touch
+	def do_exit(self, line):
+		'''Exit SpotiCLI'''
+		return True
+
 ###Disabling search functionality until I can get the other stuff under control.
 
 ####	### Parses search results into a list of items to make it a human-readable list
@@ -537,6 +545,7 @@ class SpotiCLI(Cmd):
 		
 	# wtf
 	# AttributeError: 'Spotify' object has no attribute 'user_follow_artists'
+	# might revisit as felix/spotipy will likely have this functionality. 
 	#
 	#def do_follow(self, line):
 	#	'''follows artist of currently playing track'''
@@ -849,4 +858,4 @@ class SpotiCLI(Cmd):
 		self.spotipy_instance.transfer_playback(device_list['devices'][user_choice - 1]['id'], False)	
 
 if __name__ == '__main__':
-	SpotiCLI().cmdloop()
+	sys.exit(SpotiCLI().cmdloop())
