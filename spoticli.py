@@ -52,7 +52,6 @@ class SpotiCLI(Cmd):
 		#init(autoreset=True)
 		
 		app_name = 'SpotiCLI'
-		author = 'Hugo A Lopez'
 		version = '0.9 build 191021.DEV'
 		self.app_info = f'\n{app_name} {version}'
 		
@@ -574,11 +573,14 @@ class SpotiCLI(Cmd):
 	### 	'''Show queued songs'''
 	### 	print('queueing not implemented (awaiting future spotify API implementation)')
 
+	### what if we create spotify connect endpoint and use that to call queue/upcoming song functionality?
+	### need to evaluate how much work this would be.
+	### also need to learn javascript since there's no way to use web SDK without javascript 
 	def do_upcoming(self, line):
 		'''Show List of upcoming songs (defaults to 5)'''
 		print('upcoming songs not implemented (awaiting future spotify API implementation)')
 		# check if queue, get first 5
-		# if queue has <5 songs or queue empty, check remainder from songs in playlist
+		# if queue has <5 songs or queue empty, check remainder from songs in upcoming list
 		# if still <5 just print what we have
 		# if nothing, display none
 		

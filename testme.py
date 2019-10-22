@@ -31,6 +31,7 @@ def app_factory() -> Flask:
     def login():
         auth_url = cred.user_authorisation_url(scope=every)
         return redirect(auth_url, 307)
+        #return auth_url
 
     @app.route('/callback', methods=['GET'])
     def login_callback():
@@ -41,8 +42,11 @@ def app_factory() -> Flask:
             info = spotify.current_user()
         session['user'] = info.id
         users[info.id] = info
-
         return redirect('/', 307)
+
+    @app.route('/playing', methods=['GET'])
+    def get_playing():
+        return [spotify.current_user(), spotify.playback_currently_playing()]
 
     @app.route('/logout', methods=['GET'])
     def logout():
