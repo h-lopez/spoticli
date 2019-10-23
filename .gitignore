@@ -59,4 +59,7 @@ docs/_build/
 idea/
 .idea/
 /.idea/
+vscode/
+.vscode/
+/.vscode/
 *.xml

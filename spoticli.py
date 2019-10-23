@@ -52,7 +52,7 @@ class SpotiCLI(Cmd):
 		#init(autoreset=True)
 		
 		app_name = 'SpotiCLI'
-		version = '0.9 build 191021.DEV'
+		version = '0.9 Build 19.1021.DEV'
 		self.app_info = f'\n{app_name} {version}'
 		
 		self.current_token = ''
@@ -527,7 +527,7 @@ class SpotiCLI(Cmd):
 			playing_state = 'Stopped'
 
 		### should produce a string looking like
-		### [Playing - 0:05 / 4:24] - Make Me Wanna Die by The Pretty Reckless on Make Me Wanna die
+		### [Playing - 0:05 / 4:24] - Make Me Wanna Die by The Pretty Reckless on Make Me Wanna Die
 		playing_str = f'[{playing_state} - {timestamp}] - {song_name} by {artist_name} on {album_name}'
 
 		print(playing_str)
