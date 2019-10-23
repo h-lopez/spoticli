@@ -1,24 +1,24 @@
 from flask import Flask, request, redirect, session
 
 from spotipy import Spotify, Credentials
-from spotipy.util import credentials_from_environment
 from spotipy.scope import every
 
 client_id = 'ad61a493657140c8a663f8db17730c4f'
 client_secret = '3c403975a6874b238339db2231864294'
-redirect_uri = 'http://127.0.0.1:5000'
+redirect_uri = 'http://localhost:5000'
 
-conf = credentials_from_environment()
 conf = (client_id, client_secret, redirect_uri)
 cred = Credentials(*conf)
 spotify = Spotify()
-
 users = {}
 
+
+print(spotify)
 
 def app_factory() -> Flask:
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'aliens'
+    print(app)
 
     @app.route('/', methods=['GET'])
     def main():
@@ -31,7 +31,6 @@ def app_factory() -> Flask:
     def login():
         auth_url = cred.user_authorisation_url(scope=every)
         return redirect(auth_url, 307)
-        #return auth_url
 
     @app.route('/callback', methods=['GET'])
     def login_callback():
@@ -40,13 +39,11 @@ def app_factory() -> Flask:
         token = cred.request_user_token(code, scope=every)
         with spotify.token_as(token):
             info = spotify.current_user()
+
         session['user'] = info.id
         users[info.id] = info
-        return redirect('/', 307)
 
-    @app.route('/playing', methods=['GET'])
-    def get_playing():
-        return [spotify.current_user(), spotify.playback_currently_playing()]
+        return redirect('/', 307)
 
     @app.route('/logout', methods=['GET'])
     def logout():
@@ -60,4 +57,4 @@ def app_factory() -> Flask:
 
 if __name__ == '__main__':
     application = app_factory()
-    application.run('127.0.0.1', 5000)
+    print(application.run('localhost', 5000))
