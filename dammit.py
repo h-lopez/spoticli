@@ -1,5 +1,6 @@
 from spotipy import Spotify
 from spotipy.scope import every
+from spotipy.sender import PersistentSender
 from spotipy.util import prompt_for_user_token
 
 client_id = 'ad61a493657140c8a663f8db17730c4f'
@@ -13,7 +14,9 @@ token = prompt_for_user_token(
     scope=every
 )
 
-s = Spotify(token)
+
+s = Spotify(token=token, sender=PersistentSender())
+print(s)
 
 tracks = s.current_user_top_tracks(limit=10)
 for track in tracks.items:
