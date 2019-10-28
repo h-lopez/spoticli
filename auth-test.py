@@ -3,7 +3,7 @@ import socket
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse, parse_qs
 
-import spotipy.util 
+#import spotipy.util 
 from spotipy import Spotify
 from spotipy.auth import Credentials
 from spotipy.scope import every
@@ -56,18 +56,8 @@ def prompt_for_user_token(
     token = cred.request_user_token(code, scope)
     return RefreshingToken(token, cred)
 
-def assert_port_available(port):
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    try:
-        s.bind(("", port))
-    except socket.error:
-        raise spotipy.SpotifyException(200, -1, "Port {} is not available. If you are currently running a server, "
-                                                "please halt it for a min.".format(port))
-    finally:
-        s.close()
-
 def get_authentication_code():
-    httpd = MicroServer((redirect_uri.replace("http:", "").replace("https:", "").replace("/", ""), 80), CustomHandler)
+    httpd = MicroServer((redirect_uri.replace("http:", "").replace("https:", "").replace("/", ""), 8080), CustomHandler)
     while not httpd.latest_query_components:
         httpd.handle_request()
     httpd.server_close()
