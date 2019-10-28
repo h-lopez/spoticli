@@ -17,11 +17,7 @@ redirect_uri = 'http://localhost'
 
 ### need to overload default behaviour of user token prompting
 ### instead of opening browser, we'll authenticate using requests to create auth/receive redirect url with the auth code.
-def prompt_for_user_token(
-        client_id: str,
-        client_secret: str,
-        redirect_uri: str,
-        scope=None) -> RefreshingToken:
+def prompt_for_user_token(client_id: str, client_secret: str, redirect_uri: str, scope=None) -> RefreshingToken:
     """
     Open a web browser for manual authentication.
     Parameters
