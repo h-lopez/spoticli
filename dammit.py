@@ -14,7 +14,6 @@ token = prompt_for_user_token(
     scope=every
 )
 
-
 s = Spotify(token=token, sender=PersistentSender())
 print(s)
 
