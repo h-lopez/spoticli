@@ -1,15 +1,20 @@
-import os
-
+#needed for local web server
 import socket
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse, parse_qs
 
 import spotipy.util 
+from spotipy import Spotify
+from spotipy.util import RefreshingToken
 from spotipy.scope import every
+from spotipy.sender import PersistentSender
 from urllib.parse import urlparse, parse_qs
-from spotipy.auth import AccessToken, Token, Credentials
+from spotipy.auth import Credentials
 
 #create requests
+client_id = 'ad61a493657140c8a663f8db17730c4f'
+client_secret = '3c403975a6874b238339db2231864294'
+redirect_uri = 'http://localhost'
 
 ### need to overload default behaviour of user token prompting
 ### instead of opening browser, we'll authenticate using requests to create auth/receive redirect url with the auth code.
@@ -17,7 +22,7 @@ def prompt_for_user_token(
         client_id: str,
         client_secret: str,
         redirect_uri: str,
-        scope=None):
+        scope=None) -> RefreshingToken:
     """
     Open a web browser for manual authentication.
     Parameters
@@ -36,28 +41,21 @@ def prompt_for_user_token(
         automatically refreshing access token
     """
     cred = Credentials(client_id, client_secret, redirect_uri)
-    url = cred.user_authorisation_url(scope)
-    print(url)
+    auth_url = cred.user_authorisation_url(scope)
+    try:
+        import webbrowser
+        webbrowser.open(auth_url)
+        print("Opened %s in your browser" % auth_url)
+    except:
+        print("Please navigate here: %s" % auth_url) 
+
+    code = get_authentication_code()
     #print('Opening browser for Spotify login...')
     #webbrowser.open(url)
     
-    #print(s.get(url, allow_redirects=True).url)
-    #print(s.get(url).text)
-    #redirected = input('Please paste redirect URL: ').strip()
     #code = parse_code_from_url(redirected)
-    #token = cred.request_user_token(code, scope)
-    #return RefreshingToken(token, cred)
-
-client_id = 'ad61a493657140c8a663f8db17730c4f'
-client_secret = '3c403975a6874b238339db2231864294'
-redirect_uri = 'http://localhost'
-
-token = prompt_for_user_token(
-    client_id,
-    client_secret,
-    redirect_uri,
-    scope=every
-)
+    token = cred.request_user_token(code, scope)
+    return RefreshingToken(token, cred)
 
 def assert_port_available(port):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -69,9 +67,8 @@ def assert_port_available(port):
     finally:
         s.close()
 
-
 def get_authentication_code():
-    httpd = MicroServer((REDIRECT_URI.replace("http:", "").replace("https:", "").replace("/", ""), 80), CustomHandler)
+    httpd = MicroServer((redirect_uri.replace("http:", "").replace("https:", "").replace("/", ""), 80), CustomHandler)
     while not httpd.latest_query_components:
         httpd.handle_request()
     httpd.server_close()
@@ -102,3 +99,17 @@ class MicroServer(HTTPServer):
     def __init__(self, server_address, RequestHandlerClass):
         self.latest_query_components = None
         super().__init__(server_address, RequestHandlerClass)
+
+
+token = prompt_for_user_token(
+    client_id,
+    client_secret,
+    redirect_uri,
+    scope=every
+)
+
+s = Spotify(token=token, sender=PersistentSender())
+
+tracks = s.current_user_top_tracks(limit=10)
+for track in tracks.items:
+    print(track.name)
