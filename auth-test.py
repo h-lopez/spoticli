@@ -57,7 +57,7 @@ def prompt_for_user_token(
     return RefreshingToken(token, cred)
 
 def get_authentication_code():
-    httpd = MicroServer((redirect_uri.replace("http:", "").replace("https:", "").replace("/", ""), 8080), CustomHandler)
+    httpd = MicroServer((redirect_uri.replace("http:", "").replace("https:", "").replace("/", ""), 80), CustomHandler)
     while not httpd.latest_query_components:
         httpd.handle_request()
     httpd.server_close()
@@ -81,14 +81,12 @@ class CustomHandler(BaseHTTPRequestHandler):
         self.send_header('Content-type', 'text/html')
         self.end_headers()
         self.server.latest_query_components = parse_qs(urlparse(self.path).query)
-        self.wfile.write(b"<html><body><p>You can close this tab</p></body></html>")
-
+        self.wfile.write(b"<html><body><p style=\"font-family:sans-serif\">You can close this tab</p></body></html>")
 
 class MicroServer(HTTPServer):
     def __init__(self, server_address, RequestHandlerClass):
         self.latest_query_components = None
         super().__init__(server_address, RequestHandlerClass)
-
 
 token = prompt_for_user_token(
     client_id,
