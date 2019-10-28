@@ -5,11 +5,10 @@ from urllib.parse import urlparse, parse_qs
 
 import spotipy.util 
 from spotipy import Spotify
-from spotipy.util import RefreshingToken
+from spotipy.auth import Credentials
 from spotipy.scope import every
 from spotipy.sender import PersistentSender
-from urllib.parse import urlparse, parse_qs
-from spotipy.auth import Credentials
+from spotipy.util import RefreshingToken
 
 #create requests
 client_id = 'ad61a493657140c8a663f8db17730c4f'
