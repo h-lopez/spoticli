@@ -21,6 +21,8 @@ redirect_uri = 'http://localhost'
 
 ### need to overload default behaviour of user token prompting
 ### instead of opening browser, we'll authenticate using requests to create auth/receive redirect url with the auth code.
+
+#why? alternative is to have browser pop everytime we need authentication, usually on program start. not a big deal.
 def get_user_token(client_id: str, client_secret: str, redirect_uri: str, scope=None) -> RefreshingToken:
     """
     Open a web browser for manual authentication.
@@ -44,22 +46,8 @@ def get_user_token(client_id: str, client_secret: str, redirect_uri: str, scope=
     
     #authorize and capture auth token
     try:
-        '''
-        #attempt to capture token via request library. 
-        try:
-
-        #if we fail to capture via request library, fallback to capturing from browser.
-        except:
-            import webbrowser
-            webbrowser.open(auth_url)
-            print("Opened %s in your browser" % auth_url)
-        '''
-        #import webbrowser
-        #webbrowser.open(auth_url)
-        response = requests.get(auth_url)
-        print(response)
-        print(response.request.url)
-        print(response.request)
+        import webbrowser
+        webbrowser.open(auth_url)
         print("Opened %s in your browser" % auth_url)
     except:
         print("Please navigate here: %s" % auth_url) 
@@ -69,7 +57,7 @@ def get_user_token(client_id: str, client_secret: str, redirect_uri: str, scope=
     #webbrowser.open(url)
     
     #code = parse_code_from_url(redirected)
-    token = cred.request_user_token(code, scope)
+    token = cred.request_user_token(code)
     return RefreshingToken(token, cred)
 
 def get_authentication_code():
@@ -116,3 +104,6 @@ s = Spotify(token=token, sender=PersistentSender())
 tracks = s.current_user_top_tracks(limit=10)
 for track in tracks.items:
     print(track.name)
+
+current_playing = s.playback_currently_playing
+print(current_playing)
