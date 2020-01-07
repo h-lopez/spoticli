@@ -15,8 +15,13 @@ import time
 
 #spotipy library
 #handles json calls to spotify API
-import spotipy
-import spotipy.util
+#import spotipy
+#import spotipy.util
+
+###due to import module naming conventions, need to import module like this
+import importlib  
+spotipy = importlib.import_module("spotipy-legacy")
+spotipy.util = importlib.import_module("spotipy-legacy.util")
 
 #colorama library
 #allows printing of text in different colors
@@ -86,7 +91,7 @@ class SpotiCLI(Cmd):
 		self.hidden_commands.append('quit')
 
 		#ONLY change title if using non unix system
-		if(os.name is not 'posix'):
+		if(os.name != 'posix'):
 			os.system('title SpotiCLI')
 			#need to look into changing window title on posix systems
 
