@@ -6,9 +6,9 @@ to use, make sure you have your client-id, client-secret and username handy to b
 i'll add a way to specify your client information details w/o hardcoding (eventually)
 
 Note: DEV BRANCH BUILD
-PLEASE MAKE SURE YOU USE https://github.com/felix-hilden/spotipy
-OLD API IS BEING DEPRECATED https://github.com/plamere/spotipy 
-ALL FUTURE DEVELOPMENT WILL BE PORTED TO FELIX VERSION OF SPOTIPY
+PLEASE MAKE SURE YOU USE https://github.com/felix-hilden/tekore
+OLD API IS BEING DEPRECATED https://github.com/plamere/tekore 
+ALL FUTURE DEVELOPMENT WILL BE PORTED TO FELIX VERSION OF tekore
 
 released under the MIT license
 '''
@@ -19,12 +19,12 @@ import argparse
 import os
 import time
 
-#spotipy library
+#tekore library
 #handles calls to spotify API
-from spotipy import Spotify
-from spotipy.scope import every
-from spotipy.sender import PersistentSender
-from spotipy.util import prompt_for_user_token
+from tekore import Spotify
+from tekore.scope import every
+from tekore.sender import PersistentSender
+from tekore.util import prompt_for_user_token
 
 import sys
 
@@ -58,7 +58,7 @@ class SpotiCLI(Cmd):
         self.app_info = f'\n{app_name} {version}'
         
         self.current_token = ''
-        self.spotipy_instance = ''
+        self.tekore_instance = ''
         #self.enable_logging = False
         self.intro = self.app_info + '\n'
         self.prompt = 'spoticli ~$ ' # + Style.RESET_ALL
@@ -92,7 +92,7 @@ class SpotiCLI(Cmd):
         redirect_uri = 'http://localhost'
         #access_token = prompt_for_user_token(client_id, client_secret,redirect_uri, scope)
         access_token = 'f'
-        self.spotipy_instance = Spotify(access_token)
+        self.tekore_instance = Spotify(access_token)
 
         self.set_window_title(app_name)
         #ONLY change title if using non unix system
@@ -116,7 +116,7 @@ class SpotiCLI(Cmd):
         print('')
         return line
 
-    #create initial spotipy object and program start
+    #create initial tekore object and program start
     ### def preloop(self):
     ###     self.authenticate()
     ###     #self.refresh_session()
@@ -137,7 +137,7 @@ class SpotiCLI(Cmd):
     #all have same basic functionality; will query spotify API for data
     #check if returned is null, if it is then we hit a device inactivity timeout
     
-    #will have spotipy try to reassign first available device    <--- no longer needed?
+    #will have tekore try to reassign first available device    <--- no longer needed?
     #function will then attempt to retrieve/return requested data
 
     #OPERATIONAL/PLAYER CALLS
@@ -198,10 +198,10 @@ class SpotiCLI(Cmd):
     #might not be needed in new API?
     ### def force_device(self):
     ###     data = self.get_devices()
-    ###     self.spotipy_instance.playback_transfer(data['devices'][0]['id'], False)
+    ###     self.tekore_instance.playback_transfer(data['devices'][0]['id'], False)
     
     #parses a string into indexed JSON format
-    ###no longer needed? new spotipy lib returns as objects
+    ###no longer needed? new tekore lib returns as objects
     ### def parse(self, data):
     ###     return json.loads(json.dumps(data))
 
@@ -209,14 +209,14 @@ class SpotiCLI(Cmd):
     ### def authenticate(self):
     ###     #print('not implemented')
     ###     print('')
-    #this creates a new spotipy session with new token.
+    #this creates a new tekore session with new token.
     #need to decouple user clientid/secret from this method 
     
     ######## I don't think this is needed anymore?
     ###
     ### def refresh_session(self):
     ###     #explicitly kill session
-    ###     self.spotipy_instance = ''
+    ###     self.tekore_instance = ''
     ###     scope = 'user-library-read user-library-modify user-read-currently-playing user-read-playback-state user-modify-playback-state user-read-recently-played playlist-read-private'
     ###     #username = '95hlopez@gmail.com'
     ###     client_id = 'ad61a493657140c8a663f8db17730c4f'
@@ -228,8 +228,8 @@ class SpotiCLI(Cmd):
     ###     self.current_token = access_token
     ###     if access_token:
     ###         #assuming new token was retrieved successfully, create new session.
-    ###         self.spotipy_instance = Spotify(access_token)
-    ###         #assuming this was successful, try to read spotipy auth token to get expiration
+    ###         self.tekore_instance = Spotify(access_token)
+    ###         #assuming this was successful, try to read tekore auth token to get expiration
     ###         #new spotipfy library will make this redundant
     ### 
     ###         #this is legacy code that will be removed once we hit better integration
@@ -257,9 +257,9 @@ class SpotiCLI(Cmd):
         print('Current UNIX time: ' + str(int(datetime.now().timestamp())))
         #print('Token create time: ' + str(self.creation_time))
         #print('Token expire time: ' + str(self.expiration_time))
-        print('SP Memory Address: ' + str(self.spotipy_instance))
+        print('SP Memory Address: ' + str(self.tekore_instance))
         print('')
-        print('Spotipy Token ID: \n' + str(self.current_token))
+        print('tekore Token ID: \n' + str(self.current_token))
     
     ##this works. do not touch
     def do_exit(self, line):
@@ -273,7 +273,7 @@ class SpotiCLI(Cmd):
 ####        args = ' '.join(args.query)
 ####        #need to append 's' at of query type
 ####        #spotify uses plurals as the keys in the search api
-####        return self.parse(self.spotipy_instance.search(args,type=search_type,limit=result_count))[search_type + 's']['items']
+####        return self.parse(self.tekore_instance.search(args,type=search_type,limit=result_count))[search_type + 's']['items']
 ####
 ####    ### Prints out list of items and allows user to make a selection out of 5 items
 ####    def search_selection(self, parsed_results, result_limit, args):
@@ -359,20 +359,20 @@ class SpotiCLI(Cmd):
 ####        #presents users with options after a selection is made (via numkeys on keyboard)
 ####        song_id = self.search_selection(parsed_results, result_limit, args)
 ####        if(song_id):
-####            #self.spotipy_instance.start_playback(uris=song_id.split())
+####            #self.tekore_instance.start_playback(uris=song_id.split())
 ####            #'do what' code goes right here.
 ####            action_id = self.action_selection(args)
 ####            if(action_id):
 ####                song_id = song_id.split()
 ####                if(action_id == 'play'):
-####                    self.spotipy_instance.start_playback(uris=song_id)
+####                    self.tekore_instance.start_playback(uris=song_id)
 ####                    self.do_current('')
 ####                if(action_id == 'queue'):
 ####                    print('queuing is not currently supported')
 ####                if(action_id == 'save'):
-####                    self.spotipy_instance.current_user_saved_tracks_add(song_id)
+####                    self.tekore_instance.current_user_saved_tracks_add(song_id)
 ####                if(action_id == 'unsave'):
-####                    self.spotipy_instance.current_user_saved_tracks_delete(song_id)
+####                    self.tekore_instance.current_user_saved_tracks_delete(song_id)
 ####        else:
 ####            return
 ####
@@ -396,7 +396,7 @@ class SpotiCLI(Cmd):
 ####
 ####        artist_id = self.search_selection(parsed_results, result_limit, args)
 ####        if(artist_id):
-####            self.spotipy_instance.start_playback(context_uri=artist_id)
+####            self.tekore_instance.start_playback(context_uri=artist_id)
 ####        else:
 ####            return
 ####
@@ -422,7 +422,7 @@ class SpotiCLI(Cmd):
 ####        #play playlist directly from results
 ####        album_id = self.search_selection(parsed_results, result_limit, args)
 ####        if(album_id):
-####            self.spotipy_instance.start_playback(context_uri=album_id)
+####            self.tekore_instance.start_playback(context_uri=album_id)
 ####        else:
 ####            return
 ####
@@ -447,7 +447,7 @@ class SpotiCLI(Cmd):
 ####        #play playlist directly from results
 ####        playlist_id = self.search_selection(parsed_results, result_limit, args)
 ####        if(playlist_id):
-####            self.spotipy_instance.start_playback(context_uri=playlist_id)
+####            self.tekore_instance.start_playback(context_uri=playlist_id)
 ####        else:
 ####            return
 ####
@@ -514,7 +514,7 @@ class SpotiCLI(Cmd):
 
         #pull JSON on currently playing track & parse into python friendly format
         now_playing = self.get_current_playback_data()
-        #parsed = self.parse(self.spotipy_instance.current_user_playing_track())
+        #parsed = self.parse(self.tekore_instance.current_user_playing_track())
 
         #pull song name, artist and album, print to console
         song_name = self.get_song(now_playing)
@@ -546,15 +546,15 @@ class SpotiCLI(Cmd):
         
     # wtf
     # AttributeError: 'Spotify' object has no attribute 'user_follow_artists'
-    # might revisit as felix/spotipy will likely have this functionality. 
+    # might revisit as felix/tekore will likely have this functionality. 
     #
     #def do_follow(self, line):
     #    '''follows artist of currently playing track'''
     #    now_playing = self.get_current_playback_data()
-    #    self.spotipy_instance.user_follow_artists(now_playing['item']['artist']['id'].split())
+    #    self.tekore_instance.user_follow_artists(now_playing['item']['artist']['id'].split())
     #    print('<3 - Artist Followed')
 
-    #not currently possible to unfollow artist in spotipy API...oh well...
+    #not currently possible to unfollow artist in tekore API...oh well...
     #def do_unfollow(self, line):
     #    '''unfollows artist of currently playing track'''
     #    now_playing = self.get_current_playback_data()
@@ -612,9 +612,9 @@ class SpotiCLI(Cmd):
 
         if(line[0] == '+' or line[0] == '-'):
             song_position = song_position + new_pos
-            self.spotipy_instance.seek_track(song_position)
+            self.tekore_instance.seek_track(song_position)
         else:
-            self.spotipy_instance.seek_track(new_pos)
+            self.tekore_instance.seek_track(new_pos)
         #print(str(new_pos/1000) + ' / ' + str(song_duration/1000))
         self.do_current('')
 
@@ -633,7 +633,7 @@ class SpotiCLI(Cmd):
         #functionally the same as doing 'seek 0' from CLI
         #just replays the currently playing song. 
         #if playback is paused, this will NOT resumt playback
-        self.spotipy_instance.seek_track(0)
+        self.tekore_instance.seek_track(0)
         print('not implemented')
         self.do_current('')
 
@@ -641,13 +641,13 @@ class SpotiCLI(Cmd):
     #time delay introduced to allow spotify API to 'catch up' and write our changes
     #before we attempt to read them    
     def shuffle_enable(self, args):
-        #self.spotipy_instance.shuffle(True)
+        #self.tekore_instance.shuffle(True)
         #time.sleep(0.5)
         print('not implemented')
         self.do_shuffle('')
 
     def shuffle_disable(self, args):
-        #self.spotipy_instance.shuffle(False)
+        #self.tekore_instance.shuffle(False)
         #time.sleep(0.5)
         print('not implemented')
         self.do_shuffle('')
@@ -684,17 +684,17 @@ class SpotiCLI(Cmd):
     #while we can just print the state we selected, there's no confirmation our changes were taken by spotify.
     #it's shitty, but no good alternative is available
     def repeat_enable(self, args):
-        self.spotipy_instance.playback_repeat('context')
+        self.tekore_instance.playback_repeat('context')
         time.sleep(0.5)
         self.do_repeat('')
 
     def repeat_track(self, args):
-        self.spotipy_instance.playback_repeat('track')
+        self.tekore_instance.playback_repeat('track')
         time.sleep(0.5)
         self.do_repeat('')
 
     def repeat_disable(self, args):
-        self.spotipy_instance.playback_repeat('off')
+        self.tekore_instance.playback_repeat('off')
         time.sleep(0.5)
         self.do_repeat('')
 
@@ -733,7 +733,7 @@ class SpotiCLI(Cmd):
     #history is built-in cmd2 command, being overloaded by function that displays last 5 songs.
         '''Show last 5 played songs'''
         result_limit = 5
-        history_list = self.spotipy_instance.current_user_recently_played(result_limit)
+        history_list = self.tekore_instance.current_user_recently_played(result_limit)
         parsed_results = self.parse(history_list['items'])
         #print(parsed_results)
         #if results are less < 5, only print the # of returned results
@@ -771,20 +771,20 @@ class SpotiCLI(Cmd):
         song_id = parsed_results[user_choice - 1]['track']['uri']
         print(song_id)
         if(song_id):
-            #self.spotipy_instance.start_playback(uris=song_id.split())
+            #self.tekore_instance.start_playback(uris=song_id.split())
             #'do what' code goes right here.
             action_id = self.action_selection(line)
             if(action_id):
                 song_id = song_id.split()
                 if(action_id == 'play'):
-                    self.spotipy_instance.start_playback(uris=song_id)
+                    self.tekore_instance.start_playback(uris=song_id)
                     self.do_current('')
                 if(action_id == 'queue'):
                     print('queuing is not currently supported')
                 if(action_id == 'save'):
-                    self.spotipy_instance.current_user_saved_tracks_add(song_id)
+                    self.tekore_instance.current_user_saved_tracks_add(song_id)
                 if(action_id == 'unsave'):
-                    self.spotipy_instance.current_user_saved_tracks_delete(song_id)
+                    self.tekore_instance.current_user_saved_tracks_delete(song_id)
         else:
             return
                 
@@ -818,7 +818,7 @@ class SpotiCLI(Cmd):
         elif(new_vol < 0):
             new_vol = 0
 
-        self.spotipy_instance.playback_volume(new_vol)
+        self.tekore_instance.playback_volume(new_vol)
         print('not implemented')
         print('volume: ' + str(new_vol))
 
@@ -860,7 +860,7 @@ class SpotiCLI(Cmd):
         #transfer playback on selected device, but don't actually start playing yet.
         #subtract one because arrays start at 0
         
-        self.spotipy_instance.transfer_playback(device_list['devices'][user_choice - 1]['id'], False)    
+        self.tekore_instance.transfer_playback(device_list['devices'][user_choice - 1]['id'], False)    
 
 if __name__ == '__main__':
     sys.exit(SpotiCLI().cmdloop())
