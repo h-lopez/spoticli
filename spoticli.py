@@ -109,6 +109,9 @@ class SpotiCLI(Cmd):
         user = tekore_instance.current_user()
         print(user)
 
+        refresh_token = ...
+        token = util.refresh_user_token(*conf[:2], refresh_token)
+
         self.set_window_title(app_name)
         #ONLY change title if using non unix system
         #if(os.name is not 'posix'):
