@@ -13,7 +13,7 @@ Linux-based systems can use dbus to control playback (this functionality is NOT 
 ### Requirements:
 * python3
 * pip
-* felix-hilder/spotipy
+* tekore
 * cmd2
 * colorama
 * flask
