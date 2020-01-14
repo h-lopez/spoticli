@@ -21,10 +21,9 @@ import time
 
 #tekore library
 #handles calls to spotify API
-from tekore import Spotify
+from tekore import Spotify, util
 from tekore.scope import every
 from tekore.sender import PersistentSender
-from tekore.util import prompt_for_user_token
 
 import sys
 
@@ -87,12 +86,28 @@ class SpotiCLI(Cmd):
         self.hidden_commands.append('run_script')
 
         scope = 'user-library-read user-library-modify user-read-currently-playing user-read-playback-state user-modify-playback-state user-read-recently-played playlist-read-private'
-        client_id = 'ad61a493657140c8a663f8db17730c4f'
-        client_secret = '3c403975a6874b238339db2231864294'
-        redirect_uri = 'http://localhost'
+        
+        #reading from conf.spoticli file now. yay.
+        # output of cat ./conf.spoticli
+
+        # [DEFAULT]
+        # SPOTIFY_CLIENT_ID=ad61a493657140c8a663f8db17730c4f
+        # SPOTIFY_CLIENT_SECRET=3c403975a6874b238339db2231864294
+        # SPOTIFY_REDIRECT_URI=http://localhost
+
+        ##client_id = 'ad61a493657140c8a663f8db17730c4f'
+        ##client_secret = '3c403975a6874b238339db2231864294'
+        ##redirect_uri = 'http://localhost'
         #access_token = prompt_for_user_token(client_id, client_secret,redirect_uri, scope)
-        access_token = 'f'
-        self.tekore_instance = Spotify(access_token)
+        #access_token = 'f'
+        #self.tekore_instance = Spotify(access_token)
+
+        #define initial user
+        conf = util.config_from_file('conf.spoticli')
+        token = util.prompt_for_user_token(*conf, scope=scope)
+        tekore_instance = Spotify(token=token, sender=PersistentSender())
+        user = tekore_instance.current_user()
+        print(user)
 
         self.set_window_title(app_name)
         #ONLY change title if using non unix system
