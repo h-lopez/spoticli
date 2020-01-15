@@ -1,4 +1,0 @@
-#required to function
-tekore
-cmd2
-colorama

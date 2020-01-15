@@ -1,4 +1,0 @@
-#required to function
-spotipy
-cmd2
-colorama
