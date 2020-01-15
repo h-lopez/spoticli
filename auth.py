@@ -1,11 +1,13 @@
-from spotipy import util
+from tekore import Spotify, util
+from tekore.scope import every
+from tekore.sender import PersistentSender
 
-#conf = util.credentials_from_environment()
-#cliuent ID, secret, and callback url
-conf = ("ad61a493657140c8a663f8db17730c4f", "3c403975a6874b238339db2231864294", "127.0.0.1")
-app_token = util.request_client_token(*conf[:2])
-user_token = util.prompt_for_user_token(*conf)
+conf = util.config_from_file('conf.spoticli')
+token = util.prompt_for_user_token(*conf, scope=every)
+s = Spotify(token=token, sender=PersistentSender())
 
-# Save the refresh token to avoid authenticating again
-refresh_token = ...     # Load refresh token
-user_token = util.refresh_user_token(*conf[:2], refresh_token)
+print(s.current_user())
+print(s.)
+
+#refresh_token = ...
+#token = util.refresh_user_token(*conf[:2], refresh_token)
