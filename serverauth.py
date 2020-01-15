@@ -63,4 +63,4 @@ def app_factory() -> Flask:
 
 if __name__ == '__main__':
     application = app_factory()
-    fapplication.run('localhost', 8080)
+    application.run('localhost', 8080)
