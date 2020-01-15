@@ -58,10 +58,9 @@ def app_factory() -> Flask:
         shutdown_server()
         return 'authentication unsuccessful. check your login creds and try again.'
 
-    return (app, user_token_id)
+    return app
 
 
 if __name__ == '__main__':
-    application = app_factory()[0]
-    f = application.run('localhost', 8080)
-    print(f)
+    application = app_factory()
+    fapplication.run('localhost', 8080)
