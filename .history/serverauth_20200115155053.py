@@ -12,8 +12,15 @@ users = {}
 
 def app_factory() -> Flask:
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'yourmum'
+    app.config['SECRET_KEY'] = 'aliens'
     user_token_id = ''
+
+    ### @app.route('/', methods=['GET'])
+    ### def main():
+    ###     in_link = '<a href="/login">login</a>'
+    ###     out_link = '<a href="/logout">logout</a>'
+    ###     user = session.get('user', None)
+    ###     return f'User ID: {user}<br>You can {in_link} or {out_link}'
 
     @app.route('/', methods=['GET'])
     def main():
@@ -49,6 +56,13 @@ def app_factory() -> Flask:
     @app.route('/fail', methods=['GET'])
     def fail():
         return 'authentication unsuccessful. check your login creds and try again.'
+
+    ### @app.route('/logout', methods=['GET'])
+    ### def logout():
+    ###     uid = session.pop('user', None)
+    ###     if uid is not None:
+    ###         users.pop(uid, None)
+    ###     return redirect('/', 307)
 
     return app
 

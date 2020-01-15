@@ -1,22 +1,29 @@
 from flask import Flask, request, redirect, session
 
 from tekore import Spotify, Credentials
-from tekore.util import config_from_file
+from tekore.util import config_from_environment
 from tekore.scope import every
 
-conf = config_from_file('conf.spoticli')
+conf = config_from_environment()
 cred = Credentials(*conf)
 spotify = Spotify()
 
 users = {}
 
+
 def app_factory() -> Flask:
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'yourmum'
-    user_token_id = ''
+    app.config['SECRET_KEY'] = 'aliens'
 
     @app.route('/', methods=['GET'])
     def main():
+        in_link = '<a href="/login">login</a>'
+        out_link = '<a href="/logout">logout</a>'
+        user = session.get('user', None)
+        return f'User ID: {user}<br>You can {in_link} or {out_link}'
+
+    @app.route('/login', methods=['GET'])
+    def login():
         auth_url = cred.user_authorisation_url(scope=every)
         return redirect(auth_url, 307)
 
@@ -28,31 +35,21 @@ def app_factory() -> Flask:
         with spotify.token_as(token):
             info = spotify.current_user()
 
-        print(f'token {token}')
-        print(f'code {code}')
-        print(f'info {info}')
-        print('this is eval')
-
         session['user'] = info.id
         users[info.id] = info
 
-        user_token_id = info
+        return redirect('/', 307)
 
-        if(info):
-            return redirect('/success', 307)
-        return redirect('/fail', 307)
-
-    @app.route('/success', methods=['GET'])
-    def success():
-        return 'authentication successful. you can close this window.'
-
-    @app.route('/fail', methods=['GET'])
-    def fail():
-        return 'authentication unsuccessful. check your login creds and try again.'
+    @app.route('/logout', methods=['GET'])
+    def logout():
+        uid = session.pop('user', None)
+        if uid is not None:
+            users.pop(uid, None)
+        return redirect('/', 307)
 
     return app
 
 
 if __name__ == '__main__':
     application = app_factory()
-    application.run('localhost', 8080)
+    application.run('127.0.0.1', 5000)

@@ -12,7 +12,7 @@ users = {}
 
 def app_factory() -> Flask:
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'yourmum'
+    app.config['SECRET_KEY'] = 'aliens'
     user_token_id = ''
 
     @app.route('/', methods=['GET'])
@@ -49,7 +49,7 @@ def app_factory() -> Flask:
     @app.route('/fail', methods=['GET'])
     def fail():
         return 'authentication unsuccessful. check your login creds and try again.'
-
+        
     return app
 
 
