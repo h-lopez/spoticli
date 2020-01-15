@@ -34,10 +34,10 @@ def app_factory() -> Flask:
         with spotify.token_as(token):
             info = spotify.current_user()
 
-        print(f'token {token}')
-        print(f'code {code}')
-        print(f'info {info}')
-        print('this is eval')
+        ### print(f'token {token}')
+        ### print(f'code {code}')
+        ### print(f'info {info}')
+        ### print('this is eval')
 
         session['user'] = info.id
         users[info.id] = info
@@ -57,7 +57,6 @@ def app_factory() -> Flask:
     def fail():
         shutdown_server()
         return 'authentication unsuccessful. check your login creds and try again.'
-
     return app
 
 
