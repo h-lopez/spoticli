@@ -20,6 +20,12 @@ def app_factory() -> Flask:
         auth_url = cred.user_authorisation_url(scope=every)
         return redirect(auth_url, 307)
 
+    def shutdown_server():
+        func = request.environ.get('werkzeug.server.shutdown')
+        if func is None:
+            raise RuntimeError('Not running with the Werkzeug Server')
+        func()
+
     @app.route('/callback', methods=['GET'])
     def login_callback():
         code = request.args.get('code', None)
@@ -44,15 +50,18 @@ def app_factory() -> Flask:
 
     @app.route('/success', methods=['GET'])
     def success():
+        shutdown_server()
         return 'authentication successful. you can close this window.'
 
     @app.route('/fail', methods=['GET'])
     def fail():
+        shutdown_server()
         return 'authentication unsuccessful. check your login creds and try again.'
 
-    return app
+    return (app, user_token_id)
 
 
 if __name__ == '__main__':
-    application = app_factory()
-    application.run('localhost', 8080)
+    application = app_factory()[0]
+    f = application.run('localhost', 8080)
+    print(f)
