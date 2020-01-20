@@ -63,3 +63,4 @@ def app_factory() -> Flask:
 if __name__ == '__main__':
     application = app_factory()
     application.run('localhost', 8080)
+    #WHY WONT YOU FUCKING WORK
