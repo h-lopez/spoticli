@@ -56,7 +56,7 @@ class SpotiCLI(Cmd):
         
         app_name = 'SpotiCLI'
         author = 'Author:\t\tHugo A Lopez'
-        version = 'Version:' + '\t' + '1.0.19.0424'
+        version = 'Version:' + '\t' + '1.0.20.0323'
         self.app_info = Fore.CYAN + '\n' + app_name + '\n\n' + author + '\n' + version
         
         self.current_token = ''
