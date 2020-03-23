@@ -280,9 +280,10 @@ class SpotiCLI(Cmd):
     # ######################################## #
     # ###### Begin CMD2 commands below ####### #
     # ######################################## #
-    def do_exit(self, line):
-        '''Exit SpotiCLI'''
-        quit()
+	### disable exit command as it breaks shit. use quit instead
+    ### def do_exit(self, line):
+    ###     '''Exit SpotiCLI'''
+    ###     quit()
 
     def do_about(self, line):
         '''Show Build Information'''
