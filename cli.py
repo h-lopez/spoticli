@@ -75,23 +75,36 @@ class SpotiCLI(Cmd):
 
     def do_current(self, line):
         '''show currently playing track'''
-        print
         print('placeholder')
 
     def do_play(self, line):
         '''start or resume playback, or play next/previous song'''
-        self.sp_user.playback_resume()
-        print('placeholder')
+        if(line == 'previous'):
+            self.sp_user.playback_previous()
+            print('playing previous')
+        if(line == 'next'):
+            self.sp_user.playback_next()
+            print('playing next')
+        else:
+            try:
+                self.sp_user.playback_resume()
+            except:
+                print('')
+            print('playing')
 
     def do_pause(self, line):
         '''pause playback'''
-        self.sp_user.playback_pause()
-        print('placeholder')
+        try:
+            self.sp_user.playback_pause()
+        except:
+            print('')
+        print('paused')
     
     def do_seek(self, line):
         '''seek to specific time in a track
         usage: seek [seconds]
         you can also specify a step increase by prefixing time with +/-'''
+        self.sp_user.playback_seek()
         print('placeholder')
 
     #### playback properties
@@ -113,10 +126,17 @@ class SpotiCLI(Cmd):
     
     def do_repeat(self, line):
         '''show or modify repeat state'''
+        ### valid states: 
+        ### track - repeat enabled for track
+        ### enabled - repeat enabled for playlist/album
+        ### disabled - repeat disabled
         print('placeholder')
 
     def do_shuffle(self, line):
         '''show or modify shuffle state'''
+        ### valid states: 
+        ### enabled - shuffle enabled
+        ### disabled - shuffle disabled
         print('placeholder')
             
     #### playlist modification
