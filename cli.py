@@ -1,27 +1,16 @@
 '''
 SpotiCLI
-Copyright 2019, Hugo A Lopez
-
-to use, make sure you have your client-id, client-secret and username handy to build this out
-i'll add a way to specify your client information details w/o hardcoding (eventually)
-
-Note: DEV BRANCH BUILD
-PLEASE MAKE SURE YOU USE https://github.com/felix-hilden/tekore
-OLD API IS BEING DEPRECATED https://github.com/plamere/tekore 
-ALL FUTURE DEVELOPMENT WILL BE USING tekore
+Copyright 2020, Hugo A Lopez
 
 released under the MIT license
 '''
 
 from tekore import Spotify, util
-from tekore.scope import every
-from tekore.sender import PersistentSender
-
 from cmd2 import Cmd, with_argparser
 #from colorama import init, Fore, Back, Style
 
 class SpotiCLI(Cmd):
-    def __init__(self):
+    def __init__(self, token=token):
         super().__init__()
 
         app_name = 'SpotiCLI'
@@ -32,7 +21,7 @@ class SpotiCLI(Cmd):
         self.intro = self.app_info + '\n'
         self.prompt = 'spoticli ~$ '
 
-        self.tekore_instance = ''   
+        self.tekore_instance = Spotify(token)
 
         #hide built-in cmd2 functions. this will leave them available for use but will be hidden from tab completion (and docs)
         self.hidden_commands.append('alias')
