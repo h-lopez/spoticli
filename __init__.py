@@ -18,4 +18,4 @@ if __name__ == '__main__':
     #### print(tracks)
     ### pass token to spoticli, spoticli with instantiate spotify object and handle refreshing
     ### spoticli will handle auth user and periodically refresh token as needed
-    SpotiCLI().cmdloop()
+    SpotiCLI(token=token).cmdloop()

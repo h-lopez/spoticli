@@ -21,7 +21,7 @@ class SpotiCLI(Cmd):
         self.intro = self.app_info + '\n'
         self.prompt = 'spoticli ~$ '
 
-        self.tekore_instance = Spotify(token)
+        self.sp_user = Spotify(token)
 
         #hide built-in cmd2 functions. this will leave them available for use but will be hidden from tab completion (and docs)
         self.hidden_commands.append('alias')
@@ -67,7 +67,7 @@ class SpotiCLI(Cmd):
 
     def do_diagnostics(self, line):
        '''show program diagnostics'''
-       print(self.tekore_instance.current_user_top_tracks(limit=10))
+       #print(self.sp_user.current_user_top_tracks(limit=10))
        print('no diagnostics to show')
     
     #### playback commands
@@ -75,14 +75,17 @@ class SpotiCLI(Cmd):
 
     def do_current(self, line):
         '''show currently playing track'''
+        print
         print('placeholder')
 
     def do_play(self, line):
         '''start or resume playback, or play next/previous song'''
+        self.sp_user.playback_resume()
         print('placeholder')
 
     def do_pause(self, line):
         '''pause playback'''
+        self.sp_user.playback_pause()
         print('placeholder')
     
     def do_seek(self, line):
