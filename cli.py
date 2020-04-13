@@ -30,7 +30,7 @@ class SpotiCLI(Cmd):
         ###define app parameters
         self.app_info = f'\n{app_name} {version}'
         self.intro = self.app_info + '\n'
-        self.prompt = 'spoticli ~$ ' # + Style.RESET_ALL
+        self.prompt = 'spoticli ~$ '
 
         #hide built-in cmd2 functions. this will leave them available for use but will be hidden from tab completion (and docs)
         self.hidden_commands.append('alias')
@@ -82,6 +82,10 @@ class SpotiCLI(Cmd):
     #### playback commands
     ##########################################
 
+    def do_current(self, line):
+        '''show currently playing track'''
+        print('placeholder')
+
     def do_play(self, line):
         '''start or resume playback, or play next/previous song'''
         print('placeholder')
@@ -128,14 +132,13 @@ class SpotiCLI(Cmd):
         '''display user playlists'''
         print('placeholder')
 
-
     def do_previous(self, line):
         '''show previous songs'''
         print('placeholder')
     
     def do_queue(self, line):
         '''show and modify queue'''
-        print('placeholder')
+        print('not implemented. pending expansion of spotify api')
 
     def do_save(self, line):
         '''add currently playing track to liked songs'''
