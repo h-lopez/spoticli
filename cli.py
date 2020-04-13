@@ -10,7 +10,7 @@ from cmd2 import Cmd, with_argparser
 #from colorama import init, Fore, Back, Style
 
 class SpotiCLI(Cmd):
-    def __init__(self, token=token):
+    def __init__(self, token):
         super().__init__()
 
         app_name = 'SpotiCLI'
@@ -67,6 +67,7 @@ class SpotiCLI(Cmd):
 
     def do_diagnostics(self, line):
        '''show program diagnostics'''
+       print(self.tekore_instance.current_user_top_tracks(limit=10))
        print('no diagnostics to show')
     
     #### playback commands
