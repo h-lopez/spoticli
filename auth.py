@@ -8,7 +8,7 @@ from tekore.auth.refreshing import RefreshingToken, RefreshingCredentials
 
 from tekore import Spotify, util, scope
 
-cred = util.config_from_file('conf.spoticli')
+#cred = util.config_from_file('conf.spoticli')
 
 class RequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):

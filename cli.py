@@ -51,7 +51,6 @@ class SpotiCLI(Cmd):
         self.hidden_commands.append('run_script')
 
         ##define permissions scope...
-        scope = 'user-library-read user-library-modify user-read-currently-playing user-read-playback-state user-modify-playback-state user-read-recently-played playlist-read-private'
 
     #### cmd2 native functions
     ##########################################
