@@ -2,8 +2,7 @@
 
 ### About
 Command line front end for Spotify  
-Please note this REQUIRES Spotify Premium to use; most of the playback APIs are locked behind premium  
-Linux-based systems can use dbus to control playback (this functionality is NOT implemented in SpotiCLI)
+Please note this REQUIRES Spotify Premium to use as most of the playback APIs are locked behind premium subscription  
 
 ### Compatibility
 * Win10 - Fully compatible
@@ -12,14 +11,14 @@ Linux-based systems can use dbus to control playback (this functionality is NOT 
 
 ### Requirements
 * python3
-* pip
 * tekore
 * cmd2
 * colorama
-* flask
 
 ### Installation
+1. install above requirements
 1. setup spotify dev account and have a client id/secret ready to use 
 1. clone repo 
-1. run 'python3 client.py' or whatever you need to do to run a .py  
-1. authorize yourself
+1. run 'python3 __init__.py' from the command line
+1. complete authorization process
+1. play music
