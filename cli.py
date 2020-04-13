@@ -18,7 +18,7 @@ from tekore.scope import every
 from tekore.sender import PersistentSender
 
 from cmd2 import Cmd, with_argparser
-from colorama import init, Fore, Back, Style
+#from colorama import init, Fore, Back, Style
 
 class SpotiCLI(Cmd):
     def __init__(self):
@@ -31,6 +31,8 @@ class SpotiCLI(Cmd):
         self.app_info = f'\n{app_name} {version}'
         self.intro = self.app_info + '\n'
         self.prompt = 'spoticli ~$ '
+
+        self.tekore_instance = ''   
 
         #hide built-in cmd2 functions. this will leave them available for use but will be hidden from tab completion (and docs)
         self.hidden_commands.append('alias')
