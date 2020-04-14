@@ -51,7 +51,7 @@ class SpotiCLI(Cmd):
 
     #overloads default error message
     def default(self, line):
-        print('Unrecognized command')
+        print('unrecognized command')
 
     #used to write an extra blank line between commands...just a formatting thing.
     def postcmd(self,line,stop):
