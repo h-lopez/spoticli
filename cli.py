@@ -41,6 +41,68 @@ class SpotiCLI(Cmd):
 
         ##define permissions scope...
 
+    #### accessor / mutators
+    #### getter / setter, whatever
+    #### these make the spotify api calls
+    ##########################################
+    
+    def get_playback_data():
+        print('placeholder')
+
+    ## accessor
+    ############################
+
+    # track specific properties
+    #####################
+
+    def get_album():
+        print('placeholder')
+
+    def get_artist():
+        print('placeholder')
+
+    def get_song():
+        print('placeholder')
+
+    # generic accessors
+    #####################
+
+    def get_device(): 
+        print('placeholder')
+
+    def get_duration(): 
+        print('placeholder')
+
+    def get_position(): 
+        print('placeholder')
+
+    def get_repeat_state(): 
+        print('placeholder')
+
+    def get_shuffle_state(): 
+        print('placeholder')
+
+    def get_volume(): 
+        print('placeholder')
+
+    ## mutator
+    ############################
+
+    def set_device(): 
+        print('placeholder')
+
+    def set_position(): 
+        print('placeholder')
+
+    def set_repeat_state(): 
+        print('placeholder')
+
+    def set_shuffle_state(): 
+        print('placeholder')
+
+    def set_volume(): 
+        print('placeholder')
+
     #### cmd2 native functions
     ##########################################
     
@@ -73,9 +135,13 @@ class SpotiCLI(Cmd):
     #### playback commands
     ##########################################
 
+    ###
+    ### [Playing - 0:05 / 4:24] Make Me Wanna Die by The Pretty Reckless on Make Me Wanna Die
+    ### [Stopped - 0:05 / 4:24] Make Me Wanna Die by The Pretty Reckless on Make Me Wanna Die
     def do_current(self, line):
         '''show currently playing track'''
-        print('placeholder')
+        #now_playing = f'[{playing_state} - {timestamp}] {song_name} by {artist_name} on {album_name}'
+        print(now_playing)
 
     def do_play(self, line):
         '''start or resume playback, or play next/previous song'''
@@ -114,10 +180,7 @@ class SpotiCLI(Cmd):
         '''set volume to specified level, range 0-100
         usage: volume [value]
         specify a step increase by prefixing value with +/-, otherwise it defaults to 10% step'''
-        print('placeholder')
 
-    def do_mute(self, line):
-        '''mutes current track. invoking command while muted will return to orignal volume.'''
         print('placeholder')
     
     def do_endpoint(self, line):
