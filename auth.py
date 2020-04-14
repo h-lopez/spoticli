@@ -43,7 +43,7 @@ class RequestHandler(BaseHTTPRequestHandler):
 def start_local_http_server(port, handler=RequestHandler):
     while True:
         try:
-            server = HTTPServer(("127.0.0.1", port), handler)
+            server = HTTPServer(("localhost", port), handler)
         except socket.error as err:
             if err.errno != errno.EADDRINUSE:
                 raise
@@ -64,7 +64,7 @@ def prompt_for_user_token(
     Parameters
     ----------
     client_id
-        client ID
+        client ID q
     client_secret
         client secret
     redirect_uri
