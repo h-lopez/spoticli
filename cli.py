@@ -46,61 +46,67 @@ class SpotiCLI(Cmd):
     #### these make the spotify api calls
     ##########################################
     
-    def get_playback_data():
-        print('placeholder')
+    def get_playback(self):
+        return self.sp_user.playback()
 
-    ## accessor
+    def get_current_playback(self):
+        return self.sp_user.playback_currently_playing()
+
+    ## accessors
     ############################
 
-    # track specific properties
-    #####################
+    # track specific
+    ################
 
-    def get_album():
+    def get_album(self):
         print('placeholder')
 
-    def get_artist():
+    def get_artist(self):
         print('placeholder')
 
-    def get_song():
+    def get_song(self):
         print('placeholder')
 
     # generic accessors
-    #####################
+    ################
 
-    def get_device(): 
+    def get_device(self): 
         print('placeholder')
 
-    def get_duration(): 
+    def get_duration(self): 
         print('placeholder')
 
-    def get_position(): 
+    def get_history(self): 
+        return self.sp_user.playback_recently_played()
+
+    def get_position(self): 
         print('placeholder')
 
-    def get_repeat_state(): 
-        print('placeholder')
+    def get_repeat_state(self): 
+        return self.get_playback().repeat_state
 
-    def get_shuffle_state(): 
-        print('placeholder')
+    def get_shuffle_state(self): 
+        return self.get_playback().shuffle_state
 
-    def get_volume(): 
-        print('placeholder')
+    def get_volume(self): 
+        return self.get_playback().device.volume_percent
 
     ## mutator
     ############################
 
-    def set_device(): 
+    def set_device(self): 
         print('placeholder')
 
-    def set_position(): 
+    def set_position(self): 
         print('placeholder')
 
-    def set_repeat_state(): 
+    def set_repeat_state(self): 
         print('placeholder')
 
-    def set_shuffle_state(): 
+    def set_shuffle_state(self): 
         print('placeholder')
 
-    def set_volume(): 
+    def set_volume(self): 
         print('placeholder')
 
     #### cmd2 native functions
@@ -141,7 +147,7 @@ class SpotiCLI(Cmd):
     def do_current(self, line):
         '''show currently playing track'''
         #now_playing = f'[{playing_state} - {timestamp}] {song_name} by {artist_name} on {album_name}'
-        print(now_playing)
+        print(self.get_playback())
 
     def do_play(self, line):
         '''start or resume playback, or play next/previous song'''
@@ -181,7 +187,7 @@ class SpotiCLI(Cmd):
         usage: volume [value]
         specify a step increase by prefixing value with +/-, otherwise it defaults to 10% step'''
 
-        print('placeholder')
+        print(self.get_volume())
     
     def do_endpoint(self, line):
         '''transfer playback between valid spotify connect endpoints'''
@@ -193,15 +199,26 @@ class SpotiCLI(Cmd):
         ### track - repeat enabled for track
         ### enabled - repeat enabled for playlist/album
         ### disabled - repeat disabled
-        print('placeholder')
+        
+        current_repeat = self.get_repeat_state()
+
+        if(current_repeat == 'context'):
+            print('repeat is enabled')
+        elif(current_repeat == 'off'):
+            print('repeat is disabled')
+        elif(current_repeat == 'track'):
+            print('repeating track')
 
     def do_shuffle(self, line):
         '''show or modify shuffle state'''
         ### valid states: 
         ### enabled - shuffle enabled
         ### disabled - shuffle disabled
-        print('placeholder')
-            
+        if(self.get_shuffle_state()):
+            print('shuffle is enabled')
+        else:
+            print('shuffle is disabled')
+
     #### playlist modification
     ##########################################
 
@@ -211,7 +228,7 @@ class SpotiCLI(Cmd):
 
     def do_previous(self, line):
         '''show previous songs'''
-        print('placeholder')
+        print([t.id for t in self.get_history().items])
     
     def do_queue(self, line):
         '''show and modify queue'''
