@@ -30,6 +30,7 @@ if __name__ == '__main__':
 
     
     '''
+    
     ##load local creds
     ##retrieve token using local creds
     cred = util.config_from_file('conf.spoticli')

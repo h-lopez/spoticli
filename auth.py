@@ -32,7 +32,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             return
 
         self._write(
-            "<html><body><h1>Authentication status: {}</h1>you can close this window</body></html>".format(status))
+            "<html><body><h1>authentication : {}</h1>you can close this window</body></html>".format(status))
 
     def _write(self, text):
         return self.wfile.write(text.encode("utf-8"))
