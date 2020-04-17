@@ -41,6 +41,38 @@ class SpotiCLI(Cmd):
 
         ##define permissions scope...
 
+    #### Misc / Util methods
+    ##########################################
+    
+    '''
+    convert milliseconds into human readable time stamp in format MM:SS 
+    '''
+    def ms_to_time(self, time_to_convert):
+
+        #modulus to get seconds from ms timestamp
+        seconds = (time_to_convert / 1000) % 60
+        seconds = str(int(seconds))
+
+        #modulus to get minutes from ms timestamp
+        minutes = (time_to_convert / (1000 * 60)) % 60
+        minutes = str(int(minutes))
+
+        #if seconds is single digit, prefix with 0
+        if(len(seconds) < 2):
+            seconds = '0' + seconds
+
+        #return formatted value
+        return f'{minutes}:{seconds}'
+
+    '''
+    generate timestamp in format "length / duration" from song playback data  
+    '''
+    def generate_timestamp(self, song_data):
+        pos_ms = self.ms_to_time(self.get_position(song_data))
+        dur_ms = self.ms_to_time(self.get_duration(song_data))
+
+        return f'{pos_ms} / {dur_ms}'
+
     #### accessor / mutators
     #### getter / setter, whatever
     #### these make the spotify api calls
@@ -58,29 +90,29 @@ class SpotiCLI(Cmd):
     # track specific
     ################
 
-    def get_album(self):
-        print('placeholder')
+    def get_album(self, song_data):
+        return song_data.item.album.name
 
-    def get_artist(self):
-        print('placeholder')
+    def get_artist(self, song_data):
+        return song_data.item.artists
 
-    def get_song(self):
-        print('placeholder')
+    def get_song(self, song_data):
+        return song_data.item.name
+
+    def get_duration(self, song_data): 
+        return song_data.item.duration_ms
+
+    def get_position(self, song_data): 
+        return song_data.progress_ms
 
     # generic accessors
     ################
 
     def get_device(self): 
-        print('placeholder')
-
-    def get_duration(self): 
-        print('placeholder')
+        return self.sp_user.playback_devices()
 
     def get_history(self): 
         return self.sp_user.playback_recently_played()
-
-    def get_position(self): 
-        print('placeholder')
 
     def get_repeat_state(self): 
         return self.get_playback().repeat_state
@@ -147,7 +179,15 @@ class SpotiCLI(Cmd):
     def do_current(self, line):
         '''show currently playing track'''
         #now_playing = f'[{playing_state} - {timestamp}] {song_name} by {artist_name} on {album_name}'
-        print(self.get_playback())
+        song_data = self.get_current_playback()
+        song_artist = self.get_artist(song_data)
+        song_album = self.get_album(song_data)
+        song_name = self.get_song(song_data)
+        
+        time_stamp = self.generate_timestamp(song_data)
+        
+        now_playing = f'{song_name} by {song_artist} on {song_album}'
+        print(now_playing)
 
     def do_play(self, line):
         '''start or resume playback, or play next/previous song'''
