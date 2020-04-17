@@ -9,6 +9,16 @@ if __name__ == '__main__':
     ##need to convert to tekore friendly format before we pass it along
     #scope = 'user-library-read user-library-modify user-read-currently-playing user-read-playback-state user-modify-playback-state user-read-recently-played playlist-read-private'
 
+    spotify_scopes = (  
+        scope.scopes.user_library_read +
+        scope.scopes.user_library_modify +
+        scope.scopes.user_read_currently_playing +
+        scope.scopes.user_read_playback_state +
+        scope.scopes.user_modify_playback_state +
+        scope.scopes.user_read_recently_played +
+        scope.scopes.playlist_read_private
+        )
+
     ### procedure
     '''
     if (cached_token_exists)
@@ -26,15 +36,13 @@ if __name__ == '__main__':
                 print error and exit program
 
             creds.prompt(client_id, secret) #redirect uri not needed from user, will always be localhost:8080
-            write to conf.spoticli in user directory
-
-    
+            write to conf.spoticli in user directory    
     '''
-    
+
     ##load local creds
     ##retrieve token using local creds
     cred = util.config_from_file('conf.spoticli')
-    token = auth.prompt_for_user_token(*cred, scope=scope.every)
+    token = auth.prompt_for_user_token(*cred, scope=spotify_scopes)
     #### spotify = Spotify(token)
     #### tracks = spotify.current_user_top_tracks(limit=10)
     #### print(tracks)
