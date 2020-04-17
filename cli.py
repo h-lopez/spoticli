@@ -94,13 +94,18 @@ class SpotiCLI(Cmd):
         return song_data.item.album.name
 
     def get_artist(self, song_data):
-        return song_data.item.artists
+        ### artists is an array as a song can have multiple artists
+        ### if there is multiple artists, return name of _first_ artist in array (usually main artist)
+        return song_data.item.artists[0].name
 
     def get_song(self, song_data):
         return song_data.item.name
 
     def get_duration(self, song_data): 
         return song_data.item.duration_ms
+
+    def get_is_playing(self, song_data):
+        return song_data.is_playing
 
     def get_position(self, song_data): 
         return song_data.progress_ms
@@ -129,10 +134,20 @@ class SpotiCLI(Cmd):
     def set_device(self): 
         print('placeholder')
 
+    def set_is_playing(self):
+        print('placeholder')
+
     def set_position(self): 
         print('placeholder')
 
     def set_repeat_state(self): 
+        print('placeholder')
+
+    def set_save(self):
+        #self.get_playback()
+        print('test')
+
+    def set_unsave(self):
         print('placeholder')
 
     def set_shuffle_state(self): 
@@ -180,13 +195,20 @@ class SpotiCLI(Cmd):
         '''show currently playing track'''
         #now_playing = f'[{playing_state} - {timestamp}] {song_name} by {artist_name} on {album_name}'
         song_data = self.get_current_playback()
-        song_artist = self.get_artist(song_data)
-        song_album = self.get_album(song_data)
         song_name = self.get_song(song_data)
+        song_album = self.get_album(song_data)
+        song_artist = self.get_artist(song_data)
         
+        song_playing = self.get_is_playing(song_data)
+
+        if(song_playing == True):
+            song_playing = 'Playing'
+        else:
+            song_playing = 'Stopped'
+
         time_stamp = self.generate_timestamp(song_data)
         
-        now_playing = f'{song_name} by {song_artist} on {song_album}'
+        now_playing = f'[{song_playing} - {time_stamp}] {song_name} by {song_artist} on {song_album}'
         print(now_playing)
 
     def do_play(self, line):
@@ -201,17 +223,15 @@ class SpotiCLI(Cmd):
             try:
                 self.sp_user.playback_resume()
             except:
-                print('')
-            print('playing')
-
+                pass
+                
     def do_pause(self, line):
         '''pause playback'''
         try:
             self.sp_user.playback_pause()
         except:
-            print('')
-        print('paused')
-    
+            pass
+
     def do_seek(self, line):
         '''seek to specific time in a track
         usage: seek [seconds]
@@ -231,7 +251,7 @@ class SpotiCLI(Cmd):
     
     def do_endpoint(self, line):
         '''transfer playback between valid spotify connect endpoints'''
-        print('placeholder')
+        print(self.get_device())
     
     def do_repeat(self, line):
         '''show or modify repeat state'''
