@@ -1,13 +1,17 @@
+## import auth library for authentication
+import auth
+
 from cli import SpotiCLI
 from tekore import util, scope
-#from tekore import Spotify, util, scope
-import auth
+from os.path import expanduser
 
 if __name__ == '__main__':
 
     #spotify scope
     ##need to convert to tekore friendly format before we pass it along
     #scope = 'user-library-read user-library-modify user-read-currently-playing user-read-playback-state user-modify-playback-state user-read-recently-played playlist-read-private'
+    #user_home = expanduser("~")
+    #slash_type = user_home.endswith
 
     spotify_scopes = (  
         scope.scopes.user_library_read +
