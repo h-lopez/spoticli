@@ -14,7 +14,7 @@ class SpotiCLI(Cmd):
         super().__init__()
 
         app_name = 'SpotiCLI'
-        version = '1.20.0413.dev'
+        version = '1.20.0420.dev'
         
         ###define app parameters
         self.app_info = f'\n{app_name} {version}'
@@ -132,29 +132,29 @@ class SpotiCLI(Cmd):
     ############################
 
     def set_device(self): 
-        print('placeholder')
+        self.pwarning('placeholder')
 
     def set_is_playing(self):
-        print('placeholder')
+        self.pwarning('placeholder')
 
     def set_position(self): 
-        print('placeholder')
+        self.pwarning('placeholder')
 
     def set_repeat_state(self): 
-        print('placeholder')
+        self.pwarning('placeholder')
 
     def set_save(self):
         #self.get_playback()
-        print('test')
+        self.poutput('test')
 
     def set_unsave(self):
-        print('placeholder')
+        self.pwarning('placeholder')
 
     def set_shuffle_state(self): 
-        print('placeholder')
+        self.pwarning('placeholder')
 
     def set_volume(self): 
-        print('placeholder')
+        self.pwarning('placeholder')
 
     #### cmd2 native functions
     ##########################################
@@ -166,11 +166,11 @@ class SpotiCLI(Cmd):
 
     #overloads default error message
     def default(self, line):
-        print('unrecognized command')
+        self.perror('unrecognized command')
 
     #used to write an extra blank line between commands...just a formatting thing.
     def postcmd(self,line,stop):
-        print('')
+        self.poutput('')
         return line
 
     #### Begin CMD2 commands below 
@@ -178,12 +178,12 @@ class SpotiCLI(Cmd):
 
     def do_about(self, line):
         '''show build information'''
-        print(self.app_info)
+        self.poutput(self.app_info)
 
     def do_diagnostics(self, line):
        '''show program diagnostics'''
-       #print(self.sp_user.current_user_top_tracks(limit=10))
-       print('no diagnostics to show')
+       #self.poutput(self.sp_user.current_user_top_tracks(limit=10))
+       self.poutput('no diagnostics to show')
     
     #### playback commands
     ##########################################
@@ -209,16 +209,16 @@ class SpotiCLI(Cmd):
         time_stamp = self.generate_timestamp(song_data)
         
         now_playing = f'[{song_playing} - {time_stamp}] {song_name} by {song_artist} on {song_album}'
-        print(now_playing)
+        self.poutput(now_playing)
 
     def do_play(self, line):
         '''start or resume playback, or play next/previous song'''
         if(line == 'previous'):
             self.sp_user.playback_previous()
-            print('playing previous')
+            self.poutput('playing previous')
         if(line == 'next'):
             self.sp_user.playback_next()
-            print('playing next')
+            self.poutput('playing next')
         else:
             try:
                 self.sp_user.playback_resume()
@@ -237,7 +237,7 @@ class SpotiCLI(Cmd):
         usage: seek [seconds]
         you can also specify a step increase by prefixing time with +/-'''
         self.sp_user.playback_seek()
-        print('placeholder')
+        self.pwarning('placeholder')
 
     #### playback properties
     ##########################################
@@ -247,11 +247,11 @@ class SpotiCLI(Cmd):
         usage: volume [value]
         specify a step increase by prefixing value with +/-, otherwise it defaults to 10% step'''
 
-        print(self.get_volume())
+        self.poutput(self.get_volume())
     
     def do_endpoint(self, line):
         '''transfer playback between valid spotify connect endpoints'''
-        print(self.get_device())
+        self.poutput(self.get_device())
     
     def do_repeat(self, line):
         '''show or modify repeat state'''
@@ -263,11 +263,11 @@ class SpotiCLI(Cmd):
         current_repeat = self.get_repeat_state()
 
         if(current_repeat == 'context'):
-            print('repeat is enabled')
+            self.poutput('repeat is enabled')
         elif(current_repeat == 'off'):
-            print('repeat is disabled')
+            self.poutput('repeat is disabled')
         elif(current_repeat == 'track'):
-            print('repeating track')
+            self.poutput('repeating track')
 
     def do_shuffle(self, line):
         '''show or modify shuffle state'''
@@ -275,33 +275,33 @@ class SpotiCLI(Cmd):
         ### enabled - shuffle enabled
         ### disabled - shuffle disabled
         if(self.get_shuffle_state()):
-            print('shuffle is enabled')
+            self.poutput('shuffle is enabled')
         else:
-            print('shuffle is disabled')
+            self.poutput('shuffle is disabled')
 
     #### playlist modification
     ##########################################
 
     def do_list(self, line):
         '''display user playlists'''
-        print('placeholder')
+        self.pwarning('placeholder')
 
     def do_previous(self, line):
         '''show previous songs'''
-        print([t.id for t in self.get_history().items])
+        self.poutput([t.id for t in self.get_history().items])
     
     def do_queue(self, line):
         '''show and modify queue'''
-        print('not implemented. pending expansion of spotify api')
+        self.poutput('not implemented. pending expansion of spotify api')
 
     def do_save(self, line):
         '''add currently playing track to liked songs'''
-        print('placeholder')
+        self.pwarning('placeholder')
     
     def do_unsave(self, line):
         '''remove currently playing track from liked songs'''
-        print('placeholder')
+        self.pwarning('placeholder')
 
     def do_search(self, line):
         '''search by song, artist or album'''
-        print('placeholder')
+        self.pwarning('placeholder')
