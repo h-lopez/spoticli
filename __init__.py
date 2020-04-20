@@ -1,5 +1,6 @@
 ## import auth library for authentication
 import auth
+import os
 
 from cli import SpotiCLI
 from tekore import util, scope
@@ -10,7 +11,8 @@ if __name__ == '__main__':
     #spotify scope
     ##need to convert to tekore friendly format before we pass it along
     #scope = 'user-library-read user-library-modify user-read-currently-playing user-read-playback-state user-modify-playback-state user-read-recently-played playlist-read-private'
-    #user_home = expanduser("~")
+    user_home = expanduser('~')
+
     #slash_type = user_home.endswith
 
     spotify_scopes = (  
@@ -22,26 +24,48 @@ if __name__ == '__main__':
         scope.scopes.user_read_recently_played +
         scope.scopes.playlist_read_private
         )
+    
 
-    ### procedure
-    '''
-    if (cached_token_exists)
+    os.chdir(expanduser('~'))
+    try:
+        os.chdir('.config/spoticli')
+    except:
+        try:
+            os.makedirs('.config/spoticli')
+            os.chdir('.config/spoticli')
+        except:
+            ('failed to create directory, do you have write access?')
+            exit()
+
+    dir = os.getcwd()
+
+    try:
+        auth_file = open('.config')
+
+    if(cached_token_exists):
         token = cached_token
         ##skip directly to authentication portion
-    check if conf file exists...
-
+    elif(conf_exists):
         exist = check_if_exists()
         valid = check_if_valid()
 
-        if(!valid || !exist) #if file invalid (ie. unreadable) or doesn't exist
-            try:
-                blank/create it
-            except:
-                print error and exit program
+        if(not valid or not exist): #if file invalid (ie. unreadable) or doesn't exist
+            client_id = input('input client id: \n')
+            client_key = input('input client secret: \n')
 
-            creds.prompt(client_id, secret) #redirect uri not needed from user, will always be localhost:8080
-            write to conf.spoticli in user directory    
-    '''
+            #quick sanity check to make sure secret and id are same length and are 32 characters long
+            if(len(client_id) != len(client_key) or (len(client_id) != 32)):
+                print('invalid id or secret')
+                exit()
+            try:
+                pass
+                print('valid!')
+                #blank_or_create()
+            except:
+                print ('')
+
+            #creds.prompt(client_id, secret) #redirect uri not needed from user, will always be localhost:8080
+            #write_to_conf.spoticli   
 
     ##load local creds
     ##retrieve token using local creds
@@ -52,4 +76,9 @@ if __name__ == '__main__':
     #### print(tracks)
     ### pass token to spoticli, spoticli with instantiate spotify object and handle refreshing
     ### spoticli will handle auth user and periodically refresh token as needed
+
+    #if auth failed and returned a null token, exit program
+    if (token is None):
+        exit()
+    
     SpotiCLI(token=token).cmdloop()
