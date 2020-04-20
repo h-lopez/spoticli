@@ -143,12 +143,11 @@ class SpotiCLI(Cmd):
     def set_repeat_state(self): 
         self.pwarning('placeholder')
 
-    def set_save(self):
-        #self.get_playback()
-        self.poutput('test')
+    def set_save(self, song_id):
+        self.sp_user.saved_tracks_add(song_id)
 
-    def set_unsave(self):
-        self.pwarning('placeholder')
+    def set_unsave(self, song_id):
+        self.sp_user.saved_tracks_delete(song_id)
 
     def set_shuffle_state(self): 
         self.pwarning('placeholder')
@@ -296,11 +295,17 @@ class SpotiCLI(Cmd):
 
     def do_save(self, line):
         '''add currently playing track to liked songs'''
-        self.pwarning('placeholder')
+        song_data  = self.get_playback()
+        song_name = self.get_song(song_data)
+        self.set_save([].append(song_data.item.track))
+        self.poutput(f'<3 - saved song - {song_name}')
     
     def do_unsave(self, line):
         '''remove currently playing track from liked songs'''
-        self.pwarning('placeholder')
+        song_data  = self.get_playback()
+        song_name = self.get_song(song_data)
+        self.set_unsave([].append(song_data.item.track))
+        self.poutput(f'</3 - removed song - {song_name}')
 
     def do_search(self, line):
         '''search by song, artist or album'''
