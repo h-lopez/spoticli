@@ -80,6 +80,8 @@ def prompt_for_user_token(
     url = cred.user_authorisation_url(scope, show_dialog=True)
 
     print('Opening browser for Spotify login...')
+    print('if no browser opens manually navigate to URL below:')
+    print(url)
     try:
         webbrowser.open(url)
         #print("Opened %s in your browser" % auth_url)
