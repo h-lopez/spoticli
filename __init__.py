@@ -1,6 +1,7 @@
 ## import auth library for authentication
 import auth
 import os
+import pickle
 
 from cli import SpotiCLI
 from tekore import util, scope
@@ -12,7 +13,6 @@ if __name__ == '__main__':
     #spotify scope
     ##need to convert to tekore friendly format before we pass it along
     #scope = 'user-library-read user-library-modify user-read-currently-playing user-read-playback-state user-modify-playback-state user-read-recently-played playlist-read-private'
-    token = ''
 
     #slash_type = user_home.endswith
 
@@ -42,7 +42,7 @@ if __name__ == '__main__':
 
     if(path.exists('auth.spoticli')):
         try:
-            token = open('auth.spoticli', 'r')
+            spot_token = pickle.load(open('auth.spoticli', 'rb'))
         except:
             print('cannot read token.spoticli')
             exit()
@@ -50,8 +50,8 @@ if __name__ == '__main__':
 
     #explicitly check if conf file exists then create new session based on that
     elif(path.exists('conf.spoticli')):
-        cred = util.config_from_file('conf.spoticli')
-        token = auth.prompt_for_user_token(*cred, scope=spotify_scopes)
+        spot_creds = util.config_from_file('conf.spoticli')
+        spot_token = auth.prompt_for_user_token(*spot_creds, scope=spotify_scopes)
 
     elif(not path.exists('conf.spoticli')):
         print('you will need your client id and secret')
@@ -80,9 +80,8 @@ if __name__ == '__main__':
         except:
             print('error while creating auth file, do you have proper permissions?')
             exit()
-
-        cred = util.config_from_file('conf.spoticli')
-        token = auth.prompt_for_user_token(*cred, scope=spotify_scopes)
+        spot_creds = util.config_from_file('conf.spoticli')
+        spot_token = auth.prompt_for_user_token(*spot_creds, scope=spotify_scopes)
 
             #creds.prompt(client_id, secret) #redirect uri not needed from user, will always be localhost:8080
             #write_to_conf.spoticli   
@@ -96,18 +95,13 @@ if __name__ == '__main__':
     ### spoticli will handle auth user and periodically refresh token as needed
 
     #if auth failed and returned a null token, exit program
-    if (token is None):
-        print('invalid token?')
+    if (spot_token is None):
+        print('invalid token detected')
         exit()
-
-    print(token)
-
     try:
-        auth_file = open('auth.spoticli', 'w')
-        auth_file.write(str(token))
-        auth_file.close()
+        pickle.dump(spot_token, open('auth.spoticli', 'wb'))
     except:
         print('warning, failed to write token! session will not be preserved!')
         pass
-    
-    SpotiCLI(token=token).cmdloop()
+
+    SpotiCLI(token=spot_token).cmdloop()
