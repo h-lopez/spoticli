@@ -4,6 +4,7 @@ import os
 
 from cli import SpotiCLI
 from tekore import util, scope
+from os import path
 from os.path import expanduser
 
 if __name__ == '__main__':
@@ -11,7 +12,7 @@ if __name__ == '__main__':
     #spotify scope
     ##need to convert to tekore friendly format before we pass it along
     #scope = 'user-library-read user-library-modify user-read-currently-playing user-read-playback-state user-modify-playback-state user-read-recently-played playlist-read-private'
-    user_home = expanduser('~')
+    token = ''
 
     #slash_type = user_home.endswith
 
@@ -27,9 +28,9 @@ if __name__ == '__main__':
     
 
     os.chdir(expanduser('~'))
-    try:
+    if(path.exists('.config/spoticli')):
         os.chdir('.config/spoticli')
-    except:
+    else:
         try:
             os.makedirs('.config/spoticli')
             os.chdir('.config/spoticli')
@@ -37,40 +38,57 @@ if __name__ == '__main__':
             ('failed to create directory, do you have write access?')
             exit()
 
-    dir = os.getcwd()
+    #dir = os.getcwd()
 
-    try:
-        auth_file = open('.config')
-
-    if(cached_token_exists):
-        token = cached_token
+    if(path.exists('auth.spoticli')):
+        try:
+            token = open('auth.spoticli', 'r')
+        except:
+            print('cannot read token.spoticli')
+            exit()
         ##skip directly to authentication portion
-    elif(conf_exists):
-        exist = check_if_exists()
-        valid = check_if_valid()
 
-        if(not valid or not exist): #if file invalid (ie. unreadable) or doesn't exist
-            client_id = input('input client id: \n')
-            client_key = input('input client secret: \n')
+    #explicitly check if conf file exists then create new session based on that
+    elif(path.exists('conf.spoticli')):
+        cred = util.config_from_file('conf.spoticli')
+        token = auth.prompt_for_user_token(*cred, scope=spotify_scopes)
 
-            #quick sanity check to make sure secret and id are same length and are 32 characters long
-            if(len(client_id) != len(client_key) or (len(client_id) != 32)):
-                print('invalid id or secret')
-                exit()
-            try:
-                pass
-                print('valid!')
-                #blank_or_create()
-            except:
-                print ('')
+    elif(not path.exists('conf.spoticli')):
+        print('you will need your client id and secret')
+        print('you can find this from the spotify developer dashboard')
+        print('devloper.spotify.com/dashboard')
+        print('remember most api functionality is locked to premium subscriptions')
+        client_id = input('input client id: \n')
+        client_key = input('input client secret: \n')
+
+        #quick sanity check to make sure secret and id are same length and are 32 characters long
+        if(len(client_id) != len(client_key) or (len(client_id) != 32)):
+            print('invalid id or secret')
+            exit()
+        try:
+            print('creating auth file')
+            conf_file = open('conf.spoticli', 'w')
+            conf_file.write('[DEFAULT]')
+            conf_file.write('\n')
+            conf_file.write(f'SPOTIFY_CLIENT_ID={client_id}')
+            conf_file.write('\n')
+            conf_file.write(f'SPOTIFY_CLIENT_SECRET={client_key}')
+            conf_file.write('\n')
+            conf_file.write('SPOTIFY_REDIRECT_URI=http://localhost:8080/callback')
+            conf_file.close()
+            #blank_or_create()
+        except:
+            print('error while creating auth file, do you have proper permissions?')
+            exit()
+
+        cred = util.config_from_file('conf.spoticli')
+        token = auth.prompt_for_user_token(*cred, scope=spotify_scopes)
 
             #creds.prompt(client_id, secret) #redirect uri not needed from user, will always be localhost:8080
             #write_to_conf.spoticli   
 
     ##load local creds
-    ##retrieve token using local creds
-    cred = util.config_from_file('conf.spoticli')
-    token = auth.prompt_for_user_token(*cred, scope=spotify_scopes)
+    ##retrieve token using local creds    
     #### spotify = Spotify(token)
     #### tracks = spotify.current_user_top_tracks(limit=10)
     #### print(tracks)
@@ -79,6 +97,17 @@ if __name__ == '__main__':
 
     #if auth failed and returned a null token, exit program
     if (token is None):
+        print('invalid token?')
         exit()
+
+    print(token)
+
+    try:
+        auth_file = open('auth.spoticli', 'w')
+        auth_file.write(str(token))
+        auth_file.close()
+    except:
+        print('warning, failed to write token! session will not be preserved!')
+        pass
     
     SpotiCLI(token=token).cmdloop()
