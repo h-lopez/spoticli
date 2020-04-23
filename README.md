@@ -6,7 +6,7 @@ Please note this REQUIRES Spotify Premium to use as most of the playback APIs ar
 
 ### Compatibility
 * Win10 - Fully compatible
-* Linux - Mostly working
+* Linux - Fully compatible
 * MacOS - utterly untested
 
 ### Requirements
