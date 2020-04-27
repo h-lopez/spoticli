@@ -110,6 +110,16 @@ class SpotiCLI(Cmd):
     def get_position(self, song_data): 
         return song_data.progress_ms
 
+    # generic functions
+    ################
+
+    def force_device(self):
+        current_dev = self.get_device()
+        print(current_dev)
+        self.sp_user.playback_transfer(current_dev)
+
+    def do_force(self, line):
+        self.force_device()
     # generic accessors
     ################
 
@@ -168,7 +178,7 @@ class SpotiCLI(Cmd):
         self.perror('unrecognized command')
 
     #used to write an extra blank line between commands...just a formatting thing.
-    def postcmd(self,line,stop):
+    def postcmd(self, line, stop):
         self.poutput('')
         return line
 
