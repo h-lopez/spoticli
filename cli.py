@@ -271,7 +271,7 @@ class SpotiCLI(Cmd):
         ### enabled - repeat enabled for playlist/album
         ### disabled - repeat disabled
         
-        current_repeat = self.get_repeat_state()
+        current_repeat = self.get_repeat_state().value
 
         if(current_repeat == 'context'):
             self.poutput('repeat is enabled')
