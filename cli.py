@@ -271,9 +271,9 @@ class SpotiCLI(Cmd):
     def do_seek(self, line):
         '''
         seek to specific time in a track
-        usage: seek [seconds]
         you can also specify a step increase by prefixing time with +/-
-        
+        time should be in seconds or as a timestamp value, ie. 1:41
+
         usage:
             seek [+/-][time]
         '''
@@ -295,7 +295,11 @@ class SpotiCLI(Cmd):
         self.poutput(self.get_volume())
     
     def do_endpoint(self, line):
-        '''transfer playback between valid spotify connect endpoints'''
+        '''
+        transfer playback between valid spotify connect endpoints
+
+        endpoint [new endpoint]
+        '''
         self.poutput(self.get_device())
     
     def do_repeat(self, line):
