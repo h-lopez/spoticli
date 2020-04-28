@@ -188,13 +188,23 @@ class SpotiCLI(Cmd):
     ##########################################
 
     def do_about(self, line):
-        '''show build information'''
+        '''
+        show build information
+
+        usage: 
+            about
+        '''
         self.poutput(self.app_info)
 
     def do_diagnostics(self, line):
-       '''show program diagnostics'''
-       #self.poutput(self.sp_user.current_user_top_tracks(limit=10))
-       self.poutput('no diagnostics to show')
+        '''
+        show diagnostic info
+
+        usage:
+            diagnostics
+        '''
+        #self.poutput(self.sp_user.current_user_top_tracks(limit=10))
+        self.poutput('no diagnostics to show')
     
     #### playback commands
     ##########################################
@@ -203,7 +213,12 @@ class SpotiCLI(Cmd):
     ### [Playing - 0:05 / 4:24] Make Me Wanna Die by The Pretty Reckless on Make Me Wanna Die
     ### [Stopped - 0:05 / 4:24] Make Me Wanna Die by The Pretty Reckless on Make Me Wanna Die
     def do_current(self, line):
-        '''show currently playing track'''
+        '''
+        show currently playing track
+
+        usage:
+            current
+        '''
         #now_playing = f'[{playing_state} - {timestamp}] {song_name} by {artist_name} on {album_name}'
         song_data = self.get_current_playback()
         song_name = self.get_song(song_data)
@@ -223,7 +238,12 @@ class SpotiCLI(Cmd):
         self.poutput(now_playing)
 
     def do_play(self, line):
-        '''start or resume playback, or play next/previous song'''
+        '''
+        start or resume playback, or play next/previous song
+
+        usage:
+            play [next|previous]
+        '''
         if(line == 'previous'):
             self.sp_user.playback_previous()
             self.poutput('playing previous')
@@ -237,16 +257,26 @@ class SpotiCLI(Cmd):
                 pass
                 
     def do_pause(self, line):
-        '''pause playback'''
+        '''
+        pause playback
+
+        usage:
+            pause
+        '''
         try:
             self.sp_user.playback_pause()
         except:
             pass
 
     def do_seek(self, line):
-        '''seek to specific time in a track
+        '''
+        seek to specific time in a track
         usage: seek [seconds]
-        you can also specify a step increase by prefixing time with +/-'''
+        you can also specify a step increase by prefixing time with +/-
+        
+        usage:
+            seek [+/-][time]
+        '''
         self.sp_user.playback_seek()
         self.pwarning('placeholder')
 
@@ -254,9 +284,13 @@ class SpotiCLI(Cmd):
     ##########################################
 
     def do_volume(self, line):
-        '''set volume to specified level, range 0-100
-        usage: volume [value]
-        specify a step increase by prefixing value with +/-, otherwise it defaults to 10% step'''
+        '''
+        set volume to specified level, range 0-100
+        specify a step increase by prefixing value with +/-, otherwise it defaults to 10% step
+        
+        usage: 
+            volume [+/-][value]
+        '''
 
         self.poutput(self.get_volume())
     
@@ -265,40 +299,65 @@ class SpotiCLI(Cmd):
         self.poutput(self.get_device())
     
     def do_repeat(self, line):
-        '''show or modify repeat state'''
+        '''
+        show or modify repeat state
+
+        usage: 
+            repeat [enable|disable|track]
+        '''
         ### valid states: 
         ### track - repeat enabled for track
         ### enabled - repeat enabled for playlist/album
         ### disabled - repeat disabled
-        
-        current_repeat = self.get_repeat_state().value
 
-        if(current_repeat == 'context'):
-            self.poutput('repeat is enabled')
-        elif(current_repeat == 'off'):
-            self.poutput('repeat is disabled')
-        elif(current_repeat == 'track'):
-            self.poutput('repeating track')
+        #if line is empty, print repeat state
+        if(line == ''):
+            current_repeat = self.get_repeat_state().value
+
+            if(current_repeat == 'context'):
+                self.poutput('repeat is enabled')
+            elif(current_repeat == 'off'):
+                self.poutput('repeat is disabled')
+            elif(current_repeat == 'track'):
+                self.poutput('repeating track')
 
     def do_shuffle(self, line):
-        '''show or modify shuffle state'''
+        '''
+        show or modify shuffle state
+
+        usage:
+            shuffle [enable|disable]
+        '''
         ### valid states: 
         ### enabled - shuffle enabled
         ### disabled - shuffle disabled
-        if(self.get_shuffle_state()):
-            self.poutput('shuffle is enabled')
-        else:
-            self.poutput('shuffle is disabled')
+
+        #if line is empty, print shuffle state 
+        if(line == ''):
+            if(self.get_shuffle_state()):
+                self.poutput('shuffle is enabled')
+            else:
+                self.poutput('shuffle is disabled')
 
     #### playlist modification
     ##########################################
 
     def do_list(self, line):
-        '''display user playlists'''
+        '''
+        display user playlists
+
+        usage:
+            lists
+        '''
         self.pwarning('placeholder')
 
     def do_previous(self, line):
-        '''show last 10 songs (or more)'''
+        '''
+        show last 10 songs (or more)
+
+        usage:
+            previous [integer]
+        '''
         for index, prev_song in enumerate(self.get_history(10).items):
             self.poutput(f'{index + 1}: {prev_song.track.name}')
     
@@ -307,7 +366,12 @@ class SpotiCLI(Cmd):
         self.poutput('not implemented. pending expansion of spotify api')
 
     def do_save(self, line):
-        '''add currently playing track to liked songs'''
+        '''
+        add currently playing track to liked songs
+        
+        usage:
+            save
+        '''
         song_data  = self.get_playback()
 
         song_id = self.get_song_id(song_data)
@@ -317,7 +381,11 @@ class SpotiCLI(Cmd):
         self.poutput(f'<3 - saved song - {song_name}')
     
     def do_unsave(self, line):
-        '''remove currently playing track from liked songs'''
+        '''remove currently playing track from liked songs
+        
+        usage:
+            unsave
+        '''
         song_data  = self.get_playback()
 
         song_id = self.get_song_id(song_data)
@@ -327,5 +395,10 @@ class SpotiCLI(Cmd):
         self.poutput(f'</3 - removed song - {song_name}')
 
     def do_search(self, line):
-        '''search by song, artist or album'''
+        '''
+        search by song, artist or album
+        
+        usage:
+            search [song|arist|album] query
+        '''
         self.pwarning('placeholder')
