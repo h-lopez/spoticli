@@ -115,8 +115,7 @@ class SpotiCLI(Cmd):
 
     def force_device(self):
         current_dev = self.get_device()
-        print(current_dev)
-        self.sp_user.playback_transfer(current_dev)
+        self.sp_user.playback_transfer(current_dev[0].asdict()['id'])
 
     def do_force(self, line):
         self.force_device()
