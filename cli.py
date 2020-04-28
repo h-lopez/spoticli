@@ -128,8 +128,8 @@ class SpotiCLI(Cmd):
     def get_device(self): 
         return self.sp_user.playback_devices()
 
-    def get_history(self): 
-        return self.sp_user.playback_recently_played()
+    def get_history(self, last_songs): 
+        return self.sp_user.playback_recently_played(last_songs)
 
     def get_repeat_state(self): 
         return self.get_playback().repeat_state
@@ -298,8 +298,9 @@ class SpotiCLI(Cmd):
         self.pwarning('placeholder')
 
     def do_previous(self, line):
-        '''show previous songs'''
-        self.poutput([t.id for t in self.get_history().items])
+        '''show last 10 songs (or more)'''
+        for index, prev_song in enumerate(self.get_history(10).items):
+            self.poutput(f'{index + 1}: {prev_song.track.name}')
     
     def do_queue(self, line):
         '''show and modify queue'''
@@ -308,7 +309,7 @@ class SpotiCLI(Cmd):
     def do_save(self, line):
         '''add currently playing track to liked songs'''
         song_data  = self.get_playback()
-        
+
         song_id = self.get_song_id(song_data)
         song_name = self.get_song(song_data)
 
