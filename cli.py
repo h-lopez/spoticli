@@ -23,6 +23,8 @@ class SpotiCLI(Cmd):
         self.intro = self.app_info + '\n'
         self.prompt = 'spoticli ~$ '
 
+        self.api_delay = 0.5
+
         self.sp_user = Spotify(token)
 
         #hide built-in cmd2 functions. this will leave them available for use but will be hidden from tab completion (and docs)
@@ -145,29 +147,41 @@ class SpotiCLI(Cmd):
     ## mutator
     ############################
 
+    ## these methods add artificial delay after calling API
+    ## this is needed to allow the API some time to 'catch-up' with our request
+    ## needed to prevent us from seeing incorrect data when we call them
+
     def set_device(self): 
         self.pwarning('placeholder')
+        time.sleep(self.api_delay)
 
     def set_is_playing(self):
         self.pwarning('placeholder')
+        time.sleep(self.api_delay)
 
     def set_position(self): 
         self.pwarning('placeholder')
+        time.sleep(self.api_delay)
 
     def set_repeat_state(self): 
         self.pwarning('placeholder')
+        time.sleep(self.api_delay)
 
     def set_save(self, song_id):
         self.sp_user.saved_tracks_add(song_id)
+        time.sleep(self.api_delay)
 
     def set_unsave(self, song_id):
         self.sp_user.saved_tracks_delete(song_id)
+        time.sleep(self.api_delay)
 
     def set_shuffle_state(self): 
         self.pwarning('placeholder')
+        time.sleep(self.api_delay)
 
     def set_volume(self, new_volume): 
         self.sp_user.playback_volume(new_volume)
+        time.sleep(self.api_delay)
 
     #### cmd2 native functions
     ##########################################
@@ -306,13 +320,6 @@ class SpotiCLI(Cmd):
                 new_vol = 0
 
             self.set_volume(new_vol)
-            
-            ## add artificial delay before we call api to read new volume
-            ## needed to allow the API some time to 'catch-up' with our request
-            ## we could just pass the new volume as-is and print that
-            ## but it won't be accurate in the event it _doesn't_ take
-            time.sleep(0.5)
-
         self.poutput(f'current volume: {self.get_volume()}')
 
 
