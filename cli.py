@@ -101,6 +101,9 @@ class SpotiCLI(Cmd):
     def get_song(self, song_data):
         return song_data.item.name
 
+    def get_song_id(self, song_data):
+        return song_data.item.id
+
     def get_duration(self, song_data): 
         return song_data.item.duration_ms
 
@@ -305,15 +308,21 @@ class SpotiCLI(Cmd):
     def do_save(self, line):
         '''add currently playing track to liked songs'''
         song_data  = self.get_playback()
+        
+        song_id = self.get_song_id(song_data)
         song_name = self.get_song(song_data)
-        self.set_save([].append(song_data.item.track))
+
+        self.set_save([song_id])
         self.poutput(f'<3 - saved song - {song_name}')
     
     def do_unsave(self, line):
         '''remove currently playing track from liked songs'''
         song_data  = self.get_playback()
+
+        song_id = self.get_song_id(song_data)
         song_name = self.get_song(song_data)
-        self.set_unsave([].append(song_data.item.track))
+
+        self.set_unsave([song_id])
         self.poutput(f'</3 - removed song - {song_name}')
 
     def do_search(self, line):
