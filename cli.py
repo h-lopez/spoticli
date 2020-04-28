@@ -5,6 +5,8 @@ Copyright 2020, Hugo A Lopez
 released under the MIT license
 '''
 
+import time
+
 from tekore import Spotify, util
 from cmd2 import Cmd, with_argparser
 #from colorama import init, Fore, Back, Style
@@ -164,8 +166,8 @@ class SpotiCLI(Cmd):
     def set_shuffle_state(self): 
         self.pwarning('placeholder')
 
-    def set_volume(self): 
-        self.pwarning('placeholder')
+    def set_volume(self, new_volume): 
+        self.sp_user.playback_volume(new_volume)
 
     #### cmd2 native functions
     ##########################################
@@ -291,9 +293,29 @@ class SpotiCLI(Cmd):
         usage: 
             volume [+/-][value]
         '''
+        if(line != ''):
+            try:
+                new_vol = int(line)
+            except:
+                self.poutput('invalid volume')
+                pass
 
-        self.poutput(self.get_volume())
-    
+            if new_vol > 100:
+                new_vol = 100
+            elif new_vol < 0:
+                new_vol = 0
+
+            self.set_volume(new_vol)
+            
+            ## add artificial delay before we call api to read new volume
+            ## needed to allow the API some time to 'catch-up' with our request
+            ## we could just pass the new volume as-is and print that
+            ## but it won't be accurate in the event it _doesn't_ take
+            time.sleep(0.5)
+
+        self.poutput(f'current volume: {self.get_volume()}')
+
+
     def do_endpoint(self, line):
         '''
         transfer playback between valid spotify connect endpoints
