@@ -149,7 +149,8 @@ class SpotiCLI(Cmd):
 
     ## these methods add artificial delay after calling API
     ## this is needed to allow the API some time to 'catch-up' with our request
-    ## needed to prevent us from seeing incorrect data when we call them
+    ## needed as we'll usually send a 'get' request not long after and if we send too soon
+    ## API might return wrong info
 
     def set_device(self): 
         self.pwarning('placeholder')
