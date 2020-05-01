@@ -313,7 +313,7 @@ class SpotiCLI(Cmd):
                 new_vol = int(line)
             except:
                 self.poutput('invalid volume')
-                pass
+                return
 
             if new_vol > 100:
                 new_vol = 100
