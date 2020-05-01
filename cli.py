@@ -9,7 +9,7 @@ import argparse
 import time
 
 from tekore import Spotify, util
-from cmd2 import Cmd, with_argparser
+from cmd2 import Cmd
 #from colorama import init, Fore, Back, Style
 
 class SpotiCLI(Cmd):
@@ -430,6 +430,50 @@ class SpotiCLI(Cmd):
         self.set_unsave([song_id])
         self.poutput(f'</3 - removed song - {song_name}')
 
+    ## Search functions
+    #########################
+
+    def search_song():
+        pass
+
+    def search_artist():
+        pass
+
+    def search_album():
+        pass
+
+    search_parser = argparse.ArgumentParser(prog='search', add_help=False)
+    search_subparsers = search_parser.add_subparsers(title='Search parameters')
+ 
+    parser_song = search_subparsers.add_parser('song', help='Search by Track title (default behaviour)', add_help=False)
+    parser_song.add_argument('query', nargs='+', help='search string')
+    parser_song.set_defaults(func=search_song)
+ 
+    parser_artist = search_subparsers.add_parser('artist', help='Search by Artist', add_help=False)
+    parser_artist.add_argument('query', nargs='+', help='search string')
+    parser_artist.set_defaults(func=search_artist)
+ 
+    parser_album = search_subparsers.add_parser('album', help='Search by Album', add_help=False)
+    parser_album.add_argument('query', nargs='+', help='search string')
+    parser_album.set_defaults(func=search_album)
+ 
+    parser_playlist = search_subparsers.add_parser('playlist', help='Search by Playlist', add_help=False)
+    parser_playlist.add_argument('query', nargs='+', help='search string')
+    parser_playlist.set_defaults(func=search_playlist)
+ 
+    search_subcommands = ['song', 'artist', 'album','playlist']
+ 
+    @with_argparser(search_parser)
+    def do_search(self, args):
+        '''Search by artist, album, track or playlist'''
+        try:
+            # Call whatever sub-command function was selected
+            args.func(self, args)
+        except AttributeError:
+            # No sub-command was provided, so as called
+            self.do_help('search')
+
+
     def do_search(self, args):
         '''
         search by song, artist or album
@@ -438,6 +482,14 @@ class SpotiCLI(Cmd):
             search [song|arist|album] query
         '''
         result_limit = 10
-        search_results = self.sp_user.search(types='track', limit=result_limit)
+
+        print(args.track)
+
+        if(args.track == 'track'):
+            self.poutput('searching by song!')
+
+        if(args.track == 'track'):
+            self.poutput('searching by song!')
+        #search_results = self.sp_user.search(types='track', limit=result_limit)
 
         
