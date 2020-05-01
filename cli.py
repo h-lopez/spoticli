@@ -433,13 +433,13 @@ class SpotiCLI(Cmd):
     ## Search functions
     #########################
 
-    def search_song():
+    def search_song(self):
         pass
 
-    def search_artist():
+    def search_artist(self):
         pass
 
-    def search_album():
+    def search_album(self):
         pass
 
     search_parser = argparse.ArgumentParser(prog='search', add_help=False)
