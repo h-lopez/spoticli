@@ -9,7 +9,7 @@ import argparse
 import time
 
 from tekore import Spotify, util
-from cmd2 import Cmd
+from cmd2 import Cmd, with_argparser
 #from colorama import init, Fore, Back, Style
 
 class SpotiCLI(Cmd):
@@ -433,7 +433,7 @@ class SpotiCLI(Cmd):
     ## Search functions
     #########################
 
-    def search_song(self):
+    def search_track(self):
         pass
 
     def search_artist(self):
@@ -445,9 +445,9 @@ class SpotiCLI(Cmd):
     search_parser = argparse.ArgumentParser(prog='search', add_help=False)
     search_subparsers = search_parser.add_subparsers(title='Search parameters')
  
-    parser_song = search_subparsers.add_parser('song', help='Search by Track title (default behaviour)', add_help=False)
+    parser_song = search_subparsers.add_parser('track', help='Search by Track title (default behaviour)', add_help=False)
     parser_song.add_argument('query', nargs='+', help='search string')
-    parser_song.set_defaults(func=search_song)
+    parser_song.set_defaults(func=search_track)
  
     parser_artist = search_subparsers.add_parser('artist', help='Search by Artist', add_help=False)
     parser_artist.add_argument('query', nargs='+', help='search string')
