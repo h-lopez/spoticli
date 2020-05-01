@@ -457,11 +457,7 @@ class SpotiCLI(Cmd):
     parser_album.add_argument('query', nargs='+', help='search string')
     parser_album.set_defaults(func=search_album)
  
-    parser_playlist = search_subparsers.add_parser('playlist', help='Search by Playlist', add_help=False)
-    parser_playlist.add_argument('query', nargs='+', help='search string')
-    parser_playlist.set_defaults(func=search_playlist)
- 
-    search_subcommands = ['song', 'artist', 'album','playlist']
+    search_subcommands = ['song', 'artist', 'album']
  
     @with_argparser(search_parser)
     def do_search(self, args):
