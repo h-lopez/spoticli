@@ -5,6 +5,7 @@ Copyright 2020, Hugo A Lopez
 released under the MIT license
 '''
 
+import argparse
 import time
 
 from tekore import Spotify, util
@@ -395,6 +396,7 @@ class SpotiCLI(Cmd):
         for index, prev_song in enumerate(self.get_history(10).items):
             self.poutput(f'{index + 1}: {prev_song.track.name}')
     
+    ### this has to be internal method based called by search command...
     def do_queue(self, line):
         '''show and modify queue'''
         self.poutput('not implemented. pending expansion of spotify api')
@@ -428,11 +430,14 @@ class SpotiCLI(Cmd):
         self.set_unsave([song_id])
         self.poutput(f'</3 - removed song - {song_name}')
 
-    def do_search(self, line):
+    def do_search(self, args):
         '''
         search by song, artist or album
         
         usage:
             search [song|arist|album] query
         '''
-        self.pwarning('placeholder')
+        result_limit = 10
+        search_results = self.sp_user.search(types='track', limit=result_limit)
+
+        
