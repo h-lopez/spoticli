@@ -24,7 +24,7 @@ class SpotiCLI(Cmd):
         self.intro = self.app_info + '\n'
         self.prompt = 'spoticli ~$ '
 
-        self.api_delay = 0.5
+        self.api_delay = 0.3
 
         self.sp_user = Spotify(token)
 
@@ -331,18 +331,27 @@ class SpotiCLI(Cmd):
         usage: 
             volume [+/-][value]
         '''
-        if(line != ''):
+
+        current_vol = self.get_volume()
+
+        if(line):
             try:
                 new_vol = int(line)
-            except:
-                self.poutput('invalid volume')
-                return
+                if(line[0] == '+' or line[0] == '-'):
+                    new_vol = new_vol + current_vol
+            except ValueError:
+                if(line[0] == '+'):
+                    new_vol = current_vol + 10
+                elif(line[0] == '-'):
+                    new_vol = current_vol - 10
+                else:
+                    print('invalid volume')
+                    return
 
             if new_vol > 100:
                 new_vol = 100
             elif new_vol < 0:
                 new_vol = 0
-
             self.set_volume(new_vol)
         self.poutput(f'current volume: {self.get_volume()}')
 
