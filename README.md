@@ -13,7 +13,6 @@ Please note this REQUIRES Spotify Premium to use as most of the playback APIs ar
 * python3
 * tekore
 * cmd2
-* colorama
 
 ### Installation
 1. install above requirements
