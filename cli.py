@@ -431,20 +431,21 @@ class SpotiCLI(Cmd):
         self.set_unsave([song_id])
         self.poutput(f'</3 - removed song - {song_name}')
 
-    def do_search(self, args):
+    def do_search(self, line):
         '''
         search by track, artist or album
         
         usage:
-            search [options] [-c amount] query
+            search [filter] [-c amount] query
 
+        filters:
             -a, --artist
             -b, --album
             -p, --playlist
             -t, --track
             -c, --amount
 
-            ie. 
+        examples: 
             search -t seven nation army
             search -a eminem
             search --playlist -c 3 cool songs
@@ -454,6 +455,12 @@ class SpotiCLI(Cmd):
         ### search_type = args.__statement__.arg_list[0]
         ### user_query = ' '.join(map(str, args.query))
         ### print(user_query)
+
+        print(line)
+
+        if (line.find('-a', 0, 3)):
+            print('yes')
+
 
         #args.query returns a list...convert to formatted string (ie. spaces between objects)
         #user_query = *user_query
@@ -470,9 +477,11 @@ class SpotiCLI(Cmd):
         ###         # No sub-command was provided, so as called
         ###         self.do_help('search')
 
+        result_type = ('track','artist','album')
+
         #if(search_type == 'track'):
         #self.poutput('searching by track!')
-        search_results = self.sp_user.search(types=('track','artist','album'), limit=result_limit, query=args)
+        search_results = self.sp_user.search(types=result_type, limit=result_limit, query=line)
         #print(search_results)
 
         for thing, index in enumerate(search_results):
