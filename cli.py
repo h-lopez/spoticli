@@ -565,7 +565,6 @@ class SpotiCLI(Cmd):
             -b, --album
             -p, --playlist
             -t, --track
-            -c, --amount
 
         examples: 
             search -t seven nation army
@@ -581,17 +580,33 @@ class SpotiCLI(Cmd):
         result_limit = 5
         result_type = ('album','artist','track')
 
-        if ('-a' in line):
+        ### turn into a list so we can check first flag (if any)
+        search_string = line.split(' ')
+
+        if ('-a' in search_string[0]):
             result_type = ('artist',)
+            search_string.remove('-a')
             result_limit = 10
-        elif ('-b' in line):
+        elif ('-b' in search_string[0]):
             result_type = ('album',)
+            search_string.remove('-b')
             result_limit = 10
-        elif ('-t' in line):
+        elif ('-p' in search_string[0]):
+            result_type = ('playlist',)
+            search_string.remove('-p')
+            result_limit = 10
+        elif ('-t' in search_string[0]):
             result_type = ('track',)
+            search_string.remove('-t')
             result_limit = 10
 
-        search_results = self.sp_user.search(types=result_type, limit=result_limit, query=line)
+        #if no flags detected search first 5 results of all 4 categories
+        #else it'll do search for specific categore and return first 10
+
+        ##once we finish checking flags turn back into a string and pass along to search call
+        search_string = ' '.join(search_string)
+
+        search_results = self.sp_user.search(types=result_type, limit=result_limit, query=search_string)
         #print(search_results)
         for thing, index in enumerate(search_results):
             for item in search_results[thing].items:
@@ -603,6 +618,8 @@ class SpotiCLI(Cmd):
                     self.poutput(f'{media_type} - {item.name}')
                 if(media_type == 'album'):
                     self.poutput(f'{media_type} - {item.name} by {item.artists[0].name}')
+                if(media_type == 'playlist'):
+                    self.poutput(f'{media_type} - {item.name}')
 
         #for index, item in enumerate(search_results):
             #print(f'{index} : {self.get_song(item[index].items[0].name)}')
