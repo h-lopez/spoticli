@@ -9,7 +9,7 @@ import argparse
 import time
 
 from tekore import Spotify, util
-from cmd2 import Cmd, with_argparser
+from cmd2 import Cmd
 #from colorama import init, Fore, Back, Style
 
 class SpotiCLI(Cmd):
@@ -452,16 +452,21 @@ class SpotiCLI(Cmd):
         '''
 
         result_limit = 5
+        result_type = ('album','artist','track')
         ### search_type = args.__statement__.arg_list[0]
         ### user_query = ' '.join(map(str, args.query))
         ### print(user_query)
 
-        print(line)
-
-        if (str(line).find('-a', 0, 3)):
-            print('yes')
-
-
+        if ('-a' in line):
+            result_type = ('artist',)
+            result_limit = 10
+        elif ('-b' in line):
+            result_type = ('album',)
+            result_limit = 10
+        elif ('-t' in line):
+            result_type = ('track',)
+            result_limit = 10
+        
         #args.query returns a list...convert to formatted string (ie. spaces between objects)
         #user_query = *user_query
 
@@ -477,7 +482,6 @@ class SpotiCLI(Cmd):
         ###         # No sub-command was provided, so as called
         ###         self.do_help('search')
 
-        result_type = ('track','artist','album')
 
         #if(search_type == 'track'):
         #self.poutput('searching by track!')
