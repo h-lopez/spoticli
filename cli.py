@@ -458,7 +458,7 @@ class SpotiCLI(Cmd):
 
         print(line)
 
-        if (line.find('-a', 0, 3)):
+        if (str(line).find('-a', 0, 3)):
             print('yes')
 
 
