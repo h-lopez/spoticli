@@ -351,15 +351,15 @@ class SpotiCLI(Cmd):
         self.do_repeat('')
 
     repeat_parser = argparse.ArgumentParser(prog='repeat', add_help=False)
-    repeat_subparsers = repeat_parser.add_subparsers(title='Repeat States')
+    repeat_subparsers = repeat_parser.add_subparsers(title='repeat states')
 
-    parser_repeat_track = repeat_subparsers.add_parser('track', help='Repeat current track indefinitely', add_help=False)
+    parser_repeat_track = repeat_subparsers.add_parser('track', help='repeat track', add_help=False)
     parser_repeat_track.set_defaults(func=repeat_track)
 
-    parser_repeat_enable = repeat_subparsers.add_parser('enable', help='Enable Repeat within a context (ie. Album, Playlist, etc.', add_help=False)
+    parser_repeat_enable = repeat_subparsers.add_parser('enable', help='enable repeat', add_help=False)
     parser_repeat_enable.set_defaults(func=repeat_enable)
 
-    parser_repeat_disable = repeat_subparsers.add_parser('disable', help='Disable Repeat', add_help=False)
+    parser_repeat_disable = repeat_subparsers.add_parser('disable', help='disable repeat', add_help=False)
     parser_repeat_disable.set_defaults(func=repeat_disable)
 
     search_subcommands = ['track', 'enable','disable']
@@ -400,7 +400,7 @@ class SpotiCLI(Cmd):
         self.do_shuffle('')
 
     shuffle_parser = argparse.ArgumentParser(prog='shuffle', add_help=False)
-    shuffle_subparsers = shuffle_parser.add_subparsers(title='shuffle states:')
+    shuffle_subparsers = shuffle_parser.add_subparsers(title='shuffle states')
 
     # create the parser for the "foo" sub-command
     parser_shuffle_enable = shuffle_subparsers.add_parser('enable', help='enable shuffle', add_help=False)
