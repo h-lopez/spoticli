@@ -481,19 +481,16 @@ class SpotiCLI(Cmd):
 
         search_results = self.sp_user.search(types=result_type, limit=result_limit, query=line)
         #print(search_results)
-        if(search_results != None):
-            for thing, index in enumerate(search_results):
-                for item in search_results[thing].items:
-                    media_type = item.type
+        for thing, index in enumerate(search_results):
+            for item in search_results[thing].items:
+                media_type = item.type
 
-                    if(media_type == 'track'):
-                        print(f'{media_type} - {item.name} by {item.artists[0].name} on {item.album.name}')
-                    if(media_type == 'artist'):
-                        print(f'{media_type} - {item.name}')
-                    if(media_type == 'album'):
-                        print(f'{media_type} - {item.name} by {item.artists[0].name}')
-        else:
-            self.poutput('no results for query')
+                if(media_type == 'track'):
+                    print(f'{media_type} - {item.name} by {item.artists[0].name} on {item.album.name}')
+                if(media_type == 'artist'):
+                    print(f'{media_type} - {item.name}')
+                if(media_type == 'album'):
+                    print(f'{media_type} - {item.name} by {item.artists[0].name}')
 
         #for index, item in enumerate(search_results):
             #print(f'{index} : {self.get_song(item[index].items[0].name)}')
