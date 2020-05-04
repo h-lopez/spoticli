@@ -220,6 +220,27 @@ class SpotiCLI(Cmd):
         '''
         #self.poutput(self.sp_user.current_user_top_tracks(limit=10))
         self.poutput('no diagnostics to show')
+
+    def do_logout(self, line):
+        '''
+        logout current session and force login next program start
+        '''
+        self.poutput('are you sure? type \'yes\' to proceed')
+        is_user_sure = input()
+        if (is_user_sure.lower() == 'yes'):
+            try:
+                #try to delete user token
+                #self.pwarning('logged out')
+                self.pwarning('placeholder, not implemented yet')
+                pass
+            except:
+                self.perror('failed to logout')
+                self.pwarning('unable to delete config files, please try manual removal')
+                self.pwarning('can be found in your home config directory, .config/spoticli/')
+                pass
+        else:
+            self.pwarning('not logged out')
+
     
     #### playback commands
     ##########################################
