@@ -211,19 +211,12 @@ class SpotiCLI(Cmd):
         '''
         self.poutput(self.app_info)
 
-    def do_diagnostics(self, line):
-        '''
-        show diagnostic info
-
-        usage:
-            diagnostics
-        '''
-        #self.poutput(self.sp_user.current_user_top_tracks(limit=10))
-        self.poutput('no diagnostics to show')
-
     def do_logout(self, line):
         '''
         logout current session and force login next program start
+
+        usage:
+            logout
         '''
         self.poutput('are you sure? type \'yes\' to proceed')
         is_user_sure = input()
