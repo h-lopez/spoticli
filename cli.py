@@ -335,7 +335,7 @@ class SpotiCLI(Cmd):
             new_pos = 1000 * int(line)
         #non-numerical value specified; exit
         except ValueError:
-            self.poutput('invalid time')
+            self.perror('invalid time')
             return
 
         song_data = self.get_current_playback()
@@ -344,7 +344,7 @@ class SpotiCLI(Cmd):
 
         #if new time is larger than song duration, quit
         if((new_pos > song_dur) or (new_pos < (song_dur * -1))):
-            self.poutput('invalid time')
+            self.perror('invalid time')
             return
 
         if(line[0] == '+' or line[0] == '-'):
@@ -378,7 +378,7 @@ class SpotiCLI(Cmd):
                 elif(line[0] == '-'):
                     new_vol = current_vol - 10
                 else:
-                    print('invalid volume')
+                    self.perror('invalid volume')
                     return
 
             if new_vol > 100:
@@ -580,9 +580,6 @@ class SpotiCLI(Cmd):
 
         result_limit = 5
         result_type = ('album','artist','track')
-        ### search_type = args.__statement__.arg_list[0]
-        ### user_query = ' '.join(map(str, args.query))
-        ### print(user_query)
 
         if ('-a' in line):
             result_type = ('artist',)
@@ -601,11 +598,11 @@ class SpotiCLI(Cmd):
                 media_type = item.type
 
                 if(media_type == 'track'):
-                    print(f'{media_type} - {item.name} by {item.artists[0].name} on {item.album.name}')
+                    self.poutput(f'{media_type} - {item.name} by {item.artists[0].name} on {item.album.name}')
                 if(media_type == 'artist'):
-                    print(f'{media_type} - {item.name}')
+                    self.poutput(f'{media_type} - {item.name}')
                 if(media_type == 'album'):
-                    print(f'{media_type} - {item.name} by {item.artists[0].name}')
+                    self.poutput(f'{media_type} - {item.name} by {item.artists[0].name}')
 
         #for index, item in enumerate(search_results):
             #print(f'{index} : {self.get_song(item[index].items[0].name)}')
