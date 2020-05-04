@@ -158,10 +158,6 @@ class SpotiCLI(Cmd):
         self.pwarning('placeholder')
         time.sleep(self.api_delay)
 
-    def set_is_playing(self):
-        self.pwarning('placeholder')
-        time.sleep(self.api_delay)
-
     def set_position(self, new_time): 
         self.sp_user.playback_seek(new_time)
         time.sleep(self.api_delay)
