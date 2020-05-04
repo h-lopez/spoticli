@@ -56,9 +56,6 @@ docs/_build/
 *.pyc
 *.spoticli
 *.iml
-idea/
-.idea/
-/.idea/
 vscode/
 .vscode/
 /.vscode/
