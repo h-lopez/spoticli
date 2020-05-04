@@ -9,7 +9,7 @@ import argparse
 import time
 
 from tekore import Spotify, util
-from cmd2 import Cmd
+from cmd2 import Cmd, with_argparser
 #from colorama import init, Fore, Back, Style
 
 class SpotiCLI(Cmd):
@@ -166,8 +166,8 @@ class SpotiCLI(Cmd):
         self.pwarning('placeholder')
         time.sleep(self.api_delay)
 
-    def set_repeat_state(self): 
-        self.pwarning('placeholder')
+    def set_repeat_state(self, new_repeat_state): 
+        self.sp_user.playback_repeat(new_repeat_state)
         time.sleep(self.api_delay)
 
     def set_save(self, song_id):
@@ -178,8 +178,8 @@ class SpotiCLI(Cmd):
         self.sp_user.saved_tracks_delete(song_id)
         time.sleep(self.api_delay)
 
-    def set_shuffle_state(self): 
-        self.pwarning('placeholder')
+    def set_shuffle_state(self, new_shuffle_state): 
+        self.sp_user.playback_shuffle(new_shuffle_state)
         time.sleep(self.api_delay)
 
     def set_volume(self, new_volume): 
@@ -338,6 +338,33 @@ class SpotiCLI(Cmd):
         '''
         self.poutput(self.get_device())
     
+    def repeat_enable(self, args):
+        self.set_repeat_state('context')
+        self.do_repeat('')
+
+    def repeat_track(self, args):
+        self.set_repeat_state('track')
+        self.do_repeat('')
+
+    def repeat_disable(self, args):
+        self.set_repeat_state('off')
+        self.do_repeat('')
+
+    repeat_parser = argparse.ArgumentParser(prog='repeat', add_help=False)
+    repeat_subparsers = repeat_parser.add_subparsers(title='Repeat States')
+
+    parser_repeat_track = repeat_subparsers.add_parser('track', help='Repeat current track indefinitely', add_help=False)
+    parser_repeat_track.set_defaults(func=repeat_track)
+
+    parser_repeat_enable = repeat_subparsers.add_parser('enable', help='Enable Repeat within a context (ie. Album, Playlist, etc.', add_help=False)
+    parser_repeat_enable.set_defaults(func=repeat_enable)
+
+    parser_repeat_disable = repeat_subparsers.add_parser('disable', help='Disable Repeat', add_help=False)
+    parser_repeat_disable.set_defaults(func=repeat_disable)
+
+    search_subcommands = ['track', 'enable','disable']
+
+    @with_argparser(repeat_parser)
     def do_repeat(self, line):
         '''
         show or modify repeat state
@@ -345,14 +372,17 @@ class SpotiCLI(Cmd):
         usage: 
             repeat [enable|disable|track]
         '''
-        ### valid states: 
-        ### track - repeat enabled for track
-        ### enabled - repeat enabled for playlist/album
-        ### disabled - repeat disabled
 
-        #if line is empty, print repeat state
-        if(line == ''):
+        # Call whatever sub-command function was selected
+        try:
+            line.func(self, line)
+        except AttributeError:
             current_repeat = self.get_repeat_state().value
+
+            ### valid states: 
+            ### track - repeat enabled for track
+            ### enabled - repeat enabled for playlist/album
+            ### disabled - repeat disabled
 
             if(current_repeat == 'context'):
                 self.poutput('repeat is enabled')
