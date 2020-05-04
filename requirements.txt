@@ -1,4 +1,2 @@
-#required to function
-tekore
-cmd2
-colorama
+tekore==1.7.0
+cmd2==1.0.2
