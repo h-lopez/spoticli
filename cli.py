@@ -24,7 +24,7 @@ class SpotiCLI(Cmd):
         self.intro = self.app_info + '\n'
         self.prompt = 'spoticli ~$ '
 
-        self.api_delay = 0.3
+        self.api_delay = 0.2
 
         self.sp_user = Spotify(token)
 
@@ -252,6 +252,26 @@ class SpotiCLI(Cmd):
         now_playing = f'[{song_playing} - {time_stamp}] {song_name} by {song_artist} on {song_album}'
         self.poutput(now_playing)
 
+    def play_next(self, args):
+        self.sp_user.playback_next()
+        self.poutput('playing next')
+
+    def play_previous(self, args):
+        self.sp_user.playback_previous()
+        self.poutput('playing previous')
+
+    play_parser = argparse.ArgumentParser(prog='play', add_help=False)
+    play_subparsers = play_parser.add_subparsers(title='playback options')
+
+    parser_play_next = play_subparsers.add_parser('next', help='next track', add_help=False)
+    parser_play_next.set_defaults(func=play_next)
+
+    parser_play_previous = play_subparsers.add_parser('previous', help='previos track', add_help=False)
+    parser_play_previous.set_defaults(func=play_previous)
+
+    play_subcommands = ['next', 'previous']
+
+    @with_argparser(play_parser)
     def do_play(self, line):
         '''
         start or resume playback, or play next/previous song
@@ -259,13 +279,12 @@ class SpotiCLI(Cmd):
         usage:
             play [next|previous]
         '''
-        if(line == 'previous'):
-            self.sp_user.playback_previous()
-            self.poutput('playing previous')
-        if(line == 'next'):
-            self.sp_user.playback_next()
-            self.poutput('playing next')
-        else:
+
+        # Call whatever sub-command function was selected
+        try:
+            line.func(self, line)
+        #if none specified do default action (start playback)
+        except AttributeError:
             try:
                 self.sp_user.playback_resume()
             except:
@@ -389,7 +408,7 @@ class SpotiCLI(Cmd):
     parser_repeat_disable = repeat_subparsers.add_parser('disable', help='disable repeat', add_help=False)
     parser_repeat_disable.set_defaults(func=repeat_disable)
 
-    search_subcommands = ['track', 'enable','disable']
+    repeat_subcommands = ['track', 'enable','disable']
 
     @with_argparser(repeat_parser)
     def do_repeat(self, line):
@@ -437,7 +456,7 @@ class SpotiCLI(Cmd):
     parser_shuffle_disable = shuffle_subparsers.add_parser('disable', help='disable shuffle', add_help=False)
     parser_shuffle_disable.set_defaults(func=shuffle_disable)
 
-    search_subcommands = ['enable','disable']
+    shuffle_subcommands = ['enable','disable']
 
     @with_argparser(shuffle_parser)
     def do_shuffle(self, line):
