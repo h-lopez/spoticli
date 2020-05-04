@@ -162,8 +162,8 @@ class SpotiCLI(Cmd):
         self.pwarning('placeholder')
         time.sleep(self.api_delay)
 
-    def set_position(self): 
-        self.pwarning('placeholder')
+    def set_position(self, new_time): 
+        self.sp_user.playback_seek(new_time)
         time.sleep(self.api_delay)
 
     def set_repeat_state(self, new_repeat_state): 
@@ -296,11 +296,33 @@ class SpotiCLI(Cmd):
         usage:
             seek [+/-][time]
         '''
-        if(line != ''):
-            try:
-                self.sp_user.playback_seek()
-            except:
-                self.pwarning('invalid volume!')
+
+        ## no value specified; exit
+        if(not line):
+            self.do_help('seek')
+            return
+
+        try:
+            new_pos = 1000 * int(line)
+        #non-numerical value specified; exit
+        except ValueError:
+            self.poutput('invalid time')
+            return
+
+        song_data = self.get_current_playback()
+        song_pos = self.get_position(song_data)
+        song_dur = self.get_duration(song_data)
+
+        #if new time is larger than song duration, quit
+        if((new_pos > song_dur) or (new_pos < (song_dur * -1))):
+            self.poutput('invalid time')
+            return
+
+        if(line[0] == '+' or line[0] == '-'):
+            song_pos = song_pos + new_pos
+            self.set_position(song_pos)
+        else:
+            self.set_position(new_pos)
 
     #### playback properties
     ##########################################
@@ -513,8 +535,9 @@ class SpotiCLI(Cmd):
             search --playlist -c 3 cool songs
         '''
 
-        if(line == ''):
-            self.pwarning('no query')
+        if(not line):
+            self.pwarning('no query detected')
+            self.do_help('search')
             return
 
         result_limit = 5
