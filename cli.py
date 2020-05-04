@@ -296,8 +296,11 @@ class SpotiCLI(Cmd):
         usage:
             seek [+/-][time]
         '''
-        self.sp_user.playback_seek()
-        self.pwarning('placeholder')
+        if(line != ''):
+            try:
+                self.sp_user.playback_seek()
+            except:
+                self.pwarning('invalid volume!')
 
     #### playback properties
     ##########################################
@@ -330,7 +333,8 @@ class SpotiCLI(Cmd):
         '''
         transfer playback between valid spotify connect endpoints
 
-        endpoint [new endpoint]
+        usage:
+            endpoint
         '''
         self.poutput(self.get_device())
     
@@ -397,9 +401,13 @@ class SpotiCLI(Cmd):
         for index, prev_song in enumerate(self.get_history(10).items):
             self.poutput(f'{index + 1}: {prev_song.track.name}')
     
-    ### this has to be internal method based called by search command...
     def do_queue(self, line):
-        '''show and modify queue'''
+        '''
+        show and modify queue
+
+        usage:
+            queue
+        '''
         self.poutput('not implemented. pending expansion of spotify api')
 
     def do_save(self, line):
@@ -451,6 +459,10 @@ class SpotiCLI(Cmd):
             search --playlist -c 3 cool songs
         '''
 
+        if(line == ''):
+            self.pwarning('no query')
+            return
+
         result_limit = 5
         result_type = ('album','artist','track')
         ### search_type = args.__statement__.arg_list[0]
@@ -466,41 +478,22 @@ class SpotiCLI(Cmd):
         elif ('-t' in line):
             result_type = ('track',)
             result_limit = 10
-        
-        #args.query returns a list...convert to formatted string (ie. spaces between objects)
-        #user_query = *user_query
 
-        #if no type detected just do a track search
-        ### if(user_query != 'track' or user_query != 'album' or user_query != 'artist'):
-        ###     search_type = 'track'
-        ### else: 
-        ###     ##otherwise allow subcommands for track artist or album (also playlist?)
-        ###     try:
-        ###         # Call whatever sub-command function was selected
-        ###         args.func(self, args)
-        ###     except AttributeError:
-        ###         # No sub-command was provided, so as called
-        ###         self.do_help('search')
-
-
-        #if(search_type == 'track'):
-        #self.poutput('searching by track!')
         search_results = self.sp_user.search(types=result_type, limit=result_limit, query=line)
         #print(search_results)
+        if(search_results != None):
+            for thing, index in enumerate(search_results):
+                for item in search_results[thing].items:
+                    media_type = item.type
 
-        for thing, index in enumerate(search_results):
-            for item in search_results[thing].items:
-                media_type = item.type
-
-                if(media_type == 'track'):
-                    song_name = item.name
-                    album_name = item.album.name
-                    artist_name = item.artists[0].name
-                    print(f'{media_type} - {song_name} by {artist_name} on {album_name}')
-                if(media_type == 'artist'):
-                    print(f'{media_type} - {item.name}')
-                if(media_type == 'album'):
-                    print(f'{media_type} - {item.name}')
+                    if(media_type == 'track'):
+                        print(f'{media_type} - {item.name} by {item.artists[0].name} on {item.album.name}')
+                    if(media_type == 'artist'):
+                        print(f'{media_type} - {item.name}')
+                    if(media_type == 'album'):
+                        print(f'{media_type} - {item.name} by {item.artists[0].name}')
+        else:
+            self.poutput('no results for query')
 
         #for index, item in enumerate(search_results):
             #print(f'{index} : {self.get_song(item[index].items[0].name)}')
