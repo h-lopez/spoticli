@@ -391,6 +391,28 @@ class SpotiCLI(Cmd):
             elif(current_repeat == 'track'):
                 self.poutput('repeating track')
 
+    def shuffle_enable(self, args):
+        self.set_shuffle_state(True)
+        self.do_shuffle('')
+
+    def shuffle_disable(self, args):
+        self.set_shuffle_state(False)
+        self.do_shuffle('')
+
+    shuffle_parser = argparse.ArgumentParser(prog='shuffle', add_help=False)
+    shuffle_subparsers = shuffle_parser.add_subparsers(title='shuffle states:')
+
+    # create the parser for the "foo" sub-command
+    parser_shuffle_enable = shuffle_subparsers.add_parser('enable', help='enable shuffle', add_help=False)
+    parser_shuffle_enable.set_defaults(func=shuffle_enable)
+
+    # create the parser for the "foo" sub-command
+    parser_shuffle_disable = shuffle_subparsers.add_parser('disable', help='disable shuffle', add_help=False)
+    parser_shuffle_disable.set_defaults(func=shuffle_disable)
+
+    search_subcommands = ['enable','disable']
+
+    @with_argparser(shuffle_parser)
     def do_shuffle(self, line):
         '''
         show or modify shuffle state
@@ -403,7 +425,9 @@ class SpotiCLI(Cmd):
         ### disabled - shuffle disabled
 
         #if line is empty, print shuffle state 
-        if(line == ''):
+        try:
+            line.func(self, line)
+        except AttributeError:
             if(self.get_shuffle_state()):
                 self.poutput('shuffle is enabled')
             else:
