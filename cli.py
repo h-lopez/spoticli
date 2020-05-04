@@ -17,7 +17,7 @@ class SpotiCLI(Cmd):
         super().__init__()
 
         app_name = 'SpotiCLI'
-        version = '1.20.0420.dev'
+        version = '1.20.0504.dev'
         
         ###define app parameters
         self.app_info = f'\n{app_name} {version}'
