@@ -43,6 +43,7 @@ class SpotiCLI(Cmd):
         self.hidden_commands.append('_relative_load')
         self.hidden_commands.append('run_pyscript')
         self.hidden_commands.append('run_script')
+        self.debug = True
 
         ##define permissions scope...
 
@@ -430,62 +431,63 @@ class SpotiCLI(Cmd):
         self.set_unsave([song_id])
         self.poutput(f'</3 - removed song - {song_name}')
 
-    ## Search functions
-    #########################
-
-    def search_track(self):
-        pass
-
-    def search_artist(self):
-        pass
-
-    def search_album(self):
-        pass
-
-    search_parser = argparse.ArgumentParser(prog='search', add_help=False)
-    search_subparsers = search_parser.add_subparsers(title='Search parameters')
- 
-    parser_song = search_subparsers.add_parser('track', help='Search by Track title (default behaviour)', add_help=False)
-    parser_song.add_argument('query', nargs='+', help='search string')
-    parser_song.set_defaults(func=search_track)
- 
-    parser_artist = search_subparsers.add_parser('artist', help='Search by Artist', add_help=False)
-    parser_artist.add_argument('query', nargs='+', help='search string')
-    parser_artist.set_defaults(func=search_artist)
- 
-    parser_album = search_subparsers.add_parser('album', help='Search by Album', add_help=False)
-    parser_album.add_argument('query', nargs='+', help='search string')
-    parser_album.set_defaults(func=search_album)
- 
-    search_subcommands = ['song', 'artist', 'album']
- 
-    @with_argparser(search_parser)
-    def do_search(self, args):
-        '''Search by artist, album, track or playlist'''
-        try:
-            # Call whatever sub-command function was selected
-            args.func(self, args)
-        except AttributeError:
-            # No sub-command was provided, so as called
-            self.do_help('search')
-
-
     def do_search(self, args):
         '''
-        search by song, artist or album
+        search by track, artist or album
         
         usage:
-            search [song|arist|album] query
+            search [options] [-c amount] query
+
+            -a, --artist
+            -b, --album
+            -p, --playlist
+            -t, --track
+            -c, --amount
+
+            ie. 
+            search -t seven nation army
+            search -a eminem
+            search --playlist -c 3 cool songs
         '''
-        result_limit = 10
 
-        print(args.track)
+        result_limit = 5
+        ### search_type = args.__statement__.arg_list[0]
+        ### user_query = ' '.join(map(str, args.query))
+        ### print(user_query)
 
-        if(args.track == 'track'):
-            self.poutput('searching by song!')
+        #args.query returns a list...convert to formatted string (ie. spaces between objects)
+        #user_query = *user_query
 
-        if(args.track == 'track'):
-            self.poutput('searching by song!')
-        #search_results = self.sp_user.search(types='track', limit=result_limit)
+        #if no type detected just do a track search
+        ### if(user_query != 'track' or user_query != 'album' or user_query != 'artist'):
+        ###     search_type = 'track'
+        ### else: 
+        ###     ##otherwise allow subcommands for track artist or album (also playlist?)
+        ###     try:
+        ###         # Call whatever sub-command function was selected
+        ###         args.func(self, args)
+        ###     except AttributeError:
+        ###         # No sub-command was provided, so as called
+        ###         self.do_help('search')
 
-        
+        #if(search_type == 'track'):
+        #self.poutput('searching by track!')
+        search_results = self.sp_user.search(types=('track','artist','album'), limit=result_limit, query=args)
+        #print(search_results)
+
+        for thing, index in enumerate(search_results):
+            for item in search_results[thing].items:
+                media_type = item.type
+
+                if(media_type == 'track'):
+                    song_name = item.name
+                    album_name = item.album.name
+                    artist_name = item.artists[0].name
+                    print(f'{media_type} - {song_name} by {artist_name} on {album_name}')
+                if(media_type == 'artist'):
+                    print(f'{media_type} - {item.name}')
+                if(media_type == 'album'):
+                    print(f'{media_type} - {item.name}')
+
+        #for index, item in enumerate(search_results):
+            #print(f'{index} : {self.get_song(item[index].items[0].name)}')
