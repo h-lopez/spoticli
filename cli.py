@@ -577,8 +577,8 @@ class SpotiCLI(Cmd):
             self.do_help('search')
             return
 
-        result_limit = 5
-        result_type = ('album','artist','track')
+        result_limit = 3
+        result_type = ('album','artist','track','playlist')
 
         ### turn into a list so we can check first flag (if any)
         search_string = line.split(' ')
@@ -600,7 +600,7 @@ class SpotiCLI(Cmd):
             search_string.remove('-t')
             result_limit = 10
 
-        #if no flags detected search first 5 results of all 4 categories
+        #if no flags detected search first 3 results of all 4 categories
         #else it'll do search for specific categore and return first 10
 
         ##once we finish checking flags turn back into a string and pass along to search call
