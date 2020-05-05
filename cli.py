@@ -578,27 +578,30 @@ class SpotiCLI(Cmd):
             return
 
         result_limit = 3
-        result_type = ('album','artist','track','playlist')
+        result_type = ()
 
         ### turn into a list so we can check first flag (if any)
         search_string = line.split(' ')
 
         if ('-a' in search_string[0]):
-            result_type = ('artist',)
+            result_type = result_type + ('artist',)
             search_string.remove('-a')
             result_limit = 10
         elif ('-b' in search_string[0]):
-            result_type = ('album',)
+            result_type = result_type + ('album',)
             search_string.remove('-b')
             result_limit = 10
         elif ('-p' in search_string[0]):
-            result_type = ('playlist',)
+            result_type = result_type + ('playlist',)
             search_string.remove('-p')
             result_limit = 10
         elif ('-t' in search_string[0]):
-            result_type = ('track',)
+            result_type = result_type + ('track',)
             search_string.remove('-t')
             result_limit = 10
+
+        if(result_type == ()):
+            result_type = ('track','artist','album','playlist')
 
         #if no flags detected search first 3 results of all 4 categories
         #else it'll do search for specific categore and return first 10
