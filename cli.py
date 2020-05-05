@@ -317,13 +317,14 @@ class SpotiCLI(Cmd):
             pass
 
     def do_seek(self, line):
+        ### time should be in seconds or as a timestamp value, ie. 1:41
+        ### not implemented yet...
         '''
         seek to specific time in a track
         you can also specify a step increase by prefixing time with +/-
-        time should be in seconds or as a timestamp value, ie. 1:41
 
         usage:
-            seek [+/-][time]
+            seek [+/-] time
         '''
 
         ## no value specified; exit
