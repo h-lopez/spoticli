@@ -611,7 +611,7 @@ class SpotiCLI(Cmd):
             search_string.remove('-t')
 
         if(result_type == ()):
-            result_type = ('track')
+            result_type = ('track',)
 
         #if no flags detected, default search for track
 
@@ -625,17 +625,56 @@ class SpotiCLI(Cmd):
 
         search_results = self.sp_user.search(types=result_type, limit=result_limit, query=search_string)
         #print(search_results)
+
+        item_id = []
         for index, item in enumerate(search_results[0].items):
             media_type = item.type
 
             if(media_type == 'track'):
                 self.poutput(f'{str(index + 1)} : {media_type} - {item.name} by {item.artists[0].name} on {item.album.name}')
+                item_id.append(item.uri)
             if(media_type == 'artist'):
                 self.poutput(f'{str(index + 1)} : {media_type} - {item.name}')
+                item_id.append(item.uri)
             if(media_type == 'album'):
                 self.poutput(f'{str(index + 1)} : {media_type} - {item.name} by {item.artists[0].name}')
+                item_id.append(item.uri)
             if(media_type == 'playlist'):
                 self.poutput(f'{str(index + 1)} : {media_type} - {item.name}')
+                item_id.append(item.uri)
         
         #for index, item in enumerate(search_results):
             #print(f'{index} : {self.get_song(item[index].items[0].name)}')
+
+        ### check user input for sanity
+        user_input = input('select item: ')
+        try:
+            user_input = int(user_input) - 1
+            if(user_input > 9 or user_input < 0):
+                raise ValueError
+        except:
+            self.pwarning('invalid selection')
+
+        ### if input is sane, insta-play. unless it's a track. then prompt for action
+        if(result_type == ('track',)):
+            self.poutput('1. play')
+            self.poutput('2. queue')
+            user_action = input('select action: ')
+            try:
+                user_action = int(user_action) - 1
+                if(user_action > 2 or user_action < 0):
+                    raise ValueError
+            except:
+                self.pwarning('invalid selection')
+
+            #play
+            if(user_action == 0):
+                self.sp_user.playback_start_context(context_uri=item_id[user_input])
+                return
+            #queue
+            if(user_action == 1):
+                self.sp_user.playback_queue_add(uri=item_id[user_input])
+                return
+
+        else:
+            self.sp_user.playback_start_context(context_uri=item_id[user_input])
