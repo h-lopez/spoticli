@@ -1,3 +1,10 @@
+'''
+SpotiCLI
+Copyright 2020, Hugo A Lopez
+
+released under the MIT license
+'''
+
 ## import auth library for authentication
 import auth
 import os
@@ -26,7 +33,6 @@ if __name__ == '__main__':
         scope.scopes.playlist_read_private
         )
     
-
     os.chdir(expanduser('~'))
     if(path.exists('.config/spoticli')):
         os.chdir('.config/spoticli')
@@ -99,15 +105,13 @@ if __name__ == '__main__':
         print('invalid token detected')
         exit()
     try:
-        ## for session presevation, serialize/dumb the token into readable file
+        ## for session presevation, serialize/dump the token into readable file
         ## this will attempt to be loaded next time user uses the program
 
         ## will this always work? theoretically yes as tekore uses self-refreshing tokens. 
-        ## only one way to find out?
-        ## maybe we should have function that periodically refreshes the token in the cli.pi clas
         pickle.dump(spot_token, open('auth.spoticli', 'wb'))
     except:
         print('warning, failed to write token! session will not be preserved!')
         pass
 
-    SpotiCLI(token=spot_token).cmdloop()
+    exit_code = SpotiCLI(token=spot_token).cmdloop()

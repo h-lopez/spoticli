@@ -3,10 +3,17 @@ SpotiCLI
 Copyright 2020, Hugo A Lopez
 
 released under the MIT license
+
+cli.py
+
+this handles the actual cli that user is presented with
 '''
 
 import argparse
 import time
+import fsop
+
+from colorama import init, Fore, Back, Style
 
 from tekore import Spotify, util
 from cmd2 import Cmd, with_argparser
@@ -18,11 +25,11 @@ class SpotiCLI(Cmd):
 
         app_name = 'SpotiCLI'
         version = '1.20.0504.dev'
-        
+
         ###define app parameters
         self.app_info = f'\n{app_name} {version}'
-        self.intro = self.app_info + '\n'
-        self.prompt = 'spoticli ~$ '
+        self.intro = Fore.CYAN + self.app_info + '\n'
+        self.prompt = f'{Fore.GREEN}spoticli ~$ {Style.RESET_ALL}'
 
         self.api_delay = 0.2
 
@@ -38,6 +45,7 @@ class SpotiCLI(Cmd):
         self.hidden_commands.append('macro')
         self.hidden_commands.append('py')
         self.hidden_commands.append('pyscript')
+        self.hidden_commands.append('quit')
         self.hidden_commands.append('shell')
         self.hidden_commands.append('shortcuts')
         self.hidden_commands.append('_relative_load')
@@ -122,12 +130,17 @@ class SpotiCLI(Cmd):
     # generic functions
     ################
 
+
+    ### sometimes a device is no longer marked 'active' if it's been idle too long
+    ### this 'forces' playback/activity on last active device
+    ### need to make this more seemless for the user
     def force_device(self):
         current_dev = self.get_device()
         self.sp_user.playback_transfer(current_dev[0].asdict()['id'])
 
     def do_force(self, line):
         self.force_device()
+
     # generic accessors
     ################
 
@@ -211,6 +224,15 @@ class SpotiCLI(Cmd):
         '''
         self.poutput(self.app_info)
 
+    def do_exit(self, line):
+        '''
+        exit application
+        
+        usage:
+            exit
+        '''
+        return True
+
     def do_logout(self, line):
         '''
         logout current session and force login next program start
@@ -221,16 +243,12 @@ class SpotiCLI(Cmd):
         self.poutput('are you sure? type \'yes\' to proceed')
         is_user_sure = input()
         if (is_user_sure.lower() == 'yes'):
-            try:
-                #try to delete user token
-                #self.pwarning('logged out')
-                self.pwarning('placeholder, not implemented yet')
-                pass
-            except:
-                self.perror('failed to logout')
-                self.pwarning('unable to delete config files, please try manual removal')
-                self.pwarning('can be found in your home config directory, .config/spoticli/')
-                pass
+            if(fsop.fsop.delete_conf(self)):
+                self.pwarning('user creds deleted')
+                return
+            self.perror('failed to logout!')
+            self.pwarning('unable to delete config files, please try manual removal')
+            self.pwarning('can be found in your home config directory, .config/spoticli/')
         else:
             self.pwarning('not logged out')
 
@@ -280,7 +298,7 @@ class SpotiCLI(Cmd):
     parser_play_next = play_subparsers.add_parser('next', help='next track', add_help=False)
     parser_play_next.set_defaults(func=play_next)
 
-    parser_play_previous = play_subparsers.add_parser('previous', help='previos track', add_help=False)
+    parser_play_previous = play_subparsers.add_parser('previous', help='previous track', add_help=False)
     parser_play_previous.set_defaults(func=play_previous)
 
     play_subcommands = ['next', 'previous']
@@ -317,13 +335,14 @@ class SpotiCLI(Cmd):
             pass
 
     def do_seek(self, line):
+        ### time should be in seconds or as a timestamp value, ie. 1:41
+        ### not implemented yet...
         '''
         seek to specific time in a track
         you can also specify a step increase by prefixing time with +/-
-        time should be in seconds or as a timestamp value, ie. 1:41
 
         usage:
-            seek [+/-][time]
+            seek [+/-] time
         '''
 
         ## no value specified; exit
@@ -577,52 +596,99 @@ class SpotiCLI(Cmd):
             self.do_help('search')
             return
 
-        result_limit = 3
+        result_limit = 10
         result_type = ()
 
         ### turn into a list so we can check first flag (if any)
         search_string = line.split(' ')
 
+        ### check for flags in beginning of search string. 
+        ### if found, remove (so we don't do a search for the flag)
         if ('-a' in search_string[0]):
             result_type = result_type + ('artist',)
             search_string.remove('-a')
-            result_limit = 10
         elif ('-b' in search_string[0]):
             result_type = result_type + ('album',)
             search_string.remove('-b')
-            result_limit = 10
         elif ('-p' in search_string[0]):
             result_type = result_type + ('playlist',)
             search_string.remove('-p')
-            result_limit = 10
         elif ('-t' in search_string[0]):
             result_type = result_type + ('track',)
             search_string.remove('-t')
-            result_limit = 10
 
         if(result_type == ()):
-            result_type = ('track','artist','album','playlist')
+            result_type = ('track',)
 
-        #if no flags detected search first 3 results of all 4 categories
-        #else it'll do search for specific categore and return first 10
+        #if no flags detected, default search for track
 
         ##once we finish checking flags turn back into a string and pass along to search call
         search_string = ' '.join(search_string)
 
+        if(search_string == ''):
+            self.pwarning('no query detected')
+            self.do_help('search')
+            return
+
         search_results = self.sp_user.search(types=result_type, limit=result_limit, query=search_string)
         #print(search_results)
-        for thing, index in enumerate(search_results):
-            for item in search_results[thing].items:
-                media_type = item.type
 
-                if(media_type == 'track'):
-                    self.poutput(f'{media_type} - {item.name} by {item.artists[0].name} on {item.album.name}')
-                if(media_type == 'artist'):
-                    self.poutput(f'{media_type} - {item.name}')
-                if(media_type == 'album'):
-                    self.poutput(f'{media_type} - {item.name} by {item.artists[0].name}')
-                if(media_type == 'playlist'):
-                    self.poutput(f'{media_type} - {item.name}')
+        item_id = []
+        for index, item in enumerate(search_results[0].items):
+            media_type = item.type
 
+            if(media_type == 'track'):
+                self.poutput(f'{str(index + 1)}. \t{media_type} - {item.name} by {item.artists[0].name} on {item.album.name}')
+                item_id.append(item.uri)
+            if(media_type == 'artist'):
+                self.poutput(f'{str(index + 1)}. \t{media_type} - {item.name}')
+                item_id.append(item.uri)
+            if(media_type == 'album'):
+                self.poutput(f'{str(index + 1)}. \t{media_type} - {item.name} by {item.artists[0].name}')
+                item_id.append(item.uri)
+            if(media_type == 'playlist'):
+                self.poutput(f'{str(index + 1)}. \t{media_type} - {item.name}')
+                item_id.append(item.uri)
+        
         #for index, item in enumerate(search_results):
             #print(f'{index} : {self.get_song(item[index].items[0].name)}')
+
+        ### check user input for sanity
+        user_input = input('select item: ')
+        if(user_input) == '':
+            return
+
+        try:
+            user_input = int(user_input) - 1
+            if(user_input > 9 or user_input < 0):
+                raise ValueError
+        except:
+            self.pwarning('invalid selection')
+            return
+
+        ### if input is sane, insta-play. unless it's a track. then prompt for action
+        if(result_type == ('track',)):
+            self.poutput('1. play')
+            self.poutput('2. queue')
+            user_action = input('select action: ')
+            if(user_action) == '':
+                return
+            try:
+                user_action = int(user_action) - 1
+                if(user_action > 2 or user_action < 0):
+                    raise ValueError
+            except:
+                self.pwarning('invalid action')
+                return
+
+            #play
+            if(user_action == 0):
+                self.sp_user.playback_start_context(context_uri=item_id[user_input])
+                return
+            #queue
+            if(user_action == 1):
+                self.sp_user.playback_queue_add(uri=item_id[user_input])
+                return
+
+        else:
+            self.sp_user.playback_start_context(context_uri=item_id[user_input])
