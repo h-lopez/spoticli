@@ -3,10 +3,15 @@ SpotiCLI
 Copyright 2020, Hugo A Lopez
 
 released under the MIT license
+
+cli.py
+
+this handles the actual cli that user is presented with
 '''
 
 import argparse
 import time
+import fsop
 
 from tekore import Spotify, util
 from cmd2 import Cmd, with_argparser
@@ -231,16 +236,12 @@ class SpotiCLI(Cmd):
         self.poutput('are you sure? type \'yes\' to proceed')
         is_user_sure = input()
         if (is_user_sure.lower() == 'yes'):
-            try:
-                #try to delete user token
-                #self.pwarning('logged out')
-                self.pwarning('placeholder, not implemented yet')
-                pass
-            except:
-                self.perror('failed to logout')
-                self.pwarning('unable to delete config files, please try manual removal')
-                self.pwarning('can be found in your home config directory, .config/spoticli/')
-                pass
+            if(fsop.fsop.delete_conf(self)):
+                self.pwarning('user creds deleted')
+                return
+            self.perror('failed to logout!')
+            self.pwarning('unable to delete config files, please try manual removal')
+            self.pwarning('can be found in your home config directory, .config/spoticli/')
         else:
             self.pwarning('not logged out')
 
