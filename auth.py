@@ -1,3 +1,14 @@
+'''
+SpotiCLI
+Copyright 2020, Hugo A Lopez
+
+released under the MIT license
+
+auth.py
+
+responsible for spinning local webserver to capture user creds during login on first use
+'''
+
 import socket
 import errno
 import webbrowser
