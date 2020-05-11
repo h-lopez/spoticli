@@ -13,6 +13,8 @@ import argparse
 import time
 import fsop
 
+from colorama import init, Fore, Back, Style
+
 from tekore import Spotify, util
 from cmd2 import Cmd, with_argparser
 #from colorama import init, Fore, Back, Style
@@ -23,11 +25,11 @@ class SpotiCLI(Cmd):
 
         app_name = 'SpotiCLI'
         version = '1.20.0504.dev'
-        
+
         ###define app parameters
         self.app_info = f'\n{app_name} {version}'
-        self.intro = self.app_info + '\n'
-        self.prompt = 'spoticli ~$ '
+        self.intro = Fore.CYAN + self.app_info + '\n'
+        self.prompt = f'{Fore.GREEN}spoticli ~$ {Style.RESET_ALL}'
 
         self.api_delay = 0.2
 
@@ -128,12 +130,17 @@ class SpotiCLI(Cmd):
     # generic functions
     ################
 
+
+    ### sometimes a device is no longer marked 'active' if it's been idle too long
+    ### this 'forces' playback/activity on last active device
+    ### need to make this more seemless for the user
     def force_device(self):
         current_dev = self.get_device()
         self.sp_user.playback_transfer(current_dev[0].asdict()['id'])
 
     def do_force(self, line):
         self.force_device()
+
     # generic accessors
     ################
 
