@@ -291,7 +291,7 @@ class SpotiCLI(Cmd):
     parser_play_next = play_subparsers.add_parser('next', help='next track', add_help=False)
     parser_play_next.set_defaults(func=play_next)
 
-    parser_play_previous = play_subparsers.add_parser('previous', help='previos track', add_help=False)
+    parser_play_previous = play_subparsers.add_parser('previous', help='previous track', add_help=False)
     parser_play_previous.set_defaults(func=play_previous)
 
     play_subcommands = ['next', 'previous']
