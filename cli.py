@@ -589,52 +589,53 @@ class SpotiCLI(Cmd):
             self.do_help('search')
             return
 
-        result_limit = 3
+        result_limit = 10
         result_type = ()
 
         ### turn into a list so we can check first flag (if any)
         search_string = line.split(' ')
 
+        ### check for flags in beginning of search string. 
+        ### if found, remove (so we don't do a search for the flag)
         if ('-a' in search_string[0]):
             result_type = result_type + ('artist',)
             search_string.remove('-a')
-            result_limit = 10
         elif ('-b' in search_string[0]):
             result_type = result_type + ('album',)
             search_string.remove('-b')
-            result_limit = 10
         elif ('-p' in search_string[0]):
             result_type = result_type + ('playlist',)
             search_string.remove('-p')
-            result_limit = 10
         elif ('-t' in search_string[0]):
             result_type = result_type + ('track',)
             search_string.remove('-t')
-            result_limit = 10
 
         if(result_type == ()):
-            result_type = ('track','artist','album','playlist')
+            result_type = ('track')
 
-        #if no flags detected search first 3 results of all 4 categories
-        #else it'll do search for specific categore and return first 10
+        #if no flags detected, default search for track
 
         ##once we finish checking flags turn back into a string and pass along to search call
         search_string = ' '.join(search_string)
 
+        if(search_string == ''):
+            self.pwarning('no query detected')
+            self.do_help('search')
+            return
+
         search_results = self.sp_user.search(types=result_type, limit=result_limit, query=search_string)
         #print(search_results)
-        for thing, index in enumerate(search_results):
-            for item in search_results[thing].items:
-                media_type = item.type
+        for index, item in enumerate(search_results[0].items):
+            media_type = item.type
 
-                if(media_type == 'track'):
-                    self.poutput(f'{media_type} - {item.name} by {item.artists[0].name} on {item.album.name}')
-                if(media_type == 'artist'):
-                    self.poutput(f'{media_type} - {item.name}')
-                if(media_type == 'album'):
-                    self.poutput(f'{media_type} - {item.name} by {item.artists[0].name}')
-                if(media_type == 'playlist'):
-                    self.poutput(f'{media_type} - {item.name}')
-
+            if(media_type == 'track'):
+                self.poutput(f'{str(index + 1)} : {media_type} - {item.name} by {item.artists[0].name} on {item.album.name}')
+            if(media_type == 'artist'):
+                self.poutput(f'{str(index + 1)} : {media_type} - {item.name}')
+            if(media_type == 'album'):
+                self.poutput(f'{str(index + 1)} : {media_type} - {item.name} by {item.artists[0].name}')
+            if(media_type == 'playlist'):
+                self.poutput(f'{str(index + 1)} : {media_type} - {item.name}')
+        
         #for index, item in enumerate(search_results):
             #print(f'{index} : {self.get_song(item[index].items[0].name)}')
