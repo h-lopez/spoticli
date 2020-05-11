@@ -18,5 +18,10 @@ setuptools.setup(
         "License :: MIT License",
         "Operating System :: OS Independent",
     ],
+    install_requires=[
+        'cmd2',
+        'tekore',
+        'colorama'
+    ],
     python_requires='>=3.6',
 )
