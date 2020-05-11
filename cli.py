@@ -38,6 +38,7 @@ class SpotiCLI(Cmd):
         self.hidden_commands.append('macro')
         self.hidden_commands.append('py')
         self.hidden_commands.append('pyscript')
+        self.hidden_commands.append('quit')
         self.hidden_commands.append('shell')
         self.hidden_commands.append('shortcuts')
         self.hidden_commands.append('_relative_load')
@@ -210,6 +211,15 @@ class SpotiCLI(Cmd):
             about
         '''
         self.poutput(self.app_info)
+
+    def do_exit(self, line):
+        '''
+        exit application
+        
+        usage:
+            exit
+        '''
+        return True
 
     def do_logout(self, line):
         '''
