@@ -631,16 +631,16 @@ class SpotiCLI(Cmd):
             media_type = item.type
 
             if(media_type == 'track'):
-                self.poutput(f'{str(index + 1)} : {media_type} - {item.name} by {item.artists[0].name} on {item.album.name}')
+                self.poutput(f'{str(index + 1)}. \t{media_type} - {item.name} by {item.artists[0].name} on {item.album.name}')
                 item_id.append(item.uri)
             if(media_type == 'artist'):
-                self.poutput(f'{str(index + 1)} : {media_type} - {item.name}')
+                self.poutput(f'{str(index + 1)}. \t{media_type} - {item.name}')
                 item_id.append(item.uri)
             if(media_type == 'album'):
-                self.poutput(f'{str(index + 1)} : {media_type} - {item.name} by {item.artists[0].name}')
+                self.poutput(f'{str(index + 1)}. \t{media_type} - {item.name} by {item.artists[0].name}')
                 item_id.append(item.uri)
             if(media_type == 'playlist'):
-                self.poutput(f'{str(index + 1)} : {media_type} - {item.name}')
+                self.poutput(f'{str(index + 1)}. \t{media_type} - {item.name}')
                 item_id.append(item.uri)
         
         #for index, item in enumerate(search_results):
@@ -648,24 +648,31 @@ class SpotiCLI(Cmd):
 
         ### check user input for sanity
         user_input = input('select item: ')
+        if(user_input) == '':
+            return
+
         try:
             user_input = int(user_input) - 1
             if(user_input > 9 or user_input < 0):
                 raise ValueError
         except:
             self.pwarning('invalid selection')
+            return
 
         ### if input is sane, insta-play. unless it's a track. then prompt for action
         if(result_type == ('track',)):
             self.poutput('1. play')
             self.poutput('2. queue')
             user_action = input('select action: ')
+            if(user_action) == '':
+                return
             try:
                 user_action = int(user_action) - 1
                 if(user_action > 2 or user_action < 0):
                     raise ValueError
             except:
-                self.pwarning('invalid selection')
+                self.pwarning('invalid action')
+                return
 
             #play
             if(user_action == 0):
