@@ -171,8 +171,12 @@ class SpotiCLI(Cmd):
     ## needed as we'll usually send a 'get' request not long after and if we send too soon
     ## API might return wrong info
 
-    def set_device(self): 
-        self.pwarning('placeholder')
+    def set_device(self, new_device): 
+        self.sp_user.playback_transfer(new_device)
+        time.sleep(self.api_delay)
+
+    def set_playback(self, playback_uri):
+        self.sp_user.playback_start_context(context_uri=playback_uri)
         time.sleep(self.api_delay)
 
     def set_position(self, new_time): 
@@ -453,7 +457,7 @@ class SpotiCLI(Cmd):
             self.pwarning('invalid selection')
             return
 
-        self.sp_user.playback_transfer(endpoint_list[user_input].asdict()['id'])
+        self.set_device(endpoint_list[user_input].asdict()['id'])
 
     
     def repeat_enable(self, args):
@@ -578,7 +582,7 @@ class SpotiCLI(Cmd):
         except:
             self.pwarning('invalid selection')
 
-        self.sp_user.playback_start_context(context_uri=user_playlists[user_input].uri)
+        self.set_playback(context_uri=user_playlists[user_input].uri)
 
     def do_previous(self, line):
         '''
@@ -740,7 +744,7 @@ class SpotiCLI(Cmd):
 
             #play
             if(user_action == 0):
-                self.sp_user.playback_start_context(context_uri=item_id[user_input])
+                self.set_playback(context_uri=item_id[user_input])
                 return
             #queue
             if(user_action == 1):
@@ -748,4 +752,4 @@ class SpotiCLI(Cmd):
                 return
 
         else:
-            self.sp_user.playback_start_context(context_uri=item_id[user_input])
+            self.set_playback(context_uri=item_id[user_input])
