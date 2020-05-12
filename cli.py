@@ -561,7 +561,24 @@ class SpotiCLI(Cmd):
         usage:
             lists
         '''
-        self.pwarning('placeholder')
+        max_index = 0
+        user_playlists = self.sp_user.followed_playlists().items
+        for index, item in enumerate(user_playlists):
+            max_index += 1
+            self.poutput(f'{index + 1}: \t{item.name}')
+
+        user_input = input('select playlist: ')
+        if (user_input == ''):
+            return
+
+        try:
+            user_input = int(user_input) - 1
+            if (user_input > max_index or user_input < 0):
+                raise ValueError
+        except:
+            self.pwarning('invalid selection')
+
+        self.sp_user.playback_start_context(context_uri=user_playlists[user_input].uri)
 
     def do_previous(self, line):
         '''
