@@ -598,7 +598,8 @@ class SpotiCLI(Cmd):
         self.poutput(f'<3 - saved song - {song_name}')
     
     def do_unsave(self, line):
-        '''remove currently playing track from liked songs
+        '''
+        remove currently playing track from liked songs
         
         usage:
             unsave
