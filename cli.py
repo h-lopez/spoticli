@@ -87,6 +87,10 @@ class SpotiCLI(Cmd):
 
         return f'{pos_ms} / {dur_ms}'
 
+    def print_list(self, list_to_print):
+        for index, item in enumerate(list_to_print):
+            self.poutput(f'{index + 1}:\t{item}')
+
     #### accessor / mutators
     #### getter / setter, whatever
     #### these make the spotify api calls
@@ -415,7 +419,31 @@ class SpotiCLI(Cmd):
         usage:
             endpoint
         '''
-        self.poutput(self.get_device())
+        endpoint_list = self.get_device()
+        max_index = 0
+        
+        for item in endpoint_list:
+            if(item.is_active == True):
+                self.poutput(f'current endpoint: {item.name}')
+
+        self.poutput('available endpoints:')
+        for index, item in enumerate(endpoint_list):
+            self.poutput(f'{index + 1}:\t{item.name}')
+            max_index += 1
+
+        user_input = input('select endpoint: ')
+        if(user_input == ''):
+            return
+        try:
+            user_input = int(user_input) - 1
+            if(user_input > max_index or user_input < 0):
+                raise ValueError
+        except:
+            self.pwarning('invalid selection')
+            return
+        
+        self.sp_user.playback_transfer(endpoint_list[user_input - 1].asdict()['id'])
+
     
     def repeat_enable(self, args):
         self.set_repeat_state('context')
