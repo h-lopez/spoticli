@@ -422,14 +422,22 @@ class SpotiCLI(Cmd):
         endpoint_list = self.get_device()
         max_index = 0
         
+        current_active = ''
+
         for item in endpoint_list:
             if(item.is_active == True):
+                current_active = item.id
                 self.poutput(f'current endpoint: {item.name}')
+                break
 
         self.poutput('available endpoints:')
         for index, item in enumerate(endpoint_list):
-            self.poutput(f'{index + 1}:\t{item.name}')
-            max_index += 1
+            max_index = index
+
+            print_string = f'{index + 1}:\t{item.name}'
+            if(item.id == current_active):
+                print_string += ' (active)'
+            self.poutput(print_string)
 
         user_input = input('select endpoint: ')
         if(user_input == ''):
@@ -441,8 +449,8 @@ class SpotiCLI(Cmd):
         except:
             self.pwarning('invalid selection')
             return
-        
-        self.sp_user.playback_transfer(endpoint_list[user_input - 1].asdict()['id'])
+
+        self.sp_user.playback_transfer(endpoint_list[user_input].asdict()['id'])
 
     
     def repeat_enable(self, args):
