@@ -422,22 +422,25 @@ class SpotiCLI(Cmd):
         endpoint_list = self.get_device()
         max_index = 0
         
+        print_string = ''
         current_active = ''
-
-        for item in endpoint_list:
-            if(item.is_active == True):
-                current_active = item.id
-                self.poutput(f'current endpoint: {item.name}')
-                break
 
         self.poutput('available endpoints:')
         for index, item in enumerate(endpoint_list):
             max_index = index
+            
+            print_string += f'{index + 1}:\t{item.name}'
 
-            print_string = f'{index + 1}:\t{item.name}'
-            if(item.id == current_active):
+            if(item.is_active == True):
+                current_active = item.name
                 print_string += ' (active)'
-            self.poutput(print_string)
+            print_string += '\n'
+
+        if(current_active == ''):
+            current_active = 'none'
+
+        self.poutput(f'current endpoint: {item.name}')
+        self.poutput(print_string)
 
         user_input = input('select endpoint: ')
         if(user_input == ''):
