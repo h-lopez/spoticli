@@ -429,7 +429,6 @@ class SpotiCLI(Cmd):
         print_string = ''
         current_active = ''
 
-        self.poutput('available endpoints:')
         for index, item in enumerate(endpoint_list):
             max_index = index
             
@@ -444,6 +443,7 @@ class SpotiCLI(Cmd):
             current_active = 'none'
 
         self.poutput(f'current endpoint: {item.name}')
+        self.poutput('available endpoints:')
         self.poutput(print_string)
 
         user_input = input('select endpoint: ')
