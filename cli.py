@@ -582,7 +582,7 @@ class SpotiCLI(Cmd):
         except:
             self.pwarning('invalid selection')
 
-        self.set_playback(context_uri=user_playlists[user_input].uri)
+        self.set_playback(user_playlists[user_input].uri)
 
     def do_previous(self, line):
         '''
@@ -744,7 +744,7 @@ class SpotiCLI(Cmd):
 
             #play
             if(user_action == 0):
-                self.set_playback(context_uri=item_id[user_input])
+                self.set_playback(item_id[user_input])
                 return
             #queue
             if(user_action == 1):
@@ -752,4 +752,4 @@ class SpotiCLI(Cmd):
                 return
 
         else:
-            self.set_playback(context_uri=item_id[user_input])
+            self.set_playback(item_id[user_input])
