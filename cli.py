@@ -63,7 +63,6 @@ class SpotiCLI(Cmd):
             current_active = self.get_active_device(self.get_device())
             if(current_active != None):
                 self.current_endpoint = current_active
-                print(self.current_endpoint)
         except:
             self.pwarning('unable to detect active playback device!')
         return super().preloop()
@@ -147,10 +146,9 @@ class SpotiCLI(Cmd):
     # generic functions
     ################
     
+    ## get active device from list
     def get_active_device(self, device_list):
-        print(device_list)
         for item in device_list:
-            print(item)
             if(item.is_active):
                 return item.id
             return None
