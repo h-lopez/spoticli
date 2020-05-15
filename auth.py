@@ -27,26 +27,26 @@ class RequestHandler(BaseHTTPRequestHandler):
         form = dict(parse_qsl(query_s))
 
         self.send_response(200)
-        self.send_header("Content-Type", "text/html")
+        self.send_header('Content-Type', 'text/html')
         self.end_headers()
 
-        if "code" in form:
-            self.server.auth_code = form["code"]
+        if 'code' in form:
+            self.server.auth_code = form['code']
             self.server.error = None
-            status = "successful"
-        elif "error" in form:
-            self.server.error = form["error"]
+            status = 'successful'
+        elif 'error' in form:
+            self.server.error = form['error']
             self.server.auth_code = None
-            status = "failed ({})".format(form["error"])
+            status = 'failed ({})'.format(form['error'])
         else:
-            self._write("<html><body><h1>Invalid request</h1></body></html>")
+            self._write('<html><body><h1>Invalid request</h1></body></html>')
             return
 
         self._write(
-            "<html><body><h1>authentication : {}</h1>you can close this window</body></html>".format(status))
+            '<html><body><h1>authentication : {}</h1>you can close this window</body></html>'.format(status))
 
     def _write(self, text):
-        return self.wfile.write(text.encode("utf-8"))
+        return self.wfile.write(text.encode('utf-8'))
 
     def log_message(self, format, *args):
         return
@@ -54,7 +54,7 @@ class RequestHandler(BaseHTTPRequestHandler):
 def start_local_http_server(port, handler=RequestHandler):
     while True:
         try:
-            server = HTTPServer(("localhost", port), handler)
+            server = HTTPServer(('localhost', port), handler)
         except socket.error as err:
             if err.errno != errno.EADDRINUSE:
                 raise
@@ -68,7 +68,7 @@ def prompt_for_user_token(
         redirect_uri: str,
         scope=None
 ) -> RefreshingToken:
-    """
+    '''
     Prompt for manual authentication.
     Open a web browser for the user to log in with Spotify.
     Prompt to paste the URL after logging in to parse the `code` URL parameter.
@@ -86,7 +86,7 @@ def prompt_for_user_token(
     -------
     RefreshingToken
         automatically refreshing user token
-    """
+    '''
     cred = RefreshingCredentials(client_id, client_secret, redirect_uri)
     url = cred.user_authorisation_url(scope, show_dialog=True)
 
@@ -95,14 +95,14 @@ def prompt_for_user_token(
     print(url)
     try:
         webbrowser.open(url)
-        #print("Opened %s in your browser" % auth_url)
+        #print('Opened %s in your browser' % auth_url)
     except:
-        print("Please navigate here: %s" % url)
+        print('Please navigate here: %s' % url)
 
     url_info = urlparse(redirect_uri)
     netloc = url_info.netloc
-    if ":" in netloc:
-        port = int(netloc.split(":", 1)[1])
+    if ':' in netloc:
+        port = int(netloc.split(':', 1)[1])
     else:
         port = 80
 
