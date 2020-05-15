@@ -261,6 +261,11 @@ class SpotiCLI(Cmd):
         '''
         self.poutput(self.app_info)
 
+    def do_diagnostics(self, line):
+        self.poutput(f'current user: \t{self.sp_user.current_user().display_name}')
+        self.poutput(f'endpoint: \t{self.current_endpoint}')
+        self.poutput(f'api delay: \t{self.api_delay}')
+
     def do_exit(self, line):
         '''
         exit application
