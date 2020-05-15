@@ -23,18 +23,18 @@ class SpotiCLI(Cmd):
     def __init__(self, token):
         super().__init__()
 
+        self.sp_user = Spotify(token)
+
         app_name = 'SpotiCLI'
         version = '1.20.0504.dev'
-
+        
         ###define app parameters
         self.app_info = f'\n{app_name} {version}'
         self.intro = Fore.CYAN + self.app_info + '\n'
         self.prompt = f'{Fore.GREEN}spoticli ~$ {Style.RESET_ALL}'
+
         self.current_endpoint = ''
-
         self.api_delay = 0.2
-
-        self.sp_user = Spotify(token)
 
         #hide built-in cmd2 functions. this will leave them available for use but will be hidden from tab completion (and docs)
         self.hidden_commands.append('alias')
@@ -208,6 +208,18 @@ class SpotiCLI(Cmd):
             self.sp_user.playback_start_tracks(track_ids=new_track, device_id=self.current_endpoint)
         time.sleep(self.api_delay)
 
+    def set_play_next(self):
+        self.sp_user.playback_next(device_id=self.current_endpoint)
+
+    def set_play_resume(self):
+            sp_user.playback_resume(device_id=self.current_endpoint)
+
+    def set_play_pause(self):
+            sp_user.playback_pause(device_id=self.current_endpoint)
+
+    def set_play_previous(self):
+        self.sp_user.playback_previous(device_id=self.current_endpoint)
+
     def set_position(self, new_time): 
         self.sp_user.playback_seek(new_time, device_id=self.current_endpoint)
         time.sleep(self.api_delay)
@@ -327,11 +339,11 @@ class SpotiCLI(Cmd):
         self.poutput(now_playing)
 
     def play_next(self, args):
-        self.sp_user.playback_next(device_id=self.current_endpoint)
+        self.set_play_next()
         self.poutput('playing next')
 
     def play_previous(self, args):
-        self.sp_user.playback_previous(device_id=self.current_endpoint)
+        self.set_play_previous()
         self.poutput('playing previous')
 
     play_parser = argparse.ArgumentParser(prog='play', add_help=False)
@@ -360,7 +372,7 @@ class SpotiCLI(Cmd):
         #if none specified do default action (start playback)
         except AttributeError:
             try:
-                self.sp_user.playback_resume(device_id=self.current_endpoint)
+                self.set_play_resume()
             except:
                 pass
                 
@@ -372,7 +384,7 @@ class SpotiCLI(Cmd):
             pause
         '''
         try:
-            self.sp_user.playback_pause(device_id=self.current_endpoint)
+            self.set_play_pause()
         except:
             pass
 
