@@ -102,7 +102,7 @@ if __name__ == '__main__':
     ### spoticli will handle auth user and periodically refresh token as needed
 
     #if auth failed and returned a null token, exit program
-    if (spot_token is None):
+    if(spot_token is None):
         print('invalid token detected')
         exit()
     try:
