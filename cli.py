@@ -10,8 +10,9 @@ this handles the actual cli that user is presented with
 '''
 
 import argparse
-import time
 import fsop
+import getpass
+import time
 
 from colorama import init, Fore, Back, Style
 
@@ -26,7 +27,7 @@ class SpotiCLI(Cmd):
         self.sp_user = Spotify(token)
 
         app_name = 'SpotiCLI'
-        version = '1.20.0504.dev'
+        version = '1.20.0515.dev'
         
         ###define app parameters
         self.app_info = f'\n{app_name} {version}'
@@ -274,6 +275,9 @@ class SpotiCLI(Cmd):
         self.poutput(self.app_info)
 
     def do_diagnostics(self, line):
+        '''
+        display diagnostic info relating to current session
+        '''
         self.poutput(f'current user: \t{self.sp_user.current_user().display_name}')
         self.poutput(f'device name: \t{self.current_endpoint.name}')
         self.poutput(f'device id: \t{self.current_endpoint.id}')
@@ -295,8 +299,7 @@ class SpotiCLI(Cmd):
         usage:
             logout
         '''
-        self.poutput('are you sure? type \'yes\' to proceed')
-        is_user_sure = input()
+        is_user_sure = getpass.getpass('are you sure? type \'yes\' to proceed: ')
         if (is_user_sure.lower() == 'yes'):
             if(fsop.fsop.delete_conf(self)):
                 self.pwarning('user creds deleted')
@@ -493,7 +496,7 @@ class SpotiCLI(Cmd):
         self.poutput('available endpoints:')
         self.poutput(print_string)
 
-        user_input = input('select endpoint: ')
+        user_input = getpass.getpass('select endpoint: ')
         if(user_input == ''):
             return
         try:
@@ -619,7 +622,7 @@ class SpotiCLI(Cmd):
             max_index += 1
             self.poutput(f'{index + 1}: \t{item.name}')
 
-        user_input = input('select playlist: ')
+        user_input = getpass.getpass('select playlist: ')
         if (user_input == ''):
             return
 
@@ -765,7 +768,7 @@ class SpotiCLI(Cmd):
             #print(f'{index} : {self.get_song(item[index].items[0].name)}')
 
         ### check user input for sanity
-        user_input = input('select item: ')
+        user_input = getpass.getpass('select item: ')
         if(user_input) == '':
             return
 
@@ -781,7 +784,7 @@ class SpotiCLI(Cmd):
         if(result_type == ('track',)):
             self.poutput('1. play')
             self.poutput('2. queue')
-            user_action = input('select action: ')
+            user_action = getpass.getpass('select action: ')
             if(user_action) == '':
                 return
             try:
