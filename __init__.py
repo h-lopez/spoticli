@@ -7,6 +7,7 @@ released under the MIT license
 
 ## import auth library for authentication
 import auth
+import getpass
 import os
 import pickle
 
@@ -64,8 +65,8 @@ if __name__ == '__main__':
         print('you can find this from the spotify developer dashboard')
         print('devloper.spotify.com/dashboard')
         print('remember most api functionality is locked to premium subscriptions')
-        client_id = input('input client id: \n')
-        client_key = input('input client secret: \n')
+        client_id = getpass.getpass('input client id: ')
+        client_key = getpass.getpass('input client secret: ')
 
         #quick sanity check to make sure secret and id are same length and are 32 characters long
         if(len(client_id) != len(client_key) or (len(client_id) != 32)):
