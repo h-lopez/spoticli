@@ -301,7 +301,7 @@ class SpotiCLI(Cmd):
         '''
         is_user_sure = getpass.getpass('are you sure? type \'yes\' to proceed: ')
         self.poutput(is_user_sure)
-        if (is_user_sure == 'yes'):
+        if(is_user_sure == 'yes'):
             if(fsop.fsop.delete_conf(self)):
                 self.pwarning('user creds deleted')
                 return
@@ -632,7 +632,7 @@ class SpotiCLI(Cmd):
 
         try:
             user_input = int(user_input) - 1
-            if (user_input > max_index or user_input < 0):
+            if(user_input > max_index or user_input < 0):
                 raise ValueError
         except:
             self.pwarning('invalid selection')
@@ -720,16 +720,16 @@ class SpotiCLI(Cmd):
 
         ### check for flags in beginning of search string. 
         ### if found, remove (so we don't do a search for the flag)
-        if ('-a' in search_string[0]):
+        if('-a' in search_string[0]):
             result_type = result_type + ('artist',)
             search_string.remove('-a')
-        elif ('-b' in search_string[0]):
+        elif('-b' in search_string[0]):
             result_type = result_type + ('album',)
             search_string.remove('-b')
-        elif ('-p' in search_string[0]):
+        elif('-p' in search_string[0]):
             result_type = result_type + ('playlist',)
             search_string.remove('-p')
-        elif ('-t' in search_string[0]):
+        elif('-t' in search_string[0]):
             result_type = result_type + ('track',)
             search_string.remove('-t')
 
