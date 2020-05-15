@@ -179,8 +179,13 @@ class SpotiCLI(Cmd):
         self.sp_user.playback_start_context(context_uri=playback_uri)
         time.sleep(self.api_delay)
 
-    def set_playback_track(self, track_uri):
-        self.sp_user.playback_start_tracks(track_ids=track_uri)
+    def set_playback_track(self, new_track):
+        if(not isinstance(new_track, list)):
+            track_list = []
+            track_list.append(new_track)
+            self.sp_user.playback_start_tracks(track_ids=track_list)
+        else:
+            self.sp_user.playback_start_tracks(track_ids=new_track)
         time.sleep(self.api_delay)
 
     def set_position(self, new_time): 
@@ -704,7 +709,9 @@ class SpotiCLI(Cmd):
 
             if(media_type == 'track'):
                 self.poutput(f'{str(index + 1)}. \t{media_type} - {item.name} by {item.artists[0].name} on {item.album.name}')
-                item_id.append(item.uri)
+                
+                ### tekore playback track uses ID or uri depending on what you want to do 
+                item_id.append(item)
             if(media_type == 'artist'):
                 self.poutput(f'{str(index + 1)}. \t{media_type} - {item.name}')
                 item_id.append(item.uri)
@@ -748,11 +755,11 @@ class SpotiCLI(Cmd):
 
             #play
             if(user_action == 0):
-                self.set_playback_track(item_id[user_input])
+                self.set_playback_track(item_id[user_input].id)
                 return
             #queue
             if(user_action == 1):
-                self.sp_user.playback_queue_add(uri=item_id[user_input])
+                self.sp_user.playback_queue_add(uri=item_id[user_input].uri)
                 return
 
         else:
