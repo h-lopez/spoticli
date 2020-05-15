@@ -300,7 +300,8 @@ class SpotiCLI(Cmd):
             logout
         '''
         is_user_sure = getpass.getpass('are you sure? type \'yes\' to proceed: ')
-        if (is_user_sure.lower() == 'yes'):
+        self.poutput(is_user_sure)
+        if (is_user_sure == 'yes'):
             if(fsop.fsop.delete_conf(self)):
                 self.pwarning('user creds deleted')
                 return
@@ -499,6 +500,8 @@ class SpotiCLI(Cmd):
         user_input = getpass.getpass('select endpoint: ')
         if(user_input == ''):
             return
+        self.poutput(f'selected: {user_input}')
+
         try:
             user_input = int(user_input) - 1
             if(user_input > max_index or user_input < 0):
@@ -623,8 +626,9 @@ class SpotiCLI(Cmd):
             self.poutput(f'{index + 1}: \t{item.name}')
 
         user_input = getpass.getpass('select playlist: ')
-        if (user_input == ''):
+        if(user_input == ''):
             return
+        self.poutput(f'selected: {user_input}')
 
         try:
             user_input = int(user_input) - 1
@@ -769,8 +773,9 @@ class SpotiCLI(Cmd):
 
         ### check user input for sanity
         user_input = getpass.getpass('select item: ')
-        if(user_input) == '':
+        if(user_input == ''):
             return
+        self.poutput(f'selected: {user_input}')
 
         try:
             user_input = int(user_input) - 1
@@ -785,8 +790,10 @@ class SpotiCLI(Cmd):
             self.poutput('1. play')
             self.poutput('2. queue')
             user_action = getpass.getpass('select action: ')
-            if(user_action) == '':
+            if(user_action == ''):
                 return
+            self.poutput(f'selected: {user_action}')
+
             try:
                 user_action = int(user_action) - 1
                 if(user_action > 2 or user_action < 0):
