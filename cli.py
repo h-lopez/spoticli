@@ -175,8 +175,12 @@ class SpotiCLI(Cmd):
         self.sp_user.playback_transfer(new_device)
         time.sleep(self.api_delay)
 
-    def set_playback(self, playback_uri):
+    def set_playback_context(self, playback_uri):
         self.sp_user.playback_start_context(context_uri=playback_uri)
+        time.sleep(self.api_delay)
+
+    def set_playback_track(self, track_uri):
+        self.sp_user.playback_start_tracks(track_ids=track_uri)
         time.sleep(self.api_delay)
 
     def set_position(self, new_time): 
@@ -582,7 +586,7 @@ class SpotiCLI(Cmd):
         except:
             self.pwarning('invalid selection')
 
-        self.set_playback(user_playlists[user_input].uri)
+        self.set_playback_context(user_playlists[user_input].uri)
 
     def do_previous(self, line):
         '''
@@ -744,7 +748,7 @@ class SpotiCLI(Cmd):
 
             #play
             if(user_action == 0):
-                self.set_playback(item_id[user_input])
+                self.set_playback_track(item_id[user_input])
                 return
             #queue
             if(user_action == 1):
@@ -752,4 +756,4 @@ class SpotiCLI(Cmd):
                 return
 
         else:
-            self.set_playback(item_id[user_input])
+            self.set_playback_context(item_id[user_input])
