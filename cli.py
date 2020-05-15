@@ -23,17 +23,18 @@ class SpotiCLI(Cmd):
     def __init__(self, token):
         super().__init__()
 
+        self.sp_user = Spotify(token)
+
         app_name = 'SpotiCLI'
         version = '1.20.0504.dev'
-
+        
         ###define app parameters
         self.app_info = f'\n{app_name} {version}'
         self.intro = Fore.CYAN + self.app_info + '\n'
         self.prompt = f'{Fore.GREEN}spoticli ~$ {Style.RESET_ALL}'
 
+        self.current_endpoint = ''
         self.api_delay = 0.2
-
-        self.sp_user = Spotify(token)
 
         #hide built-in cmd2 functions. this will leave them available for use but will be hidden from tab completion (and docs)
         self.hidden_commands.append('alias')
@@ -54,6 +55,17 @@ class SpotiCLI(Cmd):
         self.debug = True
 
         ##define permissions scope...
+
+    ### preloop
+    #########################################
+    def preloop(self):
+        try:
+            current_active = self.get_active_device(self.get_device())
+            if(current_active != None):
+                self.current_endpoint = current_active
+        except:
+            self.pwarning('unable to detect active playback device!')
+        return super().preloop()
 
     #### Misc / Util methods
     ##########################################
@@ -86,6 +98,10 @@ class SpotiCLI(Cmd):
         dur_ms = self.ms_to_time(self.get_duration(song_data))
 
         return f'{pos_ms} / {dur_ms}'
+
+    def print_list(self, list_to_print):
+        for index, item in enumerate(list_to_print):
+            self.poutput(f'{index + 1}:\t{item}')
 
     #### accessor / mutators
     #### getter / setter, whatever
@@ -129,17 +145,25 @@ class SpotiCLI(Cmd):
 
     # generic functions
     ################
-
+    
+    ## get active device from list
+    def get_active_device(self, device_list):
+        for item in device_list:
+            if(item.is_active):
+                return item
+            return None
+    ### 2020-05-15
+    ### no longer needed since endpoint functionality was added
 
     ### sometimes a device is no longer marked 'active' if it's been idle too long
     ### this 'forces' playback/activity on last active device
     ### need to make this more seemless for the user
-    def force_device(self):
-        current_dev = self.get_device()
-        self.sp_user.playback_transfer(current_dev[0].asdict()['id'])
-
-    def do_force(self, line):
-        self.force_device()
+    ### def force_device(self):
+    ###     current_dev = self.get_device()
+    ###     self.sp_user.playback_transfer(current_dev[0].asdict()['id'])
+    ### 
+    ### def do_force(self, line):
+    ###     self.force_device()
 
     # generic accessors
     ################
@@ -167,16 +191,41 @@ class SpotiCLI(Cmd):
     ## needed as we'll usually send a 'get' request not long after and if we send too soon
     ## API might return wrong info
 
-    def set_device(self): 
-        self.pwarning('placeholder')
+    def set_device(self, new_device): 
+        self.sp_user.playback_transfer(new_device, force_play=True)
         time.sleep(self.api_delay)
 
+    def set_playback_context(self, playback_uri):
+        self.sp_user.playback_start_context(context_uri=playback_uri, device_id=self.current_endpoint.id)
+        time.sleep(self.api_delay)
+
+    def set_playback_track(self, new_track):
+        if(not isinstance(new_track, list)):
+            track_list = []
+            track_list.append(new_track)
+            self.sp_user.playback_start_tracks(track_ids=track_list, device_id=self.current_endpoint.id)
+        else:
+            self.sp_user.playback_start_tracks(track_ids=new_track, device_id=self.current_endpoint.id)
+        time.sleep(self.api_delay)
+
+    def set_play_next(self):
+        self.sp_user.playback_next(device_id=self.current_endpoint.id)
+
+    def set_play_resume(self):
+        self.sp_user.playback_resume(device_id=self.current_endpoint.id)
+
+    def set_play_pause(self):
+        self.sp_user.playback_pause(device_id=self.current_endpoint.id)
+
+    def set_play_previous(self):
+        self.sp_user.playback_previous(device_id=self.current_endpoint.id)
+
     def set_position(self, new_time): 
-        self.sp_user.playback_seek(new_time)
+        self.sp_user.playback_seek(new_time, device_id=self.current_endpoint.id)
         time.sleep(self.api_delay)
 
     def set_repeat_state(self, new_repeat_state): 
-        self.sp_user.playback_repeat(new_repeat_state)
+        self.sp_user.playback_repeat(new_repeat_state, device_id=self.current_endpoint.id)
         time.sleep(self.api_delay)
 
     def set_save(self, song_id):
@@ -188,11 +237,11 @@ class SpotiCLI(Cmd):
         time.sleep(self.api_delay)
 
     def set_shuffle_state(self, new_shuffle_state): 
-        self.sp_user.playback_shuffle(new_shuffle_state)
+        self.sp_user.playback_shuffle(new_shuffle_state, device_id=self.current_endpoint.id)
         time.sleep(self.api_delay)
 
     def set_volume(self, new_volume): 
-        self.sp_user.playback_volume(new_volume)
+        self.sp_user.playback_volume(new_volume, device_id=self.current_endpoint.id)
         time.sleep(self.api_delay)
 
     #### cmd2 native functions
@@ -223,6 +272,12 @@ class SpotiCLI(Cmd):
             about
         '''
         self.poutput(self.app_info)
+
+    def do_diagnostics(self, line):
+        self.poutput(f'current user: \t{self.sp_user.current_user().display_name}')
+        self.poutput(f'device name: \t{self.current_endpoint.name}')
+        self.poutput(f'device id: \t{self.current_endpoint.id}')
+        self.poutput(f'api delay: \t{self.api_delay}')
 
     def do_exit(self, line):
         '''
@@ -285,11 +340,11 @@ class SpotiCLI(Cmd):
         self.poutput(now_playing)
 
     def play_next(self, args):
-        self.sp_user.playback_next()
+        self.set_play_next()
         self.poutput('playing next')
 
     def play_previous(self, args):
-        self.sp_user.playback_previous()
+        self.set_play_previous()
         self.poutput('playing previous')
 
     play_parser = argparse.ArgumentParser(prog='play', add_help=False)
@@ -318,7 +373,7 @@ class SpotiCLI(Cmd):
         #if none specified do default action (start playback)
         except AttributeError:
             try:
-                self.sp_user.playback_resume()
+                self.set_play_resume()
             except:
                 pass
                 
@@ -330,7 +385,7 @@ class SpotiCLI(Cmd):
             pause
         '''
         try:
-            self.sp_user.playback_pause()
+            self.set_play_pause()
         except:
             pass
 
@@ -415,7 +470,43 @@ class SpotiCLI(Cmd):
         usage:
             endpoint
         '''
-        self.poutput(self.get_device())
+        endpoint_list = self.get_device()
+        max_index = 0
+        
+        print_string = ''
+        current_active = ''
+
+        for index, item in enumerate(endpoint_list):
+            max_index = index
+            
+            print_string += f'{index + 1}:\t{item.name}'
+
+            if(item.is_active == True):
+                current_active = item.name
+                print_string += ' (active)'
+            print_string += '\n'
+
+        if(current_active == ''):
+            current_active = 'none'
+
+        self.poutput(f'current endpoint: {item.name}')
+        self.poutput('available endpoints:')
+        self.poutput(print_string)
+
+        user_input = input('select endpoint: ')
+        if(user_input == ''):
+            return
+        try:
+            user_input = int(user_input) - 1
+            if(user_input > max_index or user_input < 0):
+                raise ValueError
+        except:
+            self.pwarning('invalid selection')
+            return
+
+        self.current_endpoint = endpoint_list[user_input]
+        self.set_device(self.current_endpoint.id)
+
     
     def repeat_enable(self, args):
         self.set_repeat_state('context')
@@ -522,7 +613,24 @@ class SpotiCLI(Cmd):
         usage:
             lists
         '''
-        self.pwarning('placeholder')
+        max_index = 0
+        user_playlists = self.sp_user.followed_playlists().items
+        for index, item in enumerate(user_playlists):
+            max_index += 1
+            self.poutput(f'{index + 1}: \t{item.name}')
+
+        user_input = input('select playlist: ')
+        if (user_input == ''):
+            return
+
+        try:
+            user_input = int(user_input) - 1
+            if (user_input > max_index or user_input < 0):
+                raise ValueError
+        except:
+            self.pwarning('invalid selection')
+
+        self.set_playback_context(user_playlists[user_input].uri)
 
     def do_previous(self, line):
         '''
@@ -559,7 +667,8 @@ class SpotiCLI(Cmd):
         self.poutput(f'<3 - saved song - {song_name}')
     
     def do_unsave(self, line):
-        '''remove currently playing track from liked songs
+        '''
+        remove currently playing track from liked songs
         
         usage:
             unsave
@@ -639,7 +748,9 @@ class SpotiCLI(Cmd):
 
             if(media_type == 'track'):
                 self.poutput(f'{str(index + 1)}. \t{media_type} - {item.name} by {item.artists[0].name} on {item.album.name}')
-                item_id.append(item.uri)
+                
+                ### tekore playback track uses ID or uri depending on what you want to do 
+                item_id.append(item)
             if(media_type == 'artist'):
                 self.poutput(f'{str(index + 1)}. \t{media_type} - {item.name}')
                 item_id.append(item.uri)
@@ -683,12 +794,12 @@ class SpotiCLI(Cmd):
 
             #play
             if(user_action == 0):
-                self.sp_user.playback_start_context(context_uri=item_id[user_input])
+                self.set_playback_track(item_id[user_input].id)
                 return
             #queue
             if(user_action == 1):
-                self.sp_user.playback_queue_add(uri=item_id[user_input])
+                self.sp_user.playback_queue_add(uri=item_id[user_input].uri)
                 return
 
         else:
-            self.sp_user.playback_start_context(context_uri=item_id[user_input])
+            self.set_playback_context(item_id[user_input])
