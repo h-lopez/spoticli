@@ -59,14 +59,14 @@ class SpotiCLI(Cmd):
 
     ### preloop
     #########################################
-    def preloop(self):
-        try:
-            current_active = self.get_active_device(self.get_device())
-            if(current_active != None):
-                self.current_endpoint = current_active
-        except:
-            self.pwarning('unable to detect active playback device!')
-        return super().preloop()
+    #### def preloop(self):
+    ####     try:
+    ####         current_active = self.get_active_device(self.get_device())
+    ####         if(current_active != None):
+    ####             self.current_endpoint = current_active
+    ####     except:
+    ####         self.pwarning('unable to detect active playback device!')
+    ####     return super().preloop()
 
     #### Misc / Util methods
     ##########################################
@@ -197,16 +197,16 @@ class SpotiCLI(Cmd):
         time.sleep(self.api_delay)
 
     def set_playback_context(self, playback_uri):
-        self.sp_user.playback_start_context(context_uri=playback_uri, device_id=self.current_endpoint.id)
+        self.sp_user.playback_start_context(context_uri=playback_uri)
         time.sleep(self.api_delay)
 
     def set_playback_track(self, new_track):
         if(not isinstance(new_track, list)):
             track_list = []
             track_list.append(new_track)
-            self.sp_user.playback_start_tracks(track_ids=track_list, device_id=self.current_endpoint.id)
+            self.sp_user.playback_start_tracks(track_ids=track_list)
         else:
-            self.sp_user.playback_start_tracks(track_ids=new_track, device_id=self.current_endpoint.id)
+            self.sp_user.playback_start_tracks(track_ids=new_track)
         time.sleep(self.api_delay)
 
     def set_play_next(self):
@@ -222,11 +222,11 @@ class SpotiCLI(Cmd):
         self.sp_user.playback_previous(device_id=self.current_endpoint.id)
 
     def set_position(self, new_time): 
-        self.sp_user.playback_seek(new_time, device_id=self.current_endpoint.id)
+        self.sp_user.playback_seek(new_time)
         time.sleep(self.api_delay)
 
     def set_repeat_state(self, new_repeat_state): 
-        self.sp_user.playback_repeat(new_repeat_state, device_id=self.current_endpoint.id)
+        self.sp_user.playback_repeat(new_repeat_state)
         time.sleep(self.api_delay)
 
     def set_save(self, song_id):
@@ -238,11 +238,11 @@ class SpotiCLI(Cmd):
         time.sleep(self.api_delay)
 
     def set_shuffle_state(self, new_shuffle_state): 
-        self.sp_user.playback_shuffle(new_shuffle_state, device_id=self.current_endpoint.id)
+        self.sp_user.playback_shuffle(new_shuffle_state)
         time.sleep(self.api_delay)
 
     def set_volume(self, new_volume): 
-        self.sp_user.playback_volume(new_volume, device_id=self.current_endpoint.id)
+        self.sp_user.playback_volume(new_volume)
         time.sleep(self.api_delay)
 
     #### cmd2 native functions
