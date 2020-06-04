@@ -279,8 +279,8 @@ class SpotiCLI(Cmd):
         display diagnostic info relating to current session
         '''
         self.poutput(f'current user: \t{self.sp_user.current_user().display_name}')
-        self.poutput(f'device name: \t{self.current_endpoint.name}')
-        self.poutput(f'device id: \t{self.current_endpoint.id}')
+        #self.poutput(f'device name: \t{self.current_endpoint.name}')
+        #self.poutput(f'device id: \t{self.current_endpoint.id}')
         self.poutput(f'api delay: \t{self.api_delay}')
 
     def do_exit(self, line):
@@ -510,9 +510,9 @@ class SpotiCLI(Cmd):
             self.pwarning('invalid selection')
             return
 
-        self.current_endpoint = endpoint_list[user_input]
-        self.set_device(self.current_endpoint.id)
-
+        #self.current_endpoint = endpoint_list[user_input]
+        #self.set_device(self.current_endpoint.id)
+        self.set_device(endpoint_list[user_input].id)
     
     def repeat_enable(self, args):
         self.set_repeat_state('context')
