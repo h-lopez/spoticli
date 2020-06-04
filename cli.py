@@ -210,16 +210,16 @@ class SpotiCLI(Cmd):
         time.sleep(self.api_delay)
 
     def set_play_next(self):
-        self.sp_user.playback_next(device_id=self.current_endpoint.id)
+        self.sp_user.playback_next()
 
     def set_play_resume(self):
-        self.sp_user.playback_resume(device_id=self.current_endpoint.id)
+        self.sp_user.playback_resume()
 
     def set_play_pause(self):
-        self.sp_user.playback_pause(device_id=self.current_endpoint.id)
+        self.sp_user.playback_pause()
 
     def set_play_previous(self):
-        self.sp_user.playback_previous(device_id=self.current_endpoint.id)
+        self.sp_user.playback_previous()
 
     def set_position(self, new_time): 
         self.sp_user.playback_seek(new_time)
