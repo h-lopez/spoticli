@@ -193,7 +193,7 @@ class SpotiCLI(Cmd):
     ## API might return wrong info
 
     def set_device(self, new_device): 
-        self.sp_user.playback_transfer(new_device, force_play=True)
+        self.sp_user.playback_transfer(new_device)
         time.sleep(self.api_delay)
 
     def set_playback_context(self, playback_uri):
