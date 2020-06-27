@@ -16,7 +16,7 @@ import time
 
 from colorama import init, Fore, Back, Style
 
-from tekore import Spotify, util
+from tekore import Spotify
 from cmd2 import Cmd, with_argparser
 #from colorama import init, Fore, Back, Style
 
@@ -510,9 +510,9 @@ class SpotiCLI(Cmd):
             self.pwarning('invalid selection')
             return
 
+        self.set_device(endpoint_list[user_input].id)
         #self.current_endpoint = endpoint_list[user_input]
         #self.set_device(self.current_endpoint.id)
-        self.set_device(endpoint_list[user_input].id)
     
     def repeat_enable(self, args):
         self.set_repeat_state('context')

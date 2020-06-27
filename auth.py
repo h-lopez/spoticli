@@ -9,17 +9,13 @@ auth.py
 responsible for spinning local webserver to capture user creds during login on first use
 '''
 
-import socket
 import errno
+import socket
+import tekore
 import webbrowser
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qsl
-from tekore.auth.refreshing import RefreshingToken, RefreshingCredentials
-
-from tekore import Spotify, util, scope
-
-#cred = util.config_from_file('conf.spoticli')
 
 class RequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -67,7 +63,7 @@ def prompt_for_user_token(
         client_secret: str,
         redirect_uri: str,
         scope=None
-) -> RefreshingToken:
+) -> tekore.RefreshingToken:
     '''
     Prompt for manual authentication.
     Open a web browser for the user to log in with Spotify.
@@ -87,7 +83,7 @@ def prompt_for_user_token(
     RefreshingToken
         automatically refreshing user token
     '''
-    cred = RefreshingCredentials(client_id, client_secret, redirect_uri)
+    cred = tekore.RefreshingCredentials(client_id, client_secret, redirect_uri)
     url = cred.user_authorisation_url(scope, show_dialog=True)
 
     print('Opening browser for Spotify login...')
