@@ -9,7 +9,8 @@ Please note this REQUIRES Spotify Premium to use as most of the APIs are locked 
 * play/pause
 * play next/previous track
 * seek in current track
-* search and queueing\* (only for tracks)
+* search and play album, artists and tracks
+* queueing (only for tracks)
 * repeat/shuffle toggle
 * volume control
 * playback transfer (ie. move playback to a new spotify connect endpoint)
