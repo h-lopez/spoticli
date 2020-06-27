@@ -29,7 +29,7 @@ Please note this REQUIRES Spotify Premium to use as most of the APIs are locked 
 
 ### Installation
 1. install above requirements
-1. setup spotify dev account and have a client id/secret ready to use
+1. setup spotify [dev account])(https://developer.spotify.com/) and have a client id/secret ready to use
 1. clone repo
 1. run 'python3 \_\_init\_\_.py' from the command line
 1. complete authorization process
