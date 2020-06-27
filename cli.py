@@ -648,18 +648,22 @@ class SpotiCLI(Cmd):
         '''
         items_to_fetch = 10
 
-        if(line is not ''):
+        if(line):
             try:
                 items_to_fetch = int(line)
-            except:
-                self.pwarning('invalid count')
 
-        if(items_to_fetch < 0): 
-            items_to_fetch = 3
-            self.pwarning('invalid value, retrieving last 3 items')
-        if(items_to_fetch > 50):
-            items_to_fetch = 50
-            self.pwarning('invalid value, retrieving last 50 items')
+                if(items_to_fetch <= 0): 
+                    items_to_fetch = 3
+                    self.pwarning('value too low, retrieving last 3 items')
+                    pass
+
+                if(items_to_fetch > 50):
+                    items_to_fetch = 50
+                    self.pwarning('value to high, retrieving last 50 items')
+                    pass
+            except:
+                self.pwarning('invalid value, retrieving last 10 items')
+
 
         for index, prev_song in enumerate(self.get_history(items_to_fetch).items):
             self.poutput(f'{index + 1}: {prev_song.track.name} by {prev_song.track.artists[0].name} on {prev_song.track.album.name}')
