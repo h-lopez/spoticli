@@ -646,7 +646,22 @@ class SpotiCLI(Cmd):
         usage:
             previous [integer]
         '''
-        for index, prev_song in enumerate(self.get_history(10).items):
+        items_to_fetch = 10
+
+        if(line is not ''):
+            try:
+                items_to_fetch = int(line)
+            except:
+                self.pwarning('invalid count')
+
+        if(items_to_fetch < 0): 
+            items_to_fetch = 3
+            self.pwarning('invalid value, retrieving last 3 items')
+        if(items_to_fetch > 50):
+            items_to_fetch = 50
+            self.pwarning('invalid value, retrieving last 50 items')
+
+        for index, prev_song in enumerate(self.get_history(items_to_fetch).items):
             self.poutput(f'{index + 1}: {prev_song.track.name} by {prev_song.track.artists[0].name} on {prev_song.track.album.name}')
     
     def do_queue(self, line):
