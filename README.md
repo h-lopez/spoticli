@@ -1,8 +1,8 @@
 # SpotiCLI
 
 ### About
-Command line front end for Spotify
-This program still requires that the Spotify client be installed locally
+Command line front end for Spotify  
+This program still requires that the Spotify client be installed locally  
 Please note this REQUIRES Spotify Premium to use as most of the playback APIs are locked behind premium subscription
 
 ### Features
