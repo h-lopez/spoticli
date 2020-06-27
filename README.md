@@ -6,15 +6,15 @@ This program still requires that the Spotify client be installed locally
 Please note this REQUIRES Spotify Premium to use as most of the playback APIs are locked behind premium subscription
 
 ### Features
-#### * play/pause
-#### * play next/previous track
-#### * seek in current track
-#### * search and queueing\* (only for tracks)
-#### * repeat/shuffle toggle
-#### * volume control
-#### * playback transfer (ie. move playback to a new spotify connect endpoint)
-#### * save/unsave tracks to liked songs 
-#### * view/play your followed/saved playlists
+* play/pause
+* play next/previous track
+* seek in current track
+* search and queueing\* (only for tracks)
+* repeat/shuffle toggle
+* volume control
+* playback transfer (ie. move playback to a new spotify connect endpoint)
+* save/unsave tracks to liked songs 
+* view/play your followed/saved playlists
 
 ### Compatibility
 * Win10 - Fully compatible
