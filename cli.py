@@ -647,7 +647,7 @@ class SpotiCLI(Cmd):
             previous [integer]
         '''
         for index, prev_song in enumerate(self.get_history(10).items):
-            self.poutput(f'{index + 1}: {prev_song.track.name}')
+            self.poutput(f'{index + 1}: {prev_song.track.name} by {prev_song.track.artists[0].name} on {prev_song.track.album.name}')
     
     def do_queue(self, line):
         '''
