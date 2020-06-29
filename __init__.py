@@ -58,7 +58,7 @@ if __name__ == '__main__':
     #explicitly check if conf file exists then create new session based on that
     elif(path.exists('conf.spoticli')):
         spot_creds = tekore.config_from_file('conf.spoticli')
-        spot_token = tekore.prompt_for_user_token(*spot_creds, scope=spotify_scopes)
+        spot_token = auth.prompt_for_user_token(*spot_creds, scope=spotify_scopes)
 
     elif(not path.exists('conf.spoticli')):
         print('you will need your client id and secret')
