@@ -27,7 +27,7 @@ class SpotiCLI(Cmd):
         self.sp_user = Spotify(token)
 
         app_name = 'SpotiCLI'
-        version = '1.20.0515.dev'
+        version = '1.20.0702.dev'
         
         ###define app parameters
         self.app_info = f'\n{app_name} {version}'
