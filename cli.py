@@ -10,12 +10,13 @@ this handles the actual cli that user is presented with
 '''
 
 import argparse
-import time
 import fsop
+import getpass
+import time
 
 from colorama import init, Fore, Back, Style
 
-from tekore import Spotify, util
+from tekore import Spotify
 from cmd2 import Cmd, with_argparser
 #from colorama import init, Fore, Back, Style
 
@@ -26,12 +27,12 @@ class SpotiCLI(Cmd):
         self.sp_user = Spotify(token)
 
         app_name = 'SpotiCLI'
-        version = '1.20.0504.dev'
+        version = '1.20.0702.dev'
         
         ###define app parameters
         self.app_info = f'\n{app_name} {version}'
         self.intro = Fore.CYAN + self.app_info + '\n'
-        self.prompt = f'{Fore.GREEN}spoticli ~$ {Style.RESET_ALL}'
+        self.prompt = f'{Fore.GREEN}{Style.BRIGHT}spoticli ~$ {Style.RESET_ALL}'
 
         self.current_endpoint = ''
         self.api_delay = 0.2
@@ -58,14 +59,14 @@ class SpotiCLI(Cmd):
 
     ### preloop
     #########################################
-    def preloop(self):
-        try:
-            current_active = self.get_active_device(self.get_device())
-            if(current_active != None):
-                self.current_endpoint = current_active
-        except:
-            self.pwarning('unable to detect active playback device!')
-        return super().preloop()
+    #### def preloop(self):
+    ####     try:
+    ####         current_active = self.get_active_device(self.get_device())
+    ####         if(current_active != None):
+    ####             self.current_endpoint = current_active
+    ####     except:
+    ####         self.pwarning('unable to detect active playback device!')
+    ####     return super().preloop()
 
     #### Misc / Util methods
     ##########################################
@@ -95,7 +96,7 @@ class SpotiCLI(Cmd):
     '''
     def generate_timestamp(self, song_data):
         pos_ms = self.ms_to_time(self.get_position(song_data))
-        dur_ms = self.ms_to_time(self.get_duration(song_data))
+        dur_ms = self.ms_to_time(self.get_duration(song_data.item))
 
         return f'{pos_ms} / {dur_ms}'
 
@@ -121,21 +122,21 @@ class SpotiCLI(Cmd):
     ################
 
     def get_album(self, song_data):
-        return song_data.item.album.name
+        return f'{Fore.MAGENTA}{Style.BRIGHT}{song_data.album.name}{Style.RESET_ALL}'
 
     def get_artist(self, song_data):
         ### artists is an array as a song can have multiple artists
         ### if there is multiple artists, return name of _first_ artist in array (usually main artist)
-        return song_data.item.artists[0].name
+        return f'{Fore.CYAN}{Style.BRIGHT}{song_data.artists[0].name}{Style.RESET_ALL}'
 
     def get_song(self, song_data):
-        return song_data.item.name
+        return f'{Fore.GREEN}{Style.BRIGHT}{song_data.name}{Style.RESET_ALL}'
 
     def get_song_id(self, song_data):
-        return song_data.item.id
+        return song_data.id
 
     def get_duration(self, song_data): 
-        return song_data.item.duration_ms
+        return song_data.duration_ms
 
     def get_is_playing(self, song_data):
         return song_data.is_playing
@@ -192,40 +193,40 @@ class SpotiCLI(Cmd):
     ## API might return wrong info
 
     def set_device(self, new_device): 
-        self.sp_user.playback_transfer(new_device, force_play=True)
+        self.sp_user.playback_transfer(new_device)
         time.sleep(self.api_delay)
 
     def set_playback_context(self, playback_uri):
-        self.sp_user.playback_start_context(context_uri=playback_uri, device_id=self.current_endpoint.id)
+        self.sp_user.playback_start_context(context_uri=playback_uri)
         time.sleep(self.api_delay)
 
     def set_playback_track(self, new_track):
         if(not isinstance(new_track, list)):
             track_list = []
             track_list.append(new_track)
-            self.sp_user.playback_start_tracks(track_ids=track_list, device_id=self.current_endpoint.id)
+            self.sp_user.playback_start_tracks(track_ids=track_list)
         else:
-            self.sp_user.playback_start_tracks(track_ids=new_track, device_id=self.current_endpoint.id)
+            self.sp_user.playback_start_tracks(track_ids=new_track)
         time.sleep(self.api_delay)
 
     def set_play_next(self):
-        self.sp_user.playback_next(device_id=self.current_endpoint.id)
+        self.sp_user.playback_next()
 
     def set_play_resume(self):
-        self.sp_user.playback_resume(device_id=self.current_endpoint.id)
+        self.sp_user.playback_resume()
 
     def set_play_pause(self):
-        self.sp_user.playback_pause(device_id=self.current_endpoint.id)
+        self.sp_user.playback_pause()
 
     def set_play_previous(self):
-        self.sp_user.playback_previous(device_id=self.current_endpoint.id)
+        self.sp_user.playback_previous()
 
     def set_position(self, new_time): 
-        self.sp_user.playback_seek(new_time, device_id=self.current_endpoint.id)
+        self.sp_user.playback_seek(new_time)
         time.sleep(self.api_delay)
 
     def set_repeat_state(self, new_repeat_state): 
-        self.sp_user.playback_repeat(new_repeat_state, device_id=self.current_endpoint.id)
+        self.sp_user.playback_repeat(new_repeat_state)
         time.sleep(self.api_delay)
 
     def set_save(self, song_id):
@@ -237,11 +238,11 @@ class SpotiCLI(Cmd):
         time.sleep(self.api_delay)
 
     def set_shuffle_state(self, new_shuffle_state): 
-        self.sp_user.playback_shuffle(new_shuffle_state, device_id=self.current_endpoint.id)
+        self.sp_user.playback_shuffle(new_shuffle_state)
         time.sleep(self.api_delay)
 
     def set_volume(self, new_volume): 
-        self.sp_user.playback_volume(new_volume, device_id=self.current_endpoint.id)
+        self.sp_user.playback_volume(new_volume)
         time.sleep(self.api_delay)
 
     #### cmd2 native functions
@@ -274,9 +275,12 @@ class SpotiCLI(Cmd):
         self.poutput(self.app_info)
 
     def do_diagnostics(self, line):
+        '''
+        display diagnostic info relating to current session
+        '''
         self.poutput(f'current user: \t{self.sp_user.current_user().display_name}')
-        self.poutput(f'device name: \t{self.current_endpoint.name}')
-        self.poutput(f'device id: \t{self.current_endpoint.id}')
+        #self.poutput(f'device name: \t{self.current_endpoint.name}')
+        #self.poutput(f'device id: \t{self.current_endpoint.id}')
         self.poutput(f'api delay: \t{self.api_delay}')
 
     def do_exit(self, line):
@@ -295,9 +299,9 @@ class SpotiCLI(Cmd):
         usage:
             logout
         '''
-        self.poutput('are you sure? type \'yes\' to proceed')
-        is_user_sure = input()
-        if (is_user_sure.lower() == 'yes'):
+        is_user_sure = getpass.getpass('are you sure? type \'yes\' to proceed: ')
+        self.poutput(is_user_sure)
+        if(is_user_sure == 'yes'):
             if(fsop.fsop.delete_conf(self)):
                 self.pwarning('user creds deleted')
                 return
@@ -323,20 +327,20 @@ class SpotiCLI(Cmd):
         '''
         #now_playing = f'[{playing_state} - {timestamp}] {song_name} by {artist_name} on {album_name}'
         song_data = self.get_current_playback()
-        song_name = self.get_song(song_data)
-        song_album = self.get_album(song_data)
-        song_artist = self.get_artist(song_data)
+        song_name = self.get_song(song_data.item)
+        song_album = self.get_album(song_data.item)
+        song_artist = self.get_artist(song_data.item)
         
         song_playing = self.get_is_playing(song_data)
 
         if(song_playing == True):
-            song_playing = 'Playing'
+            song_playing = f'{Fore.BLUE}{Style.BRIGHT}Playing'
         else:
-            song_playing = 'Stopped'
+            song_playing = f'{Fore.RED}{Style.BRIGHT}Stopped'
 
         time_stamp = self.generate_timestamp(song_data)
         
-        now_playing = f'[{song_playing} - {time_stamp}] {song_name} by {song_artist} on {song_album}'
+        now_playing = f'[{song_playing} - {time_stamp}{Style.RESET_ALL}] {song_name} by {song_artist} on {song_album}'
         self.poutput(now_playing)
 
     def play_next(self, args):
@@ -414,7 +418,7 @@ class SpotiCLI(Cmd):
 
         song_data = self.get_current_playback()
         song_pos = self.get_position(song_data)
-        song_dur = self.get_duration(song_data)
+        song_dur = self.get_duration(song_data.item)
 
         #if new time is larger than song duration, quit
         if((new_pos > song_dur) or (new_pos < (song_dur * -1))):
@@ -493,9 +497,11 @@ class SpotiCLI(Cmd):
         self.poutput('available endpoints:')
         self.poutput(print_string)
 
-        user_input = input('select endpoint: ')
+        user_input = getpass.getpass('select endpoint: ')
         if(user_input == ''):
             return
+        self.poutput(f'selected: {user_input}')
+
         try:
             user_input = int(user_input) - 1
             if(user_input > max_index or user_input < 0):
@@ -504,9 +510,9 @@ class SpotiCLI(Cmd):
             self.pwarning('invalid selection')
             return
 
-        self.current_endpoint = endpoint_list[user_input]
-        self.set_device(self.current_endpoint.id)
-
+        self.set_device(endpoint_list[user_input].id)
+        #self.current_endpoint = endpoint_list[user_input]
+        #self.set_device(self.current_endpoint.id)
     
     def repeat_enable(self, args):
         self.set_repeat_state('context')
@@ -619,13 +625,14 @@ class SpotiCLI(Cmd):
             max_index += 1
             self.poutput(f'{index + 1}: \t{item.name}')
 
-        user_input = input('select playlist: ')
-        if (user_input == ''):
+        user_input = getpass.getpass('select playlist: ')
+        if(user_input == ''):
             return
+        self.poutput(f'selected: {user_input}')
 
         try:
             user_input = int(user_input) - 1
-            if (user_input > max_index or user_input < 0):
+            if(user_input > max_index or user_input < 0):
                 raise ValueError
         except:
             self.pwarning('invalid selection')
@@ -639,8 +646,27 @@ class SpotiCLI(Cmd):
         usage:
             previous [integer]
         '''
-        for index, prev_song in enumerate(self.get_history(10).items):
-            self.poutput(f'{index + 1}: {prev_song.track.name}')
+        items_to_fetch = 10
+
+        if(line):
+            try:
+                items_to_fetch = int(line)
+
+                if(items_to_fetch <= 0): 
+                    items_to_fetch = 3
+                    self.pwarning('value too low, retrieving last 3 items')
+                    pass
+
+                if(items_to_fetch > 50):
+                    items_to_fetch = 50
+                    self.pwarning('value too high, retrieving last 50 items')
+                    pass
+            except:
+                self.pwarning('invalid value, retrieving last 10 items')
+
+
+        for index, prev_song in enumerate(self.get_history(items_to_fetch).items):
+            self.poutput(f'{index + 1}: {self.get_song(prev_song.track)} by {self.get_artist(prev_song.track)} on {self.get_album(prev_song.track)}')
     
     def do_queue(self, line):
         '''
@@ -660,8 +686,8 @@ class SpotiCLI(Cmd):
         '''
         song_data  = self.get_playback()
 
-        song_id = self.get_song_id(song_data)
-        song_name = self.get_song(song_data)
+        song_id = self.get_song_id(song_data.item)
+        song_name = self.get_song(song_data.item)
 
         self.set_save([song_id])
         self.poutput(f'<3 - saved song - {song_name}')
@@ -675,8 +701,8 @@ class SpotiCLI(Cmd):
         '''
         song_data  = self.get_playback()
 
-        song_id = self.get_song_id(song_data)
-        song_name = self.get_song(song_data)
+        song_id = self.get_song_id(song_data.item)
+        song_name = self.get_song(song_data.item)
 
         self.set_unsave([song_id])
         self.poutput(f'</3 - removed song - {song_name}')
@@ -713,16 +739,16 @@ class SpotiCLI(Cmd):
 
         ### check for flags in beginning of search string. 
         ### if found, remove (so we don't do a search for the flag)
-        if ('-a' in search_string[0]):
+        if('-a' in search_string[0]):
             result_type = result_type + ('artist',)
             search_string.remove('-a')
-        elif ('-b' in search_string[0]):
+        elif('-b' in search_string[0]):
             result_type = result_type + ('album',)
             search_string.remove('-b')
-        elif ('-p' in search_string[0]):
+        elif('-p' in search_string[0]):
             result_type = result_type + ('playlist',)
             search_string.remove('-p')
-        elif ('-t' in search_string[0]):
+        elif('-t' in search_string[0]):
             result_type = result_type + ('track',)
             search_string.remove('-t')
 
@@ -747,15 +773,16 @@ class SpotiCLI(Cmd):
             media_type = item.type
 
             if(media_type == 'track'):
-                self.poutput(f'{str(index + 1)}. \t{media_type} - {item.name} by {item.artists[0].name} on {item.album.name}')
+                self.poutput(f'{str(index + 1)}. \t{media_type} - {self.get_song(item)} by {self.get_artist(item)} on {self.get_album(item)}')
                 
                 ### tekore playback track uses ID or uri depending on what you want to do 
+                ### save entire item for future ref so we can decide action later
                 item_id.append(item)
             if(media_type == 'artist'):
-                self.poutput(f'{str(index + 1)}. \t{media_type} - {item.name}')
+                self.poutput(f'{str(index + 1)}. \t{media_type} - {self.get_artist(item)}')
                 item_id.append(item.uri)
             if(media_type == 'album'):
-                self.poutput(f'{str(index + 1)}. \t{media_type} - {item.name} by {item.artists[0].name}')
+                self.poutput(f'{str(index + 1)}. \t{media_type} - {self.get_album(item)} by {self.get_artist(item)}')
                 item_id.append(item.uri)
             if(media_type == 'playlist'):
                 self.poutput(f'{str(index + 1)}. \t{media_type} - {item.name}')
@@ -765,9 +792,10 @@ class SpotiCLI(Cmd):
             #print(f'{index} : {self.get_song(item[index].items[0].name)}')
 
         ### check user input for sanity
-        user_input = input('select item: ')
-        if(user_input) == '':
+        user_input = getpass.getpass('select item: ')
+        if(user_input == ''):
             return
+        self.poutput(f'selected: {user_input}')
 
         try:
             user_input = int(user_input) - 1
@@ -781,9 +809,11 @@ class SpotiCLI(Cmd):
         if(result_type == ('track',)):
             self.poutput('1. play')
             self.poutput('2. queue')
-            user_action = input('select action: ')
-            if(user_action) == '':
+            user_action = getpass.getpass('select action: ')
+            if(user_action == ''):
                 return
+            self.poutput(f'selected: {user_action}')
+
             try:
                 user_action = int(user_action) - 1
                 if(user_action > 2 or user_action < 0):

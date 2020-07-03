@@ -7,11 +7,12 @@ released under the MIT license
 
 ## import auth library for authentication
 import auth
+import getpass
 import os
 import pickle
+import tekore
 
 from cli import SpotiCLI
-from tekore import util, scope
 from os import path
 from os.path import expanduser
 
@@ -24,13 +25,13 @@ if __name__ == '__main__':
     #slash_type = user_home.endswith
 
     spotify_scopes = (  
-        scope.scopes.user_library_read +
-        scope.scopes.user_library_modify +
-        scope.scopes.user_read_currently_playing +
-        scope.scopes.user_read_playback_state +
-        scope.scopes.user_modify_playback_state +
-        scope.scopes.user_read_recently_played +
-        scope.scopes.playlist_read_private
+        tekore.scope.user_library_read +
+        tekore.scope.user_library_modify +
+        tekore.scope.user_read_currently_playing +
+        tekore.scope.user_read_playback_state +
+        tekore.scope.user_modify_playback_state +
+        tekore.scope.user_read_recently_played +
+        tekore.scope.playlist_read_private
         )
     
     os.chdir(expanduser('~'))
@@ -56,7 +57,7 @@ if __name__ == '__main__':
 
     #explicitly check if conf file exists then create new session based on that
     elif(path.exists('conf.spoticli')):
-        spot_creds = util.config_from_file('conf.spoticli')
+        spot_creds = tekore.config_from_file('conf.spoticli')
         spot_token = auth.prompt_for_user_token(*spot_creds, scope=spotify_scopes)
 
     elif(not path.exists('conf.spoticli')):
@@ -64,8 +65,8 @@ if __name__ == '__main__':
         print('you can find this from the spotify developer dashboard')
         print('devloper.spotify.com/dashboard')
         print('remember most api functionality is locked to premium subscriptions')
-        client_id = input('input client id: \n')
-        client_key = input('input client secret: \n')
+        client_id = getpass.getpass('input client id: ')
+        client_key = getpass.getpass('input client secret: ')
 
         #quick sanity check to make sure secret and id are same length and are 32 characters long
         if(len(client_id) != len(client_key) or (len(client_id) != 32)):
@@ -86,7 +87,7 @@ if __name__ == '__main__':
         except:
             print('error while creating auth file, do you have proper permissions?')
             exit()
-        spot_creds = util.config_from_file('conf.spoticli')
+        spot_creds = tekore.config_from_file('conf.spoticli')
         spot_token = auth.prompt_for_user_token(*spot_creds, scope=spotify_scopes)
 
             #creds.prompt(client_id, secret) #redirect uri not needed from user, will always be localhost:8080
@@ -101,7 +102,7 @@ if __name__ == '__main__':
     ### spoticli will handle auth user and periodically refresh token as needed
 
     #if auth failed and returned a null token, exit program
-    if (spot_token is None):
+    if(spot_token is None):
         print('invalid token detected')
         exit()
     try:
