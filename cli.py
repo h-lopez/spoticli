@@ -122,12 +122,19 @@ class SpotiCLI(Cmd):
     ################
 
     def get_album(self, song_data):
-        return f'{Fore.MAGENTA}{Style.BRIGHT}{song_data.album.name}{Style.RESET_ALL}'
+        try:
+            return f'{Fore.MAGENTA}{Style.BRIGHT}{song_data.album.name}{Style.RESET_ALL}'
+        except:
+            return f'{Fore.MAGENTA}{Style.BRIGHT}{song_data.name}{Style.RESET_ALL}'
 
     def get_artist(self, song_data):
         ### artists is an array as a song can have multiple artists
         ### if there is multiple artists, return name of _first_ artist in array (usually main artist)
-        return f'{Fore.CYAN}{Style.BRIGHT}{song_data.artists[0].name}{Style.RESET_ALL}'
+        try:
+            return f'{Fore.CYAN}{Style.BRIGHT}{song_data.artists[0].name}{Style.RESET_ALL}'
+        except:
+            return f'{Fore.CYAN}{Style.BRIGHT}{song_data.name}{Style.RESET_ALL}'
+
 
     def get_song(self, song_data):
         return f'{Fore.GREEN}{Style.BRIGHT}{song_data.name}{Style.RESET_ALL}'
