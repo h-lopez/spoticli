@@ -30,8 +30,8 @@ class SpotiCLI(Cmd):
         version = '1.20.0702.dev'
         
         ###define app parameters
-        self.app_info = f'\n{app_name} {version}'
-        self.intro = Fore.CYAN + self.app_info + '\n'
+        self.app_info = f'{Fore.CYAN}{Style.BRIGHT}\n{app_name} {version}{Style.RESET_ALL}'
+        self.intro = self.app_info + '\n'
         self.prompt = f'{Fore.GREEN}{Style.BRIGHT}spoticli ~$ {Style.RESET_ALL}'
 
         self.current_endpoint = ''
