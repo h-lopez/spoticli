@@ -32,7 +32,7 @@ class SpotiCLI(Cmd):
         ###define app parameters
         self.app_info = f'\n{app_name} {version}'
         self.intro = Fore.CYAN + self.app_info + '\n'
-        self.prompt = f'{Fore.GREEN}spoticli ~$ {Style.RESET_ALL}'
+        self.prompt = f'{Fore.GREEN}{Style.BRIGHT}spoticli ~$ {Style.RESET_ALL}'
 
         self.current_endpoint = ''
         self.api_delay = 0.2
@@ -96,7 +96,7 @@ class SpotiCLI(Cmd):
     '''
     def generate_timestamp(self, song_data):
         pos_ms = self.ms_to_time(self.get_position(song_data))
-        dur_ms = self.ms_to_time(self.get_duration(song_data))
+        dur_ms = self.ms_to_time(self.get_duration(song_data.item))
 
         return f'{pos_ms} / {dur_ms}'
 
@@ -122,21 +122,21 @@ class SpotiCLI(Cmd):
     ################
 
     def get_album(self, song_data):
-        return song_data.item.album.name
+        return f'{Fore.MAGENTA}{Style.BRIGHT}{song_data.album.name}{Style.RESET_ALL}'
 
     def get_artist(self, song_data):
         ### artists is an array as a song can have multiple artists
         ### if there is multiple artists, return name of _first_ artist in array (usually main artist)
-        return song_data.item.artists[0].name
+        return f'{Fore.CYAN}{Style.BRIGHT}{song_data.artists[0].name}{Style.RESET_ALL}'
 
     def get_song(self, song_data):
-        return song_data.item.name
+        return f'{Fore.GREEN}{Style.BRIGHT}{song_data.name}{Style.RESET_ALL}'
 
     def get_song_id(self, song_data):
-        return song_data.item.id
+        return song_data.id
 
     def get_duration(self, song_data): 
-        return song_data.item.duration_ms
+        return song_data.duration_ms
 
     def get_is_playing(self, song_data):
         return song_data.is_playing
@@ -327,20 +327,20 @@ class SpotiCLI(Cmd):
         '''
         #now_playing = f'[{playing_state} - {timestamp}] {song_name} by {artist_name} on {album_name}'
         song_data = self.get_current_playback()
-        song_name = self.get_song(song_data)
-        song_album = self.get_album(song_data)
-        song_artist = self.get_artist(song_data)
+        song_name = self.get_song(song_data.item)
+        song_album = self.get_album(song_data.item)
+        song_artist = self.get_artist(song_data.item)
         
         song_playing = self.get_is_playing(song_data)
 
         if(song_playing == True):
-            song_playing = 'Playing'
+            song_playing = f'{Fore.BLUE}{Style.BRIGHT}Playing'
         else:
-            song_playing = 'Stopped'
+            song_playing = f'{Fore.RED}{Style.BRIGHT}Stopped'
 
         time_stamp = self.generate_timestamp(song_data)
         
-        now_playing = f'[{song_playing} - {time_stamp}] {song_name} by {song_artist} on {song_album}'
+        now_playing = f'[{song_playing} - {time_stamp}{Style.RESET_ALL}] {song_name} by {song_artist} on {song_album}'
         self.poutput(now_playing)
 
     def play_next(self, args):
@@ -418,7 +418,7 @@ class SpotiCLI(Cmd):
 
         song_data = self.get_current_playback()
         song_pos = self.get_position(song_data)
-        song_dur = self.get_duration(song_data)
+        song_dur = self.get_duration(song_data.item)
 
         #if new time is larger than song duration, quit
         if((new_pos > song_dur) or (new_pos < (song_dur * -1))):
@@ -659,14 +659,14 @@ class SpotiCLI(Cmd):
 
                 if(items_to_fetch > 50):
                     items_to_fetch = 50
-                    self.pwarning('value to high, retrieving last 50 items')
+                    self.pwarning('value too high, retrieving last 50 items')
                     pass
             except:
                 self.pwarning('invalid value, retrieving last 10 items')
 
 
         for index, prev_song in enumerate(self.get_history(items_to_fetch).items):
-            self.poutput(f'{index + 1}: {prev_song.track.name} by {prev_song.track.artists[0].name} on {prev_song.track.album.name}')
+            self.poutput(f'{index + 1}: {self.get_song(prev_song.track)} by {self.get_artist(prev_song.track)} on {self.get_album(prev_song.track)}')
     
     def do_queue(self, line):
         '''
@@ -686,8 +686,8 @@ class SpotiCLI(Cmd):
         '''
         song_data  = self.get_playback()
 
-        song_id = self.get_song_id(song_data)
-        song_name = self.get_song(song_data)
+        song_id = self.get_song_id(song_data.item)
+        song_name = self.get_song(song_data.item)
 
         self.set_save([song_id])
         self.poutput(f'<3 - saved song - {song_name}')
@@ -701,8 +701,8 @@ class SpotiCLI(Cmd):
         '''
         song_data  = self.get_playback()
 
-        song_id = self.get_song_id(song_data)
-        song_name = self.get_song(song_data)
+        song_id = self.get_song_id(song_data.item)
+        song_name = self.get_song(song_data.item)
 
         self.set_unsave([song_id])
         self.poutput(f'</3 - removed song - {song_name}')
@@ -773,15 +773,16 @@ class SpotiCLI(Cmd):
             media_type = item.type
 
             if(media_type == 'track'):
-                self.poutput(f'{str(index + 1)}. \t{media_type} - {item.name} by {item.artists[0].name} on {item.album.name}')
+                self.poutput(f'{str(index + 1)}. \t{media_type} - {self.get_song(item)} by {self.get_artist(item)} on {self.get_album(item)}')
                 
                 ### tekore playback track uses ID or uri depending on what you want to do 
+                ### save entire item for future ref so we can decide action later
                 item_id.append(item)
             if(media_type == 'artist'):
-                self.poutput(f'{str(index + 1)}. \t{media_type} - {item.name}')
+                self.poutput(f'{str(index + 1)}. \t{media_type} - {self.get_artist(item)}')
                 item_id.append(item.uri)
             if(media_type == 'album'):
-                self.poutput(f'{str(index + 1)}. \t{media_type} - {item.name} by {item.artists[0].name}')
+                self.poutput(f'{str(index + 1)}. \t{media_type} - {self.get_album(item)} by {self.get_artist(item)}')
                 item_id.append(item.uri)
             if(media_type == 'playlist'):
                 self.poutput(f'{str(index + 1)}. \t{media_type} - {item.name}')
