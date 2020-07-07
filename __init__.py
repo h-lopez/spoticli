@@ -8,6 +8,7 @@ released under the MIT license
 ## import auth library for authentication
 import auth
 import getpass
+import fsop
 import os
 import pickle
 import tekore
@@ -52,8 +53,14 @@ if __name__ == '__main__':
             spot_token = pickle.load(open('auth.spoticli', 'rb'))
         except:
             print('cannot read auth.spoticli')
-            print('this may be a corruption in the file or something else')
-            print('attempt deleting file and restarting spoticli')
+            print('attempting to delete auth.spoticli')
+            if(fsop.fsop.delete_auth(self)):
+                print('auth.spoticli deleted')
+                print('please restart spoticli')
+                exit()
+            print('unable to delete spoticli.auth')
+            print('do you have read/write access to directory?')
+            print('please attempt manually deleting the file and restarting spoticli')
             print('file is located in .config/spoticli/ directory')
             exit()
         ##skip directly to authentication portion
