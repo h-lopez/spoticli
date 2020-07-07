@@ -93,6 +93,13 @@ class SpotiCLI(Cmd):
         for index, item in enumerate(list_to_print):
             self.poutput(f'{index + 1}:\t{item}')
 
+    def display_song(self, song_data):
+        song_name = self.get_song(song_data)
+        song_artist = self.get_artist(song_data)
+        song_album = self.get_album(song_data)
+
+        return f'{song_name} by {song_artist} on {song_album}'
+
     #### accessor / mutators
     #### getter / setter, whatever
     #### these make the spotify api calls
@@ -387,10 +394,6 @@ class SpotiCLI(Cmd):
             self.pwarning('no available playback devices deteched')
             self.pwarning('assign one with the endpoint command')
             return
-
-        song_name = self.get_song(song_data.item)
-        song_album = self.get_album(song_data.item)
-        song_artist = self.get_artist(song_data.item)
         
         song_playing = self.get_is_playing(song_data)
 
@@ -401,7 +404,7 @@ class SpotiCLI(Cmd):
 
         time_stamp = self.generate_timestamp(song_data)
         
-        now_playing = f'[{song_playing} - {time_stamp}{Style.RESET_ALL}] {song_name} by {song_artist} on {song_album}'
+        now_playing = f'[{song_playing} - {time_stamp}{Style.RESET_ALL}] {self.display_song(song_data.item)}'
         self.poutput(now_playing)
 
     def play_next(self, args):
@@ -787,12 +790,9 @@ class SpotiCLI(Cmd):
             return
 
         song_id = self.get_song_id(song_data.item)
-        song_name = self.get_song(song_data.item)
-        song_artist = self.get_artist(song_data.item)
-        song_album = self.get_album(song_data.item)
 
         self.set_save([song_id])
-        self.poutput(f'{Fore.RED}{Style.BRIGHT}<3{Style.RESET_ALL} - saved song - {song_name} by {song_artist} on {song_album}')
+        self.poutput(f'{Fore.RED}{Style.BRIGHT}<3{Style.RESET_ALL} - saved song - {self.display_song(song_data.item)}')
     
     def do_unsave(self, line):
         '''
@@ -810,12 +810,9 @@ class SpotiCLI(Cmd):
             return
 
         song_id = self.get_song_id(song_data.item)
-        song_name = self.get_song(song_data.item)
-        song_artist = self.get_artist(song_data.item)
-        song_album = self.get_album(song_data.item)
 
         self.set_unsave([song_id])
-        self.poutput(f'{Fore.RED}{Style.BRIGHT}</3{Style.RESET_ALL} - removed song - {song_name} by {song_artist} on {song_album}')
+        self.poutput(f'{Fore.RED}{Style.BRIGHT}</3{Style.RESET_ALL} - removed song - {self.display_song(song_data.item)}')
 
     def do_search(self, line):
         '''
@@ -883,7 +880,7 @@ class SpotiCLI(Cmd):
             media_type = item.type
 
             if(media_type == 'track'):
-                self.poutput(f'{str(index + 1)}. \t{media_type} - {self.get_song(item)} by {self.get_artist(item)} on {self.get_album(item)}')
+                self.poutput(f'{str(index + 1)}. \t{media_type} - {self.display_song(item)}')
                 
                 ### tekore playback track uses ID or uri depending on what you want to do 
                 ### save entire item for future ref so we can decide action later
@@ -941,6 +938,8 @@ class SpotiCLI(Cmd):
             #queue
             if(user_action == 1):
                 self.sp_user.playback_queue_add(uri=item_id[user_input].uri)
+
+                self.poutput(f'song queued - {self.display_song(item_id[user_input])}')
                 return
 
         else:
