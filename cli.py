@@ -181,7 +181,7 @@ class SpotiCLI(Cmd):
 
     def get_shuffle_state(self): 
         try:
-            self.get_playback().shuffle_state
+            return self.get_playback().shuffle_state
         except:
             self.pwarning('no available playback devices deteched')
             self.pwarning('assign one with the endpoint command')
@@ -189,7 +189,7 @@ class SpotiCLI(Cmd):
 
     def get_volume(self): 
         try:
-            self.get_playback().device.volume_percent
+            return self.get_playback().device.volume_percent
         except:
             self.pwarning('no available playback devices deteched')
             self.pwarning('assign one with the endpoint command')
@@ -221,24 +221,49 @@ class SpotiCLI(Cmd):
         time.sleep(self.api_delay)
 
     def set_play_next(self):
-        self.sp_user.playback_next()
-        time.sleep(self.api_delay)
+        try:
+            self.sp_user.playback_next()
+            time.sleep(self.api_delay)
+        except:
+            self.pwarning('no available playback devices deteched')
+            self.pwarning('assign one with the endpoint command')
+            return None
 
     def set_play_resume(self):
-        self.sp_user.playback_resume()
-        time.sleep(self.api_delay)
+        try:
+            self.sp_user.playback_resume()
+            time.sleep(self.api_delay)
+        except:
+            self.pwarning('no available playback devices deteched')
+            self.pwarning('assign one with the endpoint command')
+            return None
 
     def set_play_pause(self):
-        self.sp_user.playback_pause()
-        time.sleep(self.api_delay)
+        try:
+            self.sp_user.playback_pause()
+            time.sleep(self.api_delay)
+        except:
+            self.pwarning('no available playback devices deteched')
+            self.pwarning('assign one with the endpoint command')
+            return None
 
     def set_play_previous(self):
-        self.sp_user.playback_previous()
-        time.sleep(self.api_delay)
+        try:
+            self.sp_user.playback_previous()
+            time.sleep(self.api_delay)
+        except:
+            self.pwarning('no available playback devices deteched')
+            self.pwarning('assign one with the endpoint command')
+            return None
 
     def set_position(self, new_time): 
-        self.sp_user.playback_seek(new_time)
-        time.sleep(self.api_delay)
+        try:
+            self.sp_user.playback_seek(new_time)
+            time.sleep(self.api_delay)
+        except:
+            self.pwarning('no available playback devices deteched')
+            self.pwarning('assign one with the endpoint command')
+            return None
 
     def set_repeat_state(self, new_repeat_state): 
         try:
@@ -352,6 +377,12 @@ class SpotiCLI(Cmd):
         '''
         #now_playing = f'[{playing_state} - {timestamp}] {song_name} by {artist_name} on {album_name}'
         song_data = self.get_current_playback()
+
+        if(song_data == None):
+            self.pwarning('no available playback devices deteched')
+            self.pwarning('assign one with the endpoint command')
+            return
+
         song_name = self.get_song(song_data.item)
         song_album = self.get_album(song_data.item)
         song_artist = self.get_artist(song_data.item)
@@ -369,12 +400,14 @@ class SpotiCLI(Cmd):
         self.poutput(now_playing)
 
     def play_next(self, args):
-        self.set_play_next()
+        if(self.set_play_next() == None):
+            return
         self.poutput('playing next')
         self.do_current(self)
 
     def play_previous(self, args):
-        self.set_play_previous()
+        if(self.set_play_previous() == None):
+            return
         self.poutput('playing previous')
         self.do_current(self)
 
@@ -404,7 +437,8 @@ class SpotiCLI(Cmd):
         #if none specified do default action (start playback)
         except AttributeError:
             try:
-                self.set_play_resume()
+                if(self.set_play_resume() == None):
+                    return
             except:
                 pass
             self.do_current(self)
@@ -417,7 +451,8 @@ class SpotiCLI(Cmd):
             pause
         '''
         try:
-            self.set_play_pause()
+            if(self.set_play_pause() == None):
+                return
         except:
             pass
         self.do_current(self)
@@ -446,6 +481,11 @@ class SpotiCLI(Cmd):
             return
 
         song_data = self.get_current_playback()
+        if(song_data == None):
+            self.pwarning('no available playback devices deteched')
+            self.pwarning('assign one with the endpoint command')
+            return
+
         song_pos = self.get_position(song_data)
         song_dur = self.get_duration(song_data.item)
 
@@ -459,6 +499,8 @@ class SpotiCLI(Cmd):
             self.set_position(song_pos)
         else:
             self.set_position(new_pos)
+
+        self.do_current(self)
 
     #### playback properties
     ##########################################
@@ -507,6 +549,11 @@ class SpotiCLI(Cmd):
             endpoint
         '''
         endpoint_list = self.get_device()
+
+        if(len(endpoint_list) == 0):
+            self.pwarning('no available endpoints detected')
+            self.pwarning('make sure there is an available endpoint before assigning playback again')
+            return
 
         max_index = 0
         
@@ -731,11 +778,18 @@ class SpotiCLI(Cmd):
         '''
         song_data  = self.get_playback()
 
+        if(song_data == None):
+            self.pwarning('no available playback devices deteched')
+            self.pwarning('assign one with the endpoint command')
+            return
+
         song_id = self.get_song_id(song_data.item)
         song_name = self.get_song(song_data.item)
+        song_artist = self.get_artist(song_data.item)
+        song_album = self.get_album(song_data.item)
 
         self.set_save([song_id])
-        self.poutput(f'<3 - saved song - {song_name}')
+        self.poutput(f'{Fore.RED}{Style.BRIGHT}<3{Style.RESET_ALL} - saved song - {song_name} by {song_artist} on {song_album}')
     
     def do_unsave(self, line):
         '''
@@ -747,11 +801,18 @@ class SpotiCLI(Cmd):
 
         song_data  = self.get_playback()
 
+        if(song_data == None):
+            self.pwarning('no available playback devices deteched')
+            self.pwarning('assign one with the endpoint command')
+            return
+
         song_id = self.get_song_id(song_data.item)
         song_name = self.get_song(song_data.item)
+        song_artist = self.get_artist(song_data.item)
+        song_album = self.get_album(song_data.item)
 
         self.set_unsave([song_id])
-        self.poutput(f'</3 - removed song - {song_name}')
+        self.poutput(f'{Fore.RED}{Style.BRIGHT}</3{Style.RESET_ALL} - removed song - {song_name} by {song_artist} on {song_album}')
 
     def do_search(self, line):
         '''
