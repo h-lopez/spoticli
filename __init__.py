@@ -51,7 +51,10 @@ if __name__ == '__main__':
         try:
             spot_token = pickle.load(open('auth.spoticli', 'rb'))
         except:
-            print('cannot read token.spoticli')
+            print('cannot read auth.spoticli')
+            print('this may be a corruption in the file or something else')
+            print('attempt deleting file and restarting spoticli')
+            print('file is located in .config/spoticli/ directory')
             exit()
         ##skip directly to authentication portion
 
