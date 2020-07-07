@@ -224,6 +224,7 @@ class SpotiCLI(Cmd):
         try:
             self.sp_user.playback_next()
             time.sleep(self.api_delay)
+            self.do_current('')
         except:
             self.pwarning('no available playback devices deteched')
             self.pwarning('assign one with the endpoint command')
@@ -233,6 +234,7 @@ class SpotiCLI(Cmd):
         try:
             self.sp_user.playback_resume()
             time.sleep(self.api_delay)
+            self.do_current('')
         except:
             self.pwarning('no available playback devices deteched')
             self.pwarning('assign one with the endpoint command')
@@ -242,6 +244,7 @@ class SpotiCLI(Cmd):
         try:
             self.sp_user.playback_pause()
             time.sleep(self.api_delay)
+            self.do_current('')
         except:
             self.pwarning('no available playback devices deteched')
             self.pwarning('assign one with the endpoint command')
@@ -251,6 +254,7 @@ class SpotiCLI(Cmd):
         try:
             self.sp_user.playback_previous()
             time.sleep(self.api_delay)
+            self.do_current('')
         except:
             self.pwarning('no available playback devices deteched')
             self.pwarning('assign one with the endpoint command')
@@ -260,6 +264,7 @@ class SpotiCLI(Cmd):
         try:
             self.sp_user.playback_seek(new_time)
             time.sleep(self.api_delay)
+            self.do_current('')
         except:
             self.pwarning('no available playback devices deteched')
             self.pwarning('assign one with the endpoint command')
@@ -499,8 +504,6 @@ class SpotiCLI(Cmd):
             self.set_position(song_pos)
         else:
             self.set_position(new_pos)
-
-        self.do_current(self)
 
     #### playback properties
     ##########################################
@@ -932,6 +935,8 @@ class SpotiCLI(Cmd):
             #play
             if(user_action == 0):
                 self.set_playback_track(item_id[user_input].id)
+                time.sleep(self.api_delay)
+                self.do_current('')
                 return
             #queue
             if(user_action == 1):
@@ -940,3 +945,5 @@ class SpotiCLI(Cmd):
 
         else:
             self.set_playback_context(item_id[user_input])
+            time.sleep(self.api_delay)
+            self.do_current('')
