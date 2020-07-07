@@ -35,7 +35,7 @@ class SpotiCLI(Cmd):
         self.prompt = f'{Fore.GREEN}{Style.BRIGHT}spoticli ~$ {Style.RESET_ALL}'
 
         self.current_endpoint = ''
-        self.api_delay = 0.3
+        self.api_delay = 0.2
 
         #hide built-in cmd2 functions. this will leave them available for use but will be hidden from tab completion (and docs)
         self.hidden_commands.append('alias')
@@ -218,15 +218,19 @@ class SpotiCLI(Cmd):
 
     def set_play_next(self):
         self.sp_user.playback_next()
+        time.sleep(self.api_delay)
 
     def set_play_resume(self):
         self.sp_user.playback_resume()
+        time.sleep(self.api_delay)
 
     def set_play_pause(self):
         self.sp_user.playback_pause()
+        time.sleep(self.api_delay)
 
     def set_play_previous(self):
         self.sp_user.playback_previous()
+        time.sleep(self.api_delay)
 
     def set_position(self, new_time): 
         self.sp_user.playback_seek(new_time)
