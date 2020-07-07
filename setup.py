@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="spoticli-stormparticle", 
-    version="1.20.0504",
+    version="1.20.0706",
     author="stormparticle",
     author_email="95hlopez@gmail.com",
     description="lightweight command line for spotify",

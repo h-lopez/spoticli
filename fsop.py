@@ -29,6 +29,14 @@ class fsop():
     def create_conf(self):
         pass
 
+    def delete_auth(self):
+        if(path.exists('auth.spoticli')):
+            try:
+                os.remove('auth.spoticli')
+                return True
+            except:
+                return False
+                
     def delete_conf(self):
         if(path.exists('auth.spoticli')):
             try:

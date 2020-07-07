@@ -5,7 +5,7 @@ Command line front end for Spotify
 This program still requires that the Spotify client be installed locally  
 Please note this REQUIRES Spotify Premium to use as most of the APIs are locked behind premium
 
-[![asciicast](https://asciinema.org/a/345204.svg)](https://asciinema.org/a/345204)
+[![asciicast](https://asciinema.org/a/345797.svg)](https://asciinema.org/a/345797)
 
 ### Features
 * play/pause
