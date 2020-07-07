@@ -35,7 +35,7 @@ class SpotiCLI(Cmd):
         self.prompt = f'{Fore.GREEN}{Style.BRIGHT}spoticli ~$ {Style.RESET_ALL}'
 
         self.current_endpoint = ''
-        self.api_delay = 0.2
+        self.api_delay = 0.3
 
         #hide built-in cmd2 functions. this will leave them available for use but will be hidden from tab completion (and docs)
         self.hidden_commands.append('alias')
