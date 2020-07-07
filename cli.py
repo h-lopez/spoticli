@@ -27,7 +27,7 @@ class SpotiCLI(Cmd):
         self.sp_user = Spotify(token)
 
         app_name = 'SpotiCLI'
-        version = '1.20.0702.dev'
+        version = '1.20.0706.dev'
         
         ###define app parameters
         self.app_info = f'{Fore.CYAN}{Style.BRIGHT}\n{app_name} {version}{Style.RESET_ALL}'
@@ -35,7 +35,7 @@ class SpotiCLI(Cmd):
         self.prompt = f'{Fore.GREEN}{Style.BRIGHT}spoticli ~$ {Style.RESET_ALL}'
 
         self.current_endpoint = ''
-        self.api_delay = 0.2
+        self.api_delay = 0.3
 
         #hide built-in cmd2 functions. this will leave them available for use but will be hidden from tab completion (and docs)
         self.hidden_commands.append('alias')
@@ -56,17 +56,6 @@ class SpotiCLI(Cmd):
         self.debug = True
 
         ##define permissions scope...
-
-    ### preloop
-    #########################################
-    #### def preloop(self):
-    ####     try:
-    ####         current_active = self.get_active_device(self.get_device())
-    ####         if(current_active != None):
-    ####             self.current_endpoint = current_active
-    ####     except:
-    ####         self.pwarning('unable to detect active playback device!')
-    ####     return super().preloop()
 
     #### Misc / Util methods
     ##########################################
@@ -183,13 +172,28 @@ class SpotiCLI(Cmd):
         return self.sp_user.playback_recently_played(last_songs)
 
     def get_repeat_state(self): 
-        return self.get_playback().repeat_state
+        try:
+            return self.get_playback().repeat_state
+        except:
+            self.pwarning('no available playback devices deteched')
+            self.pwarning('assign one with the endpoint command')
+            return None
 
     def get_shuffle_state(self): 
-        return self.get_playback().shuffle_state
+        try:
+            self.get_playback().shuffle_state
+        except:
+            self.pwarning('no available playback devices deteched')
+            self.pwarning('assign one with the endpoint command')
+            return None
 
     def get_volume(self): 
-        return self.get_playback().device.volume_percent
+        try:
+            self.get_playback().device.volume_percent
+        except:
+            self.pwarning('no available playback devices deteched')
+            self.pwarning('assign one with the endpoint command')
+            return None
 
     ## mutator
     ############################
@@ -237,8 +241,13 @@ class SpotiCLI(Cmd):
         time.sleep(self.api_delay)
 
     def set_repeat_state(self, new_repeat_state): 
-        self.sp_user.playback_repeat(new_repeat_state)
-        time.sleep(self.api_delay)
+        try:
+            self.sp_user.playback_repeat(new_repeat_state)
+            time.sleep(self.api_delay)
+        except:
+            self.pwarning('no available playback devices deteched')
+            self.pwarning('assign one with the endpoint command')
+            return None
 
     def set_save(self, song_id):
         self.sp_user.saved_tracks_add(song_id)
@@ -249,8 +258,13 @@ class SpotiCLI(Cmd):
         time.sleep(self.api_delay)
 
     def set_shuffle_state(self, new_shuffle_state): 
-        self.sp_user.playback_shuffle(new_shuffle_state)
-        time.sleep(self.api_delay)
+        try:
+            self.sp_user.playback_shuffle(new_shuffle_state)
+            time.sleep(self.api_delay)
+        except:
+            self.pwarning('no available playback devices deteched')
+            self.pwarning('assign one with the endpoint command')
+            return None
 
     def set_volume(self, new_volume): 
         self.sp_user.playback_volume(new_volume)
@@ -460,6 +474,9 @@ class SpotiCLI(Cmd):
 
         current_vol = self.get_volume()
 
+        if(current_vol == None):
+            return
+
         if(line):
             try:
                 new_vol = int(line)
@@ -490,6 +507,7 @@ class SpotiCLI(Cmd):
             endpoint
         '''
         endpoint_list = self.get_device()
+
         max_index = 0
         
         print_string = ''
@@ -530,15 +548,18 @@ class SpotiCLI(Cmd):
         #self.set_device(self.current_endpoint.id)
     
     def repeat_enable(self, args):
-        self.set_repeat_state('context')
+        if(self.set_repeat_state('context') == None):
+            return
         self.do_repeat('')
 
     def repeat_track(self, args):
-        self.set_repeat_state('track')
+        if(self.set_repeat_state('track') == None):
+            return
         self.do_repeat('')
 
     def repeat_disable(self, args):
-        self.set_repeat_state('off')
+        if(self.set_repeat_state('off') == None):
+            return
         self.do_repeat('')
 
     repeat_parser = argparse.ArgumentParser(prog='repeat', add_help=False)
@@ -568,7 +589,10 @@ class SpotiCLI(Cmd):
         try:
             line.func(self, line)
         except AttributeError:
-            current_repeat = self.get_repeat_state().value
+            current_repeat = self.get_repeat_state()
+            if(current_repeat == None):
+                return
+            current_repeat = current_repeat.value
 
             ### valid states: 
             ### track - repeat enabled for track
@@ -583,11 +607,13 @@ class SpotiCLI(Cmd):
                 self.poutput('repeating track')
 
     def shuffle_enable(self, args):
-        self.set_shuffle_state(True)
+        if(self.set_shuffle_state(True) == None):
+            return
         self.do_shuffle('')
 
     def shuffle_disable(self, args):
-        self.set_shuffle_state(False)
+        if(self.set_shuffle_state(False) == None):
+            return
         self.do_shuffle('')
 
     shuffle_parser = argparse.ArgumentParser(prog='shuffle', add_help=False)
@@ -619,7 +645,11 @@ class SpotiCLI(Cmd):
         try:
             line.func(self, line)
         except AttributeError:
-            if(self.get_shuffle_state()):
+            current_shuffle = self.get_shuffle_state()
+            if(current_shuffle == None):
+                return
+
+            if(current_shuffle):
                 self.poutput('shuffle is enabled')
             else:
                 self.poutput('shuffle is disabled')
@@ -714,6 +744,7 @@ class SpotiCLI(Cmd):
         usage:
             unsave
         '''
+
         song_data  = self.get_playback()
 
         song_id = self.get_song_id(song_data.item)
