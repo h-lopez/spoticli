@@ -353,10 +353,12 @@ class SpotiCLI(Cmd):
     def play_next(self, args):
         self.set_play_next()
         self.poutput('playing next')
+        self.do_current(self)
 
     def play_previous(self, args):
         self.set_play_previous()
         self.poutput('playing previous')
+        self.do_current(self)
 
     play_parser = argparse.ArgumentParser(prog='play', add_help=False)
     play_subparsers = play_parser.add_subparsers(title='playback options')
@@ -387,6 +389,7 @@ class SpotiCLI(Cmd):
                 self.set_play_resume()
             except:
                 pass
+            self.do_current(self)
                 
     def do_pause(self, line):
         '''
@@ -399,6 +402,7 @@ class SpotiCLI(Cmd):
             self.set_play_pause()
         except:
             pass
+        self.do_current(self)
 
     def do_seek(self, line):
         ### time should be in seconds or as a timestamp value, ie. 1:41
