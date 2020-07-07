@@ -54,7 +54,7 @@ if __name__ == '__main__':
         except:
             print('cannot read auth.spoticli')
             print('attempting to delete auth.spoticli')
-            if(fsop.fsop.delete_auth(self)):
+            if(fsop.fsop.delete_auth('')):
                 print('auth.spoticli deleted')
                 print('please restart spoticli')
                 exit()
