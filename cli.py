@@ -182,7 +182,7 @@ class SpotiCLI(Cmd):
         try:
             return self.get_playback().repeat_state
         except:
-            self.pwarning('no available playback devices deteched')
+            self.pwarning('no available playback devices detected')
             self.pwarning('assign one with the endpoint command')
             return None
 
@@ -190,7 +190,7 @@ class SpotiCLI(Cmd):
         try:
             return self.get_playback().shuffle_state
         except:
-            self.pwarning('no available playback devices deteched')
+            self.pwarning('no available playback devices detected')
             self.pwarning('assign one with the endpoint command')
             return None
 
@@ -198,7 +198,7 @@ class SpotiCLI(Cmd):
         try:
             return self.get_playback().device.volume_percent
         except:
-            self.pwarning('no available playback devices deteched')
+            self.pwarning('no available playback devices detected')
             self.pwarning('assign one with the endpoint command')
             return None
 
@@ -233,7 +233,7 @@ class SpotiCLI(Cmd):
             time.sleep(self.api_delay)
             self.do_current('')
         except:
-            self.pwarning('no available playback devices deteched')
+            self.pwarning('no available playback devices detected')
             self.pwarning('assign one with the endpoint command')
             return None
 
@@ -243,7 +243,7 @@ class SpotiCLI(Cmd):
             time.sleep(self.api_delay)
             self.do_current('')
         except:
-            self.pwarning('no available playback devices deteched')
+            self.pwarning('no available playback devices detected')
             self.pwarning('assign one with the endpoint command')
             return None
 
@@ -253,7 +253,7 @@ class SpotiCLI(Cmd):
             time.sleep(self.api_delay)
             self.do_current('')
         except:
-            self.pwarning('no available playback devices deteched')
+            self.pwarning('no available playback devices detected')
             self.pwarning('assign one with the endpoint command')
             return None
 
@@ -263,7 +263,7 @@ class SpotiCLI(Cmd):
             time.sleep(self.api_delay)
             self.do_current('')
         except:
-            self.pwarning('no available playback devices deteched')
+            self.pwarning('no available playback devices detected')
             self.pwarning('assign one with the endpoint command')
             return None
 
@@ -273,7 +273,7 @@ class SpotiCLI(Cmd):
             time.sleep(self.api_delay)
             self.do_current('')
         except:
-            self.pwarning('no available playback devices deteched')
+            self.pwarning('no available playback devices detected')
             self.pwarning('assign one with the endpoint command')
             return None
 
@@ -282,7 +282,7 @@ class SpotiCLI(Cmd):
             self.sp_user.playback_repeat(new_repeat_state)
             time.sleep(self.api_delay)
         except:
-            self.pwarning('no available playback devices deteched')
+            self.pwarning('no available playback devices detected')
             self.pwarning('assign one with the endpoint command')
             return None
 
@@ -299,7 +299,7 @@ class SpotiCLI(Cmd):
             self.sp_user.playback_shuffle(new_shuffle_state)
             time.sleep(self.api_delay)
         except:
-            self.pwarning('no available playback devices deteched')
+            self.pwarning('no available playback devices detected')
             self.pwarning('assign one with the endpoint command')
             return None
 
@@ -391,7 +391,7 @@ class SpotiCLI(Cmd):
         song_data = self.get_current_playback()
 
         if(song_data == None):
-            self.pwarning('no available playback devices deteched')
+            self.pwarning('no available playback devices detected')
             self.pwarning('assign one with the endpoint command')
             return
         
@@ -490,7 +490,7 @@ class SpotiCLI(Cmd):
 
         song_data = self.get_current_playback()
         if(song_data == None):
-            self.pwarning('no available playback devices deteched')
+            self.pwarning('no available playback devices detected')
             self.pwarning('assign one with the endpoint command')
             return
 
@@ -785,7 +785,7 @@ class SpotiCLI(Cmd):
         song_data  = self.get_playback()
 
         if(song_data == None):
-            self.pwarning('no available playback devices deteched')
+            self.pwarning('no available playback devices detected')
             self.pwarning('assign one with the endpoint command')
             return
 
@@ -805,7 +805,7 @@ class SpotiCLI(Cmd):
         song_data  = self.get_playback()
 
         if(song_data == None):
-            self.pwarning('no available playback devices deteched')
+            self.pwarning('no available playback devices detected')
             self.pwarning('assign one with the endpoint command')
             return
 
