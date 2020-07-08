@@ -149,15 +149,6 @@ class SpotiCLI(Cmd):
 
     # generic functions
     ################
-    
-    ## get active device from list
-    def get_active_device(self, device_list):
-        for item in device_list:
-            if(item.is_active):
-                return item
-            return None
-    ### 2020-05-15
-    ### no longer needed since endpoint functionality was added
 
     ### sometimes a device is no longer marked 'active' if it's been idle too long
     ### this 'forces' playback/activity on last active device
@@ -571,15 +562,15 @@ class SpotiCLI(Cmd):
             
             print_string += f'{index + 1}:\t{item.name}'
 
-            if(item.is_active == True):
+            if(item.is_active):
                 current_active = item.name
                 print_string += ' (active)'
             print_string += '\n'
 
         if(current_active == ''):
-            current_active = 'none'
+            current_active = 'No active endpoint'
 
-        self.poutput(f'current endpoint: {item.name}')
+        self.poutput(f'current endpoint: {current_active}')
         self.poutput('available endpoints:')
         self.poutput(print_string)
 
@@ -782,7 +773,7 @@ class SpotiCLI(Cmd):
         usage:
             save
         '''
-        song_data  = self.get_playback()
+        song_data = self.get_playback()
 
         if(song_data == None):
             self.pwarning('no available playback devices detected')
@@ -802,7 +793,7 @@ class SpotiCLI(Cmd):
             unsave
         '''
 
-        song_data  = self.get_playback()
+        song_data = self.get_playback()
 
         if(song_data == None):
             self.pwarning('no available playback devices detected')
