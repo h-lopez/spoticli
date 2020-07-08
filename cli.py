@@ -469,8 +469,7 @@ class SpotiCLI(Cmd):
         ### time should be in seconds or as a timestamp value, ie. 1:41
         ### not implemented yet...
         '''
-        seek to specific time in a track
-        you can also specify a step increase by prefixing time with +/-
+        seek to specific time in a track. specify a step increase by prefixing time with +/-
 
         usage:
             seek [+/-] time
