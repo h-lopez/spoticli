@@ -113,7 +113,7 @@ class SpotiCLI(Cmd):
     '''
     just using this function to standardize the 'no endpoint' error
     '''
-    def print_endpoint_error(self, song_data):
+    def print_endpoint_error(self):
         self.pwarning('no available playback devices detected')
         self.pwarning('assign one with the endpoint command')
 
