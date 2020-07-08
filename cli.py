@@ -456,6 +456,15 @@ class SpotiCLI(Cmd):
             pass
         self.do_current(self)
 
+    def do_replay(self, line):
+        '''
+        instantly restart current track
+
+        usage:
+            replay
+        '''
+        self.do_seek('0')
+
     def do_seek(self, line):
         ### time should be in seconds or as a timestamp value, ie. 1:41
         ### not implemented yet...
