@@ -25,6 +25,10 @@ if __name__ == '__main__':
 
     #slash_type = user_home.endswith
 
+    file_auth = 'auth.spoticli'
+    file_conf = 'conf.spoticli'
+    path_cred = '.config/spoticli'
+
     spotify_scopes = (  
         tekore.scope.user_library_read +
         tekore.scope.user_library_modify +
@@ -36,21 +40,21 @@ if __name__ == '__main__':
         )
     
     os.chdir(expanduser('~'))
-    if(path.exists('.config/spoticli')):
-        os.chdir('.config/spoticli')
+    if(path.exists(path_cred)):
+        os.chdir(path_cred)
     else:
         try:
-            os.makedirs('.config/spoticli')
-            os.chdir('.config/spoticli')
+            os.makedirs(path_cred)
+            os.chdir(path_cred)
         except:
             ('failed to create directory, do you have write access?')
             exit()
 
     #dir = os.getcwd()
 
-    if(path.exists('auth.spoticli')):
+    if(path.exists(file_auth)):
         try:
-            spot_token = pickle.load(open('auth.spoticli', 'rb'))
+            spot_token = pickle.load(open(file_auth, 'rb'))
         except:
             print('cannot read auth.spoticli')
             print('attempting to delete auth.spoticli')
@@ -66,11 +70,11 @@ if __name__ == '__main__':
         ##skip directly to authentication portion
 
     #explicitly check if conf file exists then create new session based on that
-    elif(path.exists('conf.spoticli')):
-        spot_creds = tekore.config_from_file('conf.spoticli')
+    elif(path.exists(file_conf)):
+        spot_creds = tekore.config_from_file(file_conf)
         spot_token = auth.prompt_for_user_token(*spot_creds, scope=spotify_scopes)
 
-    elif(not path.exists('conf.spoticli')):
+    elif(not path.exists(file_conf)):
         print('you will need your client id and secret')
         print('you can find this from the spotify developer dashboard')
         print('devloper.spotify.com/dashboard')
@@ -83,21 +87,16 @@ if __name__ == '__main__':
             print('invalid id or secret')
             exit()
         try:
-            print('creating auth file')
-            conf_file = open('conf.spoticli', 'w')
-            conf_file.write('[DEFAULT]')
-            conf_file.write('\n')
-            conf_file.write(f'SPOTIFY_CLIENT_ID={client_id}')
-            conf_file.write('\n')
-            conf_file.write(f'SPOTIFY_CLIENT_SECRET={client_key}')
-            conf_file.write('\n')
-            conf_file.write('SPOTIFY_REDIRECT_URI=http://localhost:8080/callback')
+            print('creating auth file') 
+            auth_file_contents = '[DEFAULT]\n' + f'SPOTIFY_CLIENT_ID={client_id}\n' + f'SPOTIFY_CLIENT_SECRET={client_key}\n' + 'SPOTIFY_REDIRECT_URI=http://localhost:8080/callback\n'
+            conf_file = open(file_conf, 'w')
+            conf_file.write(auth_file_contents)
             conf_file.close()
             #blank_or_create()
         except:
             print('error while creating auth file, do you have proper permissions?')
             exit()
-        spot_creds = tekore.config_from_file('conf.spoticli')
+        spot_creds = tekore.config_from_file(file_conf)
         spot_token = auth.prompt_for_user_token(*spot_creds, scope=spotify_scopes)
 
             #creds.prompt(client_id, secret) #redirect uri not needed from user, will always be localhost:8080
@@ -120,7 +119,7 @@ if __name__ == '__main__':
         ## this will attempt to be loaded next time user uses the program
 
         ## will this always work? theoretically yes as tekore uses self-refreshing tokens. 
-        pickle.dump(spot_token, open('auth.spoticli', 'wb'))
+        pickle.dump(spot_token, open(file_auth, 'wb'))
     except:
         print('warning, failed to write token! session will not be preserved!')
         pass
