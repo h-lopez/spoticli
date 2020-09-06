@@ -119,7 +119,7 @@ if __name__ == '__main__':
         ## this will attempt to be loaded next time user uses the program
 
         ## will this always work? theoretically yes as tekore uses self-refreshing tokens. 
-        pickle.dump(spot_token, open(file_auth, 'wb'))
+        pickle.dump(str(spot_token), open(file_auth, 'wb'))
     except:
         print('warning, failed to write token! session will not be preserved!')
         pass
