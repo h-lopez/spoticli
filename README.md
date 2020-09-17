@@ -25,7 +25,7 @@ Please note this REQUIRES Spotify Premium to use as most of the APIs are locked 
 * MacOS - utterly untested, probably works(?)
 
 ### Requirements
-* python 3.7
+* python 3.7 or higher
 * [tekore](https://github.com/felix-hilden/tekore)
 * [cmd2](https://github.com/python-cmd2/cmd2/)
 * [colorama](https://github.com/tartley/colorama)
