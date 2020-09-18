@@ -27,7 +27,7 @@ class SpotiCLI(Cmd):
         self.sp_user = Spotify(token)
 
         app_name = 'SpotiCLI'
-        version = '1.20.0706.dev'
+        version = '1.20.0917.dev'
         
         ###define app parameters
         self.app_info = f'{Fore.CYAN}{Style.BRIGHT}\n{app_name} {version}{Style.RESET_ALL}'
@@ -608,18 +608,15 @@ class SpotiCLI(Cmd):
     
     def repeat_enable(self, args):
         if(self.set_repeat_state('context') == None):
-            return
-        self.do_repeat('')
+            self.do_repeat('')
 
     def repeat_track(self, args):
         if(self.set_repeat_state('track') == None):
-            return
-        self.do_repeat('')
+            self.do_repeat('')
 
     def repeat_disable(self, args):
         if(self.set_repeat_state('off') == None):
-            return
-        self.do_repeat('')
+            self.do_repeat('')
 
     repeat_parser = argparse.ArgumentParser(prog='repeat', add_help=False)
     repeat_subparsers = repeat_parser.add_subparsers(title='repeat states')
@@ -667,13 +664,11 @@ class SpotiCLI(Cmd):
 
     def shuffle_enable(self, args):
         if(self.set_shuffle_state(True) == None):
-            return
-        self.do_shuffle('')
-
+            self.do_shuffle('')
+            
     def shuffle_disable(self, args):
         if(self.set_shuffle_state(False) == None):
-            return
-        self.do_shuffle('')
+            self.do_shuffle('')
 
     shuffle_parser = argparse.ArgumentParser(prog='shuffle', add_help=False)
     shuffle_subparsers = shuffle_parser.add_subparsers(title='shuffle states')
