@@ -25,7 +25,7 @@ if __name__ == '__main__':
 
     #slash_type = user_home.endswith
 
-    file_auth = 'auth.spoticli'
+    file_auth = 'conf.spoticli'
     file_conf = 'conf.spoticli'
     path_cred = '.config/spoticli'
 
@@ -56,7 +56,8 @@ if __name__ == '__main__':
         try:
             #fourth element is the refresh token
             #try to create new session based on this token
-            spot_token = tekore.config_from_file(file_auth, return_refresh=True)[3]
+            spot_token = tekore.config_from_file(file_auth, return_refresh=True)
+            spot_token = tekore.refresh_user_token(spot_token[0], spot_token[1], spot_token[3])
             #spot_token = pickle.load(open(file_auth, 'rb'))
             ##skip directly to authentication portion
         except:
@@ -74,14 +75,14 @@ if __name__ == '__main__':
 
     #if we made it here the auth file doesn't exist for some reason
     #explicitly check if conf file exists then create new session based on that
-    elif(path.exists(file_conf)):
-        spot_creds = tekore.config_from_file(file_conf)
-        print('found conf.spoticli but not new auth.spoticli')
-        print('spinning up new session using conf.spoticli')
-        
-        spot_token = auth.prompt_for_user_token(*spot_creds, scope=spotify_scopes)
-        #re-save the auth token 
-        tekore.config_to_file(file_auth, ('', '', '', spot_token.refresh_token))
+    ### elif(path.exists(file_conf)):
+    ###     spot_creds = tekore.config_from_file(file_conf)
+    ###     print('found conf.spoticli but not new auth.spoticli')
+    ###     print('spinning up new session using conf.spoticli')
+    ###     
+    ###     spot_token = auth.prompt_for_user_token(*spot_creds, scope=spotify_scopes)
+    ###     #re-save the auth token 
+    ###     tekore.config_to_file(file_auth, ('', '', '', spot_token.refresh_token))
 
     #elif(not path.exists(file_conf)):
     else:
@@ -98,10 +99,11 @@ if __name__ == '__main__':
             exit()
 
 
+        new_creds = (client_id, client_key, 'http://localhost:8080/callback', None)
+
         try:
             ##save method, client ID, secret, redirect URL, refresh token
             ## we don't have refresh token yet, so we'll just save this to a config file that tekore can read
-            new_creds = (client_id, client_key, 'http://localhost:8080/callback', None)
             tekore.config_to_file(file_conf, new_creds)
 
             #old way, deprecated in place of tekore's builtin method
@@ -116,10 +118,11 @@ if __name__ == '__main__':
             exit()
         spot_creds = tekore.config_from_file(file_conf)
         spot_token = auth.prompt_for_user_token(*spot_creds, scope=spotify_scopes)
+        new_creds = (client_id, client_key, 'http://localhost:8080/callback', spot_token.refresh_token)
         
         #save spot refresh token to 4th element
         #re-save the auth token separately 
-        tekore.config_to_file(file_auth, ('', '', '', spot_token.refresh_token))
+        tekore.config_to_file(file_auth, new_creds)
 
             #creds.prompt(client_id, secret) #redirect uri not needed from user, will always be localhost:8080
             #write_to_conf.spoticli   
