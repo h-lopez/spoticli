@@ -81,9 +81,10 @@ if __name__ == '__main__':
         
         spot_token = auth.prompt_for_user_token(*spot_creds, scope=spotify_scopes)
         #re-save the auth token 
-        tekore.config_to_file(file_auth, ('', '', '', spot_token.refresh_token)
+        tekore.config_to_file(file_auth, ('', '', '', spot_token.refresh_token))
 
-    elif(not path.exists(file_conf)):
+    #elif(not path.exists(file_conf)):
+    else:
         print('you will need your client id and secret')
         print('you can find this from the spotify developer dashboard')
         print('devloper.spotify.com/dashboard')
@@ -118,7 +119,7 @@ if __name__ == '__main__':
         
         #save spot refresh token to 4th element
         #re-save the auth token separately 
-        tekore.config_to_file(file_auth, ('', '', '', spot_token.refresh_token)
+        tekore.config_to_file(file_auth, ('', '', '', spot_token.refresh_token))
 
             #creds.prompt(client_id, secret) #redirect uri not needed from user, will always be localhost:8080
             #write_to_conf.spoticli   
