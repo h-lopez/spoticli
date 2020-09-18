@@ -25,7 +25,7 @@ if __name__ == '__main__':
 
     #slash_type = user_home.endswith
 
-    file_auth = 'conf.spoticli'
+    file_auth = 'auth.spoticli'
     file_conf = 'conf.spoticli'
     path_cred = '.config/spoticli'
 
@@ -57,7 +57,10 @@ if __name__ == '__main__':
             #fourth element is the refresh token
             #try to create new session based on this token
             spot_token = tekore.config_from_file(file_auth, return_refresh=True)
-            spot_token = tekore.refresh_user_token(spot_token[0], spot_token[1], spot_token[3])
+            client_id = spot_token[0]
+            client_key = spot_token[1]
+            user_re_token = spot_token[3] 
+            spot_token = tekore.refresh_user_token(client_id, client_key, user_re_token)
             #spot_token = pickle.load(open(file_auth, 'rb'))
             ##skip directly to authentication portion
         except:
