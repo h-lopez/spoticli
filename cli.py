@@ -27,11 +27,13 @@ class SpotiCLI(Cmd):
         self.sp_user = Spotify(token)
 
         app_name = 'SpotiCLI'
-        version = '1.20.0917.dev'
+        version = '1.20.1102.dev'
         
         ###define app parameters
-        self.app_info = f'{Fore.CYAN}{Style.BRIGHT}\n{app_name} {version}{Style.RESET_ALL}'
-        self.intro = self.app_info + '\n'
+        self.url = 'project home: https://github.com/stormparticle/spoticli'
+        
+        self.app_info = f'{Fore.CYAN}{Style.BRIGHT}\n{app_name} {version} {Style.RESET_ALL}'
+        self.intro = f'{self.app_info}\n\n{self.url}\n'
         self.prompt = f'{Fore.GREEN}{Style.BRIGHT}spoticli ~$ {Style.RESET_ALL}'
 
         self.current_endpoint = ''
@@ -332,7 +334,7 @@ class SpotiCLI(Cmd):
         usage: 
             about
         '''
-        self.poutput(self.app_info)
+        self.poutput(f'{self.app_info}\n\n{self.url}')
 
     def do_diagnostics(self, line):
         '''
@@ -736,6 +738,7 @@ class SpotiCLI(Cmd):
         except:
             self.pwarning('invalid selection')
 
+        self.poutput(f'playing playlist - {user_playlists[user_input].name}')
         self.set_playback_context(user_playlists[user_input].uri)
 
     def do_previous(self, line):
