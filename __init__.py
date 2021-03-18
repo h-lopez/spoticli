@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 '''
 SpotiCLI
 Copyright 2020, Hugo A Lopez
