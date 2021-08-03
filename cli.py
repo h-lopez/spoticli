@@ -191,21 +191,21 @@ class SpotiCLI(Cmd):
     def get_repeat_state(self): 
         try:
             return self.get_playback().repeat_state
-        except:
+        except AttributeError:
             self.print_endpoint_error()
             return None
 
     def get_shuffle_state(self): 
         try:
             return self.get_playback().shuffle_state
-        except:
+        except AttributeError:
             self.print_endpoint_error()
             return None
 
     def get_volume(self): 
         try:
             return self.get_playback().device.volume_percent
-        except:
+        except AttributeError:
             self.print_endpoint_error()
             return None
 
@@ -239,7 +239,7 @@ class SpotiCLI(Cmd):
             self.sp_user.playback_next()
             time.sleep(self.api_delay)
             self.do_current('')
-        except:
+        except AttributeError:
             self.print_endpoint_error()
             return None
 
@@ -248,7 +248,7 @@ class SpotiCLI(Cmd):
             self.sp_user.playback_resume()
             time.sleep(self.api_delay)
             self.do_current('')
-        except:
+        except AttributeError:
             self.print_endpoint_error()
             return None
 
@@ -257,7 +257,7 @@ class SpotiCLI(Cmd):
             self.sp_user.playback_pause()
             time.sleep(self.api_delay)
             self.do_current('')
-        except:
+        except AttributeError:
             self.print_endpoint_error()
             return None
 
@@ -266,7 +266,7 @@ class SpotiCLI(Cmd):
             self.sp_user.playback_previous()
             time.sleep(self.api_delay)
             self.do_current('')
-        except:
+        except AttributeError:
             self.print_endpoint_error()
             return None
 
@@ -275,7 +275,7 @@ class SpotiCLI(Cmd):
             self.sp_user.playback_seek(new_time)
             time.sleep(self.api_delay)
             self.do_current('')
-        except:
+        except AttributeError:
             self.print_endpoint_error()
             return None
 
@@ -283,7 +283,7 @@ class SpotiCLI(Cmd):
         try:
             self.sp_user.playback_repeat(new_repeat_state)
             time.sleep(self.api_delay)
-        except:
+        except AttributeError:
             self.print_endpoint_error()
             return None
 
@@ -299,7 +299,7 @@ class SpotiCLI(Cmd):
         try:
             self.sp_user.playback_shuffle(new_shuffle_state)
             time.sleep(self.api_delay)
-        except:
+        except AttributeError:
             self.print_endpoint_error()
             return None
 
