@@ -604,6 +604,7 @@ class SpotiCLI(Cmd):
             self.pwarning('invalid selection')
             return
 
+        self.pwarning(f'setting endpoint: {endpoint_list[user_input].name}')
         self.set_device(endpoint_list[user_input].id)
         #self.current_endpoint = endpoint_list[user_input]
         #self.set_device(self.current_endpoint.id)
