@@ -1,9 +1,10 @@
+#!/usr/bin/python3
+
 '''
-SpotiCLI
-Copyright 2020, Hugo A Lopez
+Copyright (c) 2023, Hugo A Lopez <95hlopez@gmail.com>
+'''
 
-released under the MIT license
-
+'''
 auth.py
 
 responsible for spinning local webserver to capture user creds during login on first use

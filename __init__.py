@@ -1,8 +1,7 @@
-'''
-SpotiCLI
-Copyright 2020, Hugo A Lopez
+#!/usr/bin/python3
 
-released under the MIT license
+'''
+Copyright (c) 2023, Hugo A Lopez <95hlopez@gmail.com>
 '''
 
 ## import auth library for authentication
