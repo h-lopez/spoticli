@@ -1,10 +1,11 @@
+#!/usr/bin/python3
+
+'''
+Copyright (c) 2023, Hugo A Lopez <95hlopez@gmail.com>
+'''
+
 '''
 SpotiCLI
-Copyright 2020, Hugo A Lopez
-
-released under the MIT license
-
-cli.py
 
 this handles the actual cli that user is presented with
 '''
