@@ -126,7 +126,7 @@ class SpotiCLI(Cmd):
         return self.sp_user.playback()
 
     def get_queue(self):
-        return self.sp_user.playback_queue()        
+        return self.sp_user.playback_queue()      
 
     def get_current_playback(self):
         return self.sp_user.playback_currently_playing()
@@ -777,7 +777,10 @@ class SpotiCLI(Cmd):
         usage:
             queue
         '''
-        self.get_queue()
+        playback_list = self.get_queue()
+
+        for index, song in enumerate(playback_list.queue):
+            self.poutput(f'{index + 1}: {self.display_song(song)}')
 
     def do_save(self, line):
         '''
