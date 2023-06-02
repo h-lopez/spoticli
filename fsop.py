@@ -1,9 +1,10 @@
+#!/usr/bin/python3
+
 '''
-SpotiCLI
-Copyright 2020, Hugo A Lopez
+Copyright (c) 2023, Hugo A Lopez <95hlopez@gmail.com>
+'''
 
-released under the MIT license
-
+'''
 fsop.py - File System OPerations 
 
 fsop is used to define/delete user login sessions/config files from user's home directory
