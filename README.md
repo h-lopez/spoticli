@@ -27,8 +27,8 @@ Please note this REQUIRES Spotify Premium to use as most of the APIs are locked 
 
 ### Installation
 1. clone repo
-1. install requirements (pip install -r requirements.txt)
+1. install requirements (`pip install -r requirements.txt`)
 1. setup a spotify [dev account](https://developer.spotify.com/) and have a client id/secret ready to use
-1. run 'python3 spoticli.py' from the command line
+1. run (`python3 spoticli.py`) from the command line
 1. complete authorization process
 1. play music
