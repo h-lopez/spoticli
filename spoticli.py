@@ -129,28 +129,4 @@ if __name__ == '__main__':
             #creds.prompt(client_id, secret) #redirect uri not needed from user, will always be localhost:8080
             #write_to_conf.spoticli   
 
-    ##load local creds
-    ##retrieve token using local creds    
-    #### spotify = Spotify(token)
-    #### tracks = spotify.current_user_top_tracks(limit=10)
-    #### print(tracks)
-    ### pass token to spoticli, spoticli with instantiate spotify object and handle refreshing
-    ### spoticli will handle auth user and periodically refresh token as needed
-
-    ### 2020-09-17
-    ### pickling no longer required probably.
-    #if auth failed and returned a null token, exit program
-    ###if(spot_token is None):
-    ###    print('invalid token detected')
-    ###    exit()
-    ###try:
-    ###    ## for session presevation, serialize/dump the token into readable file
-    ###    ## this will attempt to be loaded next time user uses the program
-    ###
-    ###    ## will this always work? theoretically yes as tekore uses self-refreshing tokens. 
-    ###    pickle.dump(str(spot_token), open(file_auth, 'wb'))
-    ###except:
-    ###    print('warning, failed to write token! session will not be preserved!')
-    ###    pass
-    ###
     exit_code = SpotiCLI(token=spot_token).cmdloop()
