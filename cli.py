@@ -53,7 +53,9 @@ class SpotiCLI(Cmd):
         self.hidden_commands.append('_relative_load')
         self.hidden_commands.append('run_pyscript')
         self.hidden_commands.append('run_script')
-        self.debug = True
+        
+        # debug false by default
+        # self.debug = True
 
         ##define permissions scope...
 
