@@ -27,7 +27,7 @@ class SpotiCLI(Cmd):
         self.sp_user = Spotify(token)
 
         app_name = 'SpotiCLI'
-        version = '1.20.0917.dev'
+        version = '1.23.0602.dev'
         
         ###define app parameters
         self.app_info = f'{Fore.CYAN}{Style.BRIGHT}\n{app_name} {version}{Style.RESET_ALL}'
@@ -124,6 +124,9 @@ class SpotiCLI(Cmd):
     
     def get_playback(self):
         return self.sp_user.playback()
+
+    def get_queue(self):
+        return self.sp_user.playback_queue()        
 
     def get_current_playback(self):
         return self.sp_user.playback_currently_playing()
@@ -769,12 +772,12 @@ class SpotiCLI(Cmd):
     
     def do_queue(self, line):
         '''
-        show and modify queue
+        show upcoming songs
 
         usage:
             queue
         '''
-        self.poutput('not implemented. pending expansion of spotify api')
+        self.get_queue()
 
     def do_save(self, line):
         '''
