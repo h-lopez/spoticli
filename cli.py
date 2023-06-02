@@ -116,9 +116,13 @@ class SpotiCLI(Cmd):
     '''
     just using this function to standardize the 'no endpoint' error
     '''
-    def print_endpoint_error(self):
-        self.pwarning('no available playback devices detected')
-        self.pwarning('assign one with the endpoint command')
+    def handle_error_and_print(self, error = None):
+        if(error == None):
+            self.pwarning('unknown error')
+        else:
+            self.pwarning(error)
+        # self.pwarning('no available playback devices detected')
+        # self.pwarning('assign one with the endpoint command')
 
     #### accessor / mutators
     #### getter / setter, whatever
@@ -195,22 +199,22 @@ class SpotiCLI(Cmd):
     def get_repeat_state(self): 
         try:
             return self.get_playback().repeat_state
-        except:
-            self.print_endpoint_error()
+        except Exception as error:
+            self.handle_error_and_print(error)
             return None
 
     def get_shuffle_state(self): 
         try:
             return self.get_playback().shuffle_state
-        except:
-            self.print_endpoint_error()
+        except Exception as error:
+            self.handle_error_and_print(error)
             return None
 
     def get_volume(self): 
         try:
             return self.get_playback().device.volume_percent
-        except:
-            self.print_endpoint_error()
+        except Exception as error:
+            self.handle_error_and_print(error)
             return None
 
     ## mutator
@@ -243,8 +247,8 @@ class SpotiCLI(Cmd):
             self.sp_user.playback_next()
             time.sleep(self.api_delay)
             self.do_current('')
-        except:
-            self.print_endpoint_error()
+        except Exception as error:
+            self.handle_error_and_print(error)
             return None
 
     def set_play_resume(self):
@@ -252,8 +256,8 @@ class SpotiCLI(Cmd):
             self.sp_user.playback_resume()
             time.sleep(self.api_delay)
             self.do_current('')
-        except:
-            self.print_endpoint_error()
+        except Exception as error:
+            self.handle_error_and_print(error)
             return None
 
     def set_play_pause(self):
@@ -261,8 +265,8 @@ class SpotiCLI(Cmd):
             self.sp_user.playback_pause()
             time.sleep(self.api_delay)
             self.do_current('')
-        except:
-            self.print_endpoint_error()
+        except Exception as error:
+            self.handle_error_and_print(error)
             return None
 
     def set_play_previous(self):
@@ -270,8 +274,8 @@ class SpotiCLI(Cmd):
             self.sp_user.playback_previous()
             time.sleep(self.api_delay)
             self.do_current('')
-        except:
-            self.print_endpoint_error()
+        except Exception as error:
+            self.handle_error_and_print(error)
             return None
 
     def set_position(self, new_time): 
@@ -279,16 +283,16 @@ class SpotiCLI(Cmd):
             self.sp_user.playback_seek(new_time)
             time.sleep(self.api_delay)
             self.do_current('')
-        except:
-            self.print_endpoint_error()
+        except Exception as error:
+            self.handle_error_and_print(error)
             return None
 
     def set_repeat_state(self, new_repeat_state): 
         try:
             self.sp_user.playback_repeat(new_repeat_state)
             time.sleep(self.api_delay)
-        except:
-            self.print_endpoint_error()
+        except Exception as error:
+            self.handle_error_and_print(error)
             return None
 
     def set_save(self, song_id):
@@ -304,7 +308,7 @@ class SpotiCLI(Cmd):
             self.sp_user.playback_shuffle(new_shuffle_state)
             time.sleep(self.api_delay)
         except:
-            self.print_endpoint_error()
+            self.handle_error_and_print()
             return None
 
     def set_volume(self, new_volume): 
@@ -395,7 +399,7 @@ class SpotiCLI(Cmd):
         song_data = self.get_current_playback()
 
         if(song_data == None):
-            self.print_endpoint_error()
+            self.handle_error_and_print()
             return
         
         song_playing = self.get_is_playing(song_data)
@@ -503,7 +507,7 @@ class SpotiCLI(Cmd):
 
         song_data = self.get_current_playback()
         if(song_data == None):
-            self.print_endpoint_error()
+            self.handle_error_and_print()
             return
 
         song_pos = self.get_position(song_data)
@@ -795,7 +799,7 @@ class SpotiCLI(Cmd):
         song_data = self.get_playback()
 
         if(song_data == None):
-            self.print_endpoint_error()
+            self.handle_error_and_print()
             return
 
         song_id = self.get_song_id(song_data.item)
@@ -814,7 +818,7 @@ class SpotiCLI(Cmd):
         song_data = self.get_playback()
 
         if(song_data == None):
-            self.print_endpoint_error()
+            self.handle_error_and_print()
             return
 
         song_id = self.get_song_id(song_data.item)
