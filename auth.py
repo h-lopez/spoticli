@@ -47,7 +47,7 @@ class RequestHandler(BaseHTTPRequestHandler):
 
     def log_message(self, format, *args):
         return
-    
+
 def start_local_http_server(port, handler=RequestHandler):
     while True:
         try:

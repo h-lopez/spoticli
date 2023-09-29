@@ -28,7 +28,7 @@ if __name__ == '__main__':
     file_conf = 'conf.spoticli'
     path_cred = '.config/spoticli'
 
-    spotify_scopes = (  
+    spotify_scopes = (
         tekore.scope.user_library_read +
         tekore.scope.user_library_modify +
         tekore.scope.user_read_currently_playing +
@@ -37,7 +37,7 @@ if __name__ == '__main__':
         tekore.scope.user_read_recently_played +
         tekore.scope.playlist_read_private
         )
-    
+
     os.chdir(expanduser('~'))
     if(path.exists(path_cred)):
         os.chdir(path_cred)
@@ -58,7 +58,7 @@ if __name__ == '__main__':
             spot_token = tekore.config_from_file(file_auth, return_refresh=True)
             client_id = spot_token[0]
             client_key = spot_token[1]
-            user_re_token = spot_token[3] 
+            user_re_token = spot_token[3]
             spot_token = tekore.refresh_user_token(client_id, client_key, user_re_token)
             #spot_token = pickle.load(open(file_auth, 'rb'))
             ##skip directly to authentication portion
@@ -81,9 +81,9 @@ if __name__ == '__main__':
     ###     spot_creds = tekore.config_from_file(file_conf)
     ###     print('found conf.spoticli but not new auth.spoticli')
     ###     print('spinning up new session using conf.spoticli')
-    ###     
+    ###
     ###     spot_token = auth.prompt_for_user_token(*spot_creds, scope=spotify_scopes)
-    ###     #re-save the auth token 
+    ###     #re-save the auth token
     ###     tekore.config_to_file(file_auth, ('', '', '', spot_token.refresh_token))
 
     #elif(not path.exists(file_conf)):
@@ -109,7 +109,7 @@ if __name__ == '__main__':
             tekore.config_to_file(file_conf, new_creds)
 
             #old way, deprecated in place of tekore's builtin method
-            #print('creating auth file') 
+            #print('creating auth file')
             #auth_file_contents = '[DEFAULT]\n' + f'SPOTIFY_CLIENT_ID={client_id}\n' + f'SPOTIFY_CLIENT_SECRET={client_key}\n' + 'SPOTIFY_REDIRECT_URI=http://localhost:8080/callback\n'
             #conf_file = open(file_conf, 'w')
             #conf_file.write(auth_file_contents)
@@ -121,12 +121,12 @@ if __name__ == '__main__':
         spot_creds = tekore.config_from_file(file_conf)
         spot_token = auth.prompt_for_user_token(*spot_creds, scope=spotify_scopes)
         new_creds = (client_id, client_key, 'http://localhost:8080/callback', spot_token.refresh_token)
-        
+
         #save spot refresh token to 4th element
-        #re-save the auth token separately 
+        #re-save the auth token separately
         tekore.config_to_file(file_auth, new_creds)
 
             #creds.prompt(client_id, secret) #redirect uri not needed from user, will always be localhost:8080
-            #write_to_conf.spoticli   
+            #write_to_conf.spoticli
 
     exit_code = SpotiCLI(token=spot_token).cmdloop()

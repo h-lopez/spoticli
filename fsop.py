@@ -5,7 +5,7 @@ Copyright (c) 2023, Hugo A Lopez <95hlopez@gmail.com>
 '''
 
 '''
-fsop.py - File System OPerations 
+fsop.py - File System OPerations
 
 fsop is used to define/delete user login sessions/config files from user's home directory
 '''
@@ -15,7 +15,7 @@ from os.path import expanduser
 
 class fsop():
 
-    ### move to user home directory   
+    ### move to user home directory
     os.chdir(expanduser('~'))
     if(path.exists('.config/spoticli')):
         os.chdir('.config/spoticli')
@@ -37,7 +37,7 @@ class fsop():
                 return True
             except:
                 return False
-                
+
     def delete_conf(self):
         if(path.exists('auth.spoticli')):
             try:

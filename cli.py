@@ -29,7 +29,7 @@ class SpotiCLI(Cmd):
 
         app_name = 'SpotiCLI'
         version = '1.23.0602.dev'
-        
+
         ###define app parameters
         self.app_info = f'{Fore.CYAN}{Style.BRIGHT}\n{app_name} {version}{Style.RESET_ALL}'
         self.intro = self.app_info + '\n'
@@ -54,7 +54,7 @@ class SpotiCLI(Cmd):
         self.hidden_commands.append('_relative_load')
         self.hidden_commands.append('run_pyscript')
         self.hidden_commands.append('run_script')
-        
+
         # debug false by default
         # self.debug = True
 
@@ -62,9 +62,9 @@ class SpotiCLI(Cmd):
 
     #### Misc / Util methods
     ##########################################
-    
+
     '''
-    convert milliseconds into human readable time stamp in format MM:SS 
+    convert milliseconds into human readable time stamp in format MM:SS
     '''
     def ms_to_time(self, time_to_convert):
 
@@ -84,7 +84,7 @@ class SpotiCLI(Cmd):
         return f'{minutes}:{seconds}'
 
     '''
-    generate timestamp in format "length / duration" from song playback data  
+    generate timestamp in format "length / duration" from song playback data
     '''
     def generate_timestamp(self, song_data):
         pos_ms = self.ms_to_time(self.get_position(song_data))
@@ -97,7 +97,7 @@ class SpotiCLI(Cmd):
     def print_list(self, list_to_print):
         for index, item in enumerate(list_to_print):
             self.poutput(f'{index + 1}:\t{item}')
-    
+
     '''
     formats a track string in format:
 
@@ -128,12 +128,12 @@ class SpotiCLI(Cmd):
     #### getter / setter, whatever
     #### these make the spotify api calls
     ##########################################
-    
+
     def get_playback(self):
         return self.sp_user.playback()
 
     def get_queue(self):
-        return self.sp_user.playback_queue()      
+        return self.sp_user.playback_queue()
 
     def get_current_playback(self):
         return self.sp_user.playback_currently_playing()
@@ -165,13 +165,13 @@ class SpotiCLI(Cmd):
     def get_song_id(self, song_data):
         return song_data.id
 
-    def get_duration(self, song_data): 
+    def get_duration(self, song_data):
         return song_data.duration_ms
 
     def get_is_playing(self, song_data):
         return song_data.is_playing
 
-    def get_position(self, song_data): 
+    def get_position(self, song_data):
         return song_data.progress_ms
 
     # generic functions
@@ -183,34 +183,34 @@ class SpotiCLI(Cmd):
     ### def force_device(self):
     ###     current_dev = self.get_device()
     ###     self.sp_user.playback_transfer(current_dev[0].asdict()['id'])
-    ### 
+    ###
     ### def do_force(self, line):
     ###     self.force_device()
 
     # generic accessors
     ################
 
-    def get_device(self): 
+    def get_device(self):
         return self.sp_user.playback_devices()
 
-    def get_history(self, last_songs): 
+    def get_history(self, last_songs):
         return self.sp_user.playback_recently_played(last_songs)
 
-    def get_repeat_state(self): 
+    def get_repeat_state(self):
         try:
             return self.get_playback().repeat_state
         except Exception as error:
             self.handle_error_and_print(error)
             return None
 
-    def get_shuffle_state(self): 
+    def get_shuffle_state(self):
         try:
             return self.get_playback().shuffle_state
         except Exception as error:
             self.handle_error_and_print(error)
             return None
 
-    def get_volume(self): 
+    def get_volume(self):
         try:
             return self.get_playback().device.volume_percent
         except Exception as error:
@@ -225,7 +225,7 @@ class SpotiCLI(Cmd):
     ## needed as we'll usually send a 'get' request not long after and if we send too soon
     ## API might return wrong info
 
-    def set_device(self, new_device): 
+    def set_device(self, new_device):
         self.sp_user.playback_transfer(new_device)
         time.sleep(self.api_delay)
 
@@ -278,7 +278,7 @@ class SpotiCLI(Cmd):
             self.handle_error_and_print(error)
             return None
 
-    def set_position(self, new_time): 
+    def set_position(self, new_time):
         try:
             self.sp_user.playback_seek(new_time)
             time.sleep(self.api_delay)
@@ -287,7 +287,7 @@ class SpotiCLI(Cmd):
             self.handle_error_and_print(error)
             return None
 
-    def set_repeat_state(self, new_repeat_state): 
+    def set_repeat_state(self, new_repeat_state):
         try:
             self.sp_user.playback_repeat(new_repeat_state)
             time.sleep(self.api_delay)
@@ -303,7 +303,7 @@ class SpotiCLI(Cmd):
         self.sp_user.saved_tracks_delete(song_id)
         time.sleep(self.api_delay)
 
-    def set_shuffle_state(self, new_shuffle_state): 
+    def set_shuffle_state(self, new_shuffle_state):
         try:
             self.sp_user.playback_shuffle(new_shuffle_state)
             time.sleep(self.api_delay)
@@ -311,13 +311,13 @@ class SpotiCLI(Cmd):
             self.handle_error_and_print()
             return None
 
-    def set_volume(self, new_volume): 
+    def set_volume(self, new_volume):
         self.sp_user.playback_volume(new_volume)
         time.sleep(self.api_delay)
 
     #### cmd2 native functions
     ##########################################
-    
+
     #prints blank line
     #necessary to overload cmd2's default behavior (retry previous command)
     def emptyline(self):
@@ -332,14 +332,14 @@ class SpotiCLI(Cmd):
         self.poutput('')
         return line
 
-    #### Begin CMD2 commands below 
+    #### Begin CMD2 commands below
     ##########################################
 
     def do_about(self, line):
         '''
         show build information
 
-        usage: 
+        usage:
             about
         '''
         self.poutput(self.app_info)
@@ -356,7 +356,7 @@ class SpotiCLI(Cmd):
     def do_exit(self, line):
         '''
         exit application
-        
+
         usage:
             exit
         '''
@@ -381,7 +381,7 @@ class SpotiCLI(Cmd):
         else:
             self.pwarning('not logged out')
 
-    
+
     #### playback commands
     ##########################################
 
@@ -401,7 +401,7 @@ class SpotiCLI(Cmd):
         if(song_data == None):
             self.handle_error_and_print()
             return
-        
+
         song_playing = self.get_is_playing(song_data)
 
         if(song_playing == True):
@@ -410,7 +410,7 @@ class SpotiCLI(Cmd):
             song_playing = f'{Fore.RED}{Style.BRIGHT}Stopped'
 
         time_stamp = self.generate_timestamp(song_data)
-        
+
         now_playing = f'[{song_playing} - {time_stamp}{Style.RESET_ALL}] {self.display_song(song_data.item)}'
         self.poutput(now_playing)
 
@@ -457,7 +457,7 @@ class SpotiCLI(Cmd):
             except:
                 pass
             self.do_current(self)
-                
+
     def do_pause(self, line):
         '''
         pause playback
@@ -531,8 +531,8 @@ class SpotiCLI(Cmd):
         '''
         set volume to specified level, range 0-100
         specify a step increase by prefixing value with +/-, otherwise it defaults to 10% step
-        
-        usage: 
+
+        usage:
             volume [+/-][value]
         '''
 
@@ -578,13 +578,13 @@ class SpotiCLI(Cmd):
             return
 
         max_index = 0
-        
+
         print_string = ''
         current_active = ''
 
         for index, item in enumerate(endpoint_list):
             max_index = index
-            
+
             print_string += f'{index + 1}:\t{item.name}'
 
             if(item.is_active):
@@ -615,7 +615,7 @@ class SpotiCLI(Cmd):
         self.set_device(endpoint_list[user_input].id)
         #self.current_endpoint = endpoint_list[user_input]
         #self.set_device(self.current_endpoint.id)
-    
+
     def repeat_enable(self, args):
         if(self.set_repeat_state('context') == None):
             self.do_repeat('')
@@ -647,7 +647,7 @@ class SpotiCLI(Cmd):
         '''
         show or modify repeat state
 
-        usage: 
+        usage:
             repeat [enable|disable|track]
         '''
 
@@ -660,7 +660,7 @@ class SpotiCLI(Cmd):
                 return
             current_repeat = current_repeat.value
 
-            ### valid states: 
+            ### valid states:
             ### track - repeat enabled for track
             ### enabled - repeat enabled for playlist/album
             ### disabled - repeat disabled
@@ -675,7 +675,7 @@ class SpotiCLI(Cmd):
     def shuffle_enable(self, args):
         if(self.set_shuffle_state(True) == None):
             self.do_shuffle('')
-            
+
     def shuffle_disable(self, args):
         if(self.set_shuffle_state(False) == None):
             self.do_shuffle('')
@@ -701,11 +701,11 @@ class SpotiCLI(Cmd):
         usage:
             shuffle [enable|disable]
         '''
-        ### valid states: 
+        ### valid states:
         ### enabled - shuffle enabled
         ### disabled - shuffle disabled
 
-        #if line is empty, print shuffle state 
+        #if line is empty, print shuffle state
         try:
             line.func(self, line)
         except AttributeError:
@@ -761,7 +761,7 @@ class SpotiCLI(Cmd):
             try:
                 items_to_fetch = int(line)
 
-                if(items_to_fetch <= 0): 
+                if(items_to_fetch <= 0):
                     items_to_fetch = 3
                     self.pwarning('value too low, retrieving last 3 items')
                     pass
@@ -776,7 +776,7 @@ class SpotiCLI(Cmd):
 
         for index, prev_song in enumerate(self.get_history(items_to_fetch).items):
             self.poutput(f'{index + 1}: {self.display_song(prev_song.track)}')
-    
+
     def do_queue(self, line):
         '''
         show upcoming songs
@@ -792,7 +792,7 @@ class SpotiCLI(Cmd):
     def do_save(self, line):
         '''
         add currently playing track to liked songs
-        
+
         usage:
             save
         '''
@@ -806,11 +806,11 @@ class SpotiCLI(Cmd):
 
         self.set_save([song_id])
         self.poutput(f'{Fore.RED}{Style.BRIGHT}<3{Style.RESET_ALL} - saved song - {self.display_song(song_data.item)}')
-    
+
     def do_unsave(self, line):
         '''
         remove currently playing track from liked songs
-        
+
         usage:
             unsave
         '''
@@ -829,7 +829,7 @@ class SpotiCLI(Cmd):
     def do_search(self, line):
         '''
         search by track, artist or album
-        
+
         usage:
             search [filter] [-c amount] query
 
@@ -839,7 +839,7 @@ class SpotiCLI(Cmd):
             -p, --playlist
             -t, --track
 
-        examples: 
+        examples:
             search -t seven nation army
             search -a eminem
             search --playlist -c 3 cool songs
@@ -856,7 +856,7 @@ class SpotiCLI(Cmd):
         ### turn into a list so we can check first flag (if any)
         search_string = line.split(' ')
 
-        ### check for flags in beginning of search string. 
+        ### check for flags in beginning of search string.
         ### if found, remove (so we don't do a search for the flag)
         if('-a' in search_string[0]):
             result_type = result_type + ('artist',)
@@ -893,8 +893,8 @@ class SpotiCLI(Cmd):
 
             if(media_type == 'track'):
                 self.poutput(f'{str(index + 1)}. \t{media_type} - {self.display_song(item)}')
-                
-                ### tekore playback track uses ID or uri depending on what you want to do 
+
+                ### tekore playback track uses ID or uri depending on what you want to do
                 ### save entire item for future ref so we can decide action later
                 item_id.append(item)
             if(media_type == 'artist'):
@@ -906,7 +906,7 @@ class SpotiCLI(Cmd):
             if(media_type == 'playlist'):
                 self.poutput(f'{str(index + 1)}. \t{media_type} - {item.name}')
                 item_id.append(item.uri)
-        
+
         #for index, item in enumerate(search_results):
             #print(f'{index} : {self.get_song(item[index].items[0].name)}')
 

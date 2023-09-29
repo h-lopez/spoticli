@@ -1,8 +1,8 @@
 # SpotiCLI
 
 ### About
-Command line front end for Spotify  
-This program still requires that the Spotify client be installed locally  
+Command line front end for Spotify
+This program still requires that the Spotify client be installed locally
 Please note this REQUIRES Spotify Premium to use as most of the APIs are locked behind premium
 
 [![asciicast](https://asciinema.org/a/345797.svg)](https://asciinema.org/a/345797)
@@ -16,7 +16,7 @@ Please note this REQUIRES Spotify Premium to use as most of the APIs are locked 
 * repeat/shuffle toggle
 * volume control
 * playback transfer (ie. move playback to a new spotify connect endpoint)
-* save/unsave tracks to liked songs 
+* save/unsave tracks to liked songs
 * view/play your followed/saved playlists
 
 ### Requirements
