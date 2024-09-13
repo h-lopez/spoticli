@@ -38,7 +38,7 @@ class SpotiCLI(Cmd):
         self.prompt = f'{Fore.GREEN}{Style.BRIGHT}spoticli ~$ {Style.RESET_ALL}'
 
         self.current_endpoint = ''
-        self.api_delay = 0.5
+        self.api_delay = 0.1
 
         #hide built-in cmd2 functions. this will leave them available for use but will be hidden from tab completion (and docs)
         self.hidden_commands.append('alias')
@@ -229,11 +229,9 @@ class SpotiCLI(Cmd):
 
     def set_device(self, new_device):
         self.sp_user.playback_transfer(new_device)
-        time.sleep(self.api_delay)
 
     def set_playback_context(self, playback_uri):
         self.sp_user.playback_start_context(context_uri=playback_uri)
-        time.sleep(self.api_delay)
 
     def set_playback_track(self, new_track):
         if(not isinstance(new_track, list)):
@@ -242,13 +240,10 @@ class SpotiCLI(Cmd):
             self.sp_user.playback_start_tracks(track_ids=track_list)
         else:
             self.sp_user.playback_start_tracks(track_ids=new_track)
-        time.sleep(self.api_delay)
 
     def set_play_next(self):
         try:
             self.sp_user.playback_next()
-            time.sleep(self.api_delay)
-            self.do_current('')
         except Exception as error:
             self.handle_error_and_print(error)
             return None
@@ -274,8 +269,6 @@ class SpotiCLI(Cmd):
     def set_play_previous(self):
         try:
             self.sp_user.playback_previous()
-            time.sleep(self.api_delay)
-            self.do_current('')
         except Exception as error:
             self.handle_error_and_print(error)
             return None
@@ -283,8 +276,6 @@ class SpotiCLI(Cmd):
     def set_position(self, new_time):
         try:
             self.sp_user.playback_seek(new_time)
-            time.sleep(self.api_delay)
-            self.do_current('')
         except Exception as error:
             self.handle_error_and_print(error)
             return None
@@ -292,30 +283,25 @@ class SpotiCLI(Cmd):
     def set_repeat_state(self, new_repeat_state):
         try:
             self.sp_user.playback_repeat(new_repeat_state)
-            time.sleep(self.api_delay)
         except Exception as error:
             self.handle_error_and_print(error)
             return None
 
     def set_save(self, song_id):
         self.sp_user.saved_tracks_add(song_id)
-        time.sleep(self.api_delay)
 
     def set_unsave(self, song_id):
         self.sp_user.saved_tracks_delete(song_id)
-        time.sleep(self.api_delay)
 
     def set_shuffle_state(self, new_shuffle_state):
         try:
             self.sp_user.playback_shuffle(new_shuffle_state)
-            time.sleep(self.api_delay)
         except:
             self.handle_error_and_print()
             return None
 
     def set_volume(self, new_volume):
         self.sp_user.playback_volume(new_volume)
-        time.sleep(self.api_delay)
 
     #### cmd2 native functions
     ##########################################
