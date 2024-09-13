@@ -19,6 +19,8 @@ from colorama import init, Fore, Back, Style
 
 from tekore import Spotify
 from cmd2 import Cmd, with_argparser
+from clear_screen import clear
+
 #from colorama import init, Fore, Back, Style
 
 class SpotiCLI(Cmd):
@@ -56,7 +58,7 @@ class SpotiCLI(Cmd):
         self.hidden_commands.append('run_script')
 
         # debug false by default
-        # self.debug = True
+        self.debug = True
 
         ##define permissions scope...
 
@@ -322,6 +324,10 @@ class SpotiCLI(Cmd):
     #necessary to overload cmd2's default behavior (retry previous command)
     def emptyline(self):
         return
+
+    def precmd(self, line):
+        clear()
+        return line
 
     #overloads default error message
     def default(self, line):
